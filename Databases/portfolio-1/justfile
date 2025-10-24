@@ -1,0 +1,162 @@
+# Default: load .env
+set dotenv-load
+
+################################################################
+# 🔧 Environment Configuration
+#
+# Change this to point at the dotenv file you want Just to load.
+# Common choices:
+#   - ".env"        (default/base)
+#   - ".env.local"  (local development)
+#   - ".env.dev"    (development server)
+#   - ".env.prod"   (production)
+################################################################
+
+# set default dotenv file using that variable
+set dotenv-filename := ".env.ruc"
+# export it into the environment so recipes can read it
+export DOTENV_FILENAME := ".env.ruc"
+
+################################################################
+
+# Default: use pwsh (PowerShell 7+) for most recipes
+set shell := ["pwsh.exe", "-NoLogo", "-Command"]
+
+# So we don't print the command
+set quiet := true
+
+_default:
+	just --list
+
+alias f01 := f01-show-env
+f01-show-env:
+	@Write-Output "Active dotenv: $env:DOTENV_FILENAME"
+
+alias f02 := f02-show-all-env
+f02-show-all-env:
+	Get-ChildItem Env:
+
+alias f1 := f1-run-full-pipeline-with-drop
+# Only works with dotenv-filename = .env.local
+[doc]
+f1-run-full-pipeline-with-drop:
+	Write-Output "============================================================"
+	Write-Output "🗑️  Dropping database: ${env:DB_NAME} (if it exists)..."
+	Write-Output "============================================================"
+	psql ${env:DB_URL_ADMIN} -c "DROP DATABASE IF EXISTS ${env:DB_NAME};"
+	if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+	Write-Output "============================================================"
+	Write-Output "🆕 Creating database: ${env:DB_NAME}"
+	Write-Output "============================================================"
+	psql ${env:DB_URL_ADMIN} -c "CREATE DATABASE ${env:DB_NAME};"
+	if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+	Write-Output ""
+	Write-Output "============================================================"
+	Write-Output "📦 Running setup from init.sql..."
+	Write-Output "============================================================"
+	psql "${env:DB_URL_TARGET}" -f 0_init.sql
+	if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+	@Write-Output "============================================================"
+	@Write-Output "🧪 Running database tests on ${env:DB_NAME} 🧪"
+	@Write-Output "============================================================"
+	psql ${env:DB_URL_TARGET} -a -f 0.1_tests.sql > cit${env:GROUP_NUMBER}-${env:PROJECT_NAME}.txt 2>&1
+	@Write-Output "============================================================"
+	@Write-Output "✅ Tests completed successfully ✅"
+	@Write-Output "============================================================"
+
+	Write-Output "============================================================"
+	Write-Output "📦 Restoring backup & porting data..."
+	Write-Output "============================================================"
+	psql ${env:DB_URL_TARGET} -f 0.2_backup_and_port.sql
+	if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+	@Write-Output "============================================================"
+	@Write-Output "🧪 Running migrations tests on ${env:DB_NAME} 🧪"
+	@Write-Output "============================================================"
+	psql ${env:DB_URL_TARGET} -a -f 0.3_migrations_tests.sql >> cit${env:GROUP_NUMBER}-${env:PROJECT_NAME}.txt 2>&1
+	@Write-Output "============================================================"
+	@Write-Output "✅ Tests completed successfully ✅"
+	@Write-Output "============================================================"
+
+	Write-Output "============================================================"
+	Write-Output "🚀 Database ${env:DB_NAME} is ready 🚀"
+	Write-Output "============================================================"
+
+	Write-Output "============================================================"
+	Write-Output "💾 Creating backup of database: ${env:DB_NAME}..."
+	Write-Output "============================================================"
+	pg_dump ${env:DB_URL_TARGET} > "./backups/backup_${env:DB_NAME}.sql"
+	#pg_dump ${env:DB_URL_TARGET} > backup_${env:DB_NAME}_$(Get-Date -Format "yyyyMMdd_HHmmss").sql
+	if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+alias f2 := f2-run-db-tests
+# Only works with dotenv-filename = .env.local4
+[doc]
+f2-run-db-tests:
+	@Write-Output "============================================================"
+	@Write-Output "🧪 Running tests on ${env:DB_NAME} 🧪"
+	@Write-Output "============================================================"
+	psql ${env:DB_URL_TARGET} -a -f 0.1_tests.sql > cit${env:GROUP_NUMBER}-${env:PROJECT_NAME}.txt 2>&1
+	@Write-Output "============================================================"
+	@Write-Output "✅ Tests completed successfully ✅"
+	@Write-Output "============================================================"
+
+
+alias f3 := f3-createDB-no-drop
+# Create an .env file with variable DB_URL_TARGET
+[doc]
+f3-createDB-no-drop:
+	Write-Output ""
+	Write-Output "============================================================"
+	Write-Output "📦 Running migrations from init.sql..."
+	Write-Output "============================================================"
+	psql "${env:DB_URL_TARGET}" -f 0_init.sql
+	if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+	Write-Output ""
+	Write-Output "============================================================"
+	Write-Output "✅ Database ${env:DB_NAME} is ready 🚀"
+	Write-Output "============================================================"
+
+alias f4 := f4-restore-from-backup
+# Only works with dotenv-filename = .env.local
+[doc]
+f4-restore-from-backup:
+	Write-Output "============================================================"
+	Write-Output "💾 Restoring database ${env:DB_NAME} from backup_${env:DB_NAME}.sql..."
+	Write-Output "============================================================"
+
+	# Drop DB if exists
+	psql ${env:DB_URL_ADMIN} -c "DROP DATABASE IF EXISTS ${env:DB_NAME};"
+	if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+	# Recreate DB
+	psql ${env:DB_URL_ADMIN} -c "CREATE DATABASE ${env:DB_NAME};"
+	if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+	# Restore from the most recent backup file (adjust filename if needed)
+	psql ${env:DB_URL_TARGET} -f "./backups/backup_${env:DB_NAME}.sql"
+	if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+	Write-Output "============================================================"
+	Write-Output "🚀 Database ${env:DB_NAME} has been restored from backup 🚀"
+	Write-Output "============================================================"
+
+alias f5 := f5-restore-from-backup-no-drop
+# Only works with dotenv-filename = .env.local
+[doc]
+f5-restore-from-backup-no-drop:
+	Write-Output "============================================================"
+	Write-Output "💾 Restoring database ${env:DB_NAME} from backup_${env:DB_NAME}.sql..."
+	Write-Output "============================================================"
+
+	# Restore from the most recent backup file (adjust filename if needed)
+	psql ${env:DB_URL_TARGET} -f "./backups/backup_${env:DB_NAME}.sql"
+	if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+	Write-Output "============================================================"
+	Write-Output "🚀 Database ${env:DB_NAME} has been restored from backup 🚀"
+	Write-Output "============================================================"

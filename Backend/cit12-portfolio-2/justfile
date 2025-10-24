@@ -1,0 +1,11 @@
+﻿# justfile for running the .NET WebHost project
+
+default:
+    just --list
+
+# Run the WebHost project
+dotnet-run:
+    dotnet run --project program/program.csproj
+
+dotnet-test:
+    dotnet test
