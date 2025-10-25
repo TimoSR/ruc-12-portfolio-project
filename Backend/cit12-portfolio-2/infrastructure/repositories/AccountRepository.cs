@@ -38,9 +38,10 @@ public sealed class AccountRepository : IAccountRepository
         throw new NotImplementedException();
     }
 
-    public async Task AddAsync(Account account, CancellationToken cancellationToken = default)
+    public async Task<Account> AddAsync(Account account, CancellationToken cancellationToken = default)
     {
         await _dbContext.Accounts.AddAsync(account, cancellationToken);
+        return account;
     }
     
     public async Task<Account?> GetByIdAsync(Guid id, CancellationToken cancellationToken)

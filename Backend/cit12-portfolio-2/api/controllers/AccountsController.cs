@@ -15,21 +15,17 @@ public class AccountsController(IAccountService accountService) : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> Create([FromBody] CreateAccountCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> Create([FromBody] CreateAccountCommandDto commandDto, CancellationToken cancellationToken)
     {
-        var result = await accountService.CreateAccountAsync(command, cancellationToken);
+        var result = await accountService.CreateAccountAsync(commandDto, cancellationToken);
 
         if (result.IsSuccess)
         {
-            var account = result.Value!;
-        
-            var dto = new AccountDto(account.Id, account.Email, account.Username);
-
             // Prefer CreatedAtAction or CreatedAtRoute if GetById is available
             return CreatedAtAction(
                 nameof(GetById),
-                new { id = dto.Id },
-                dto
+                new { id = result.Value.Id },
+                result.Value
             );
         }
 
@@ -74,9 +70,6 @@ public class AccountsController(IAccountService accountService) : ControllerBase
             });
         }
 
-        var account = result.Value!;
-        var dto = new AccountDto(account.Id, account.Email, account.Username);
-
-        return Ok(dto);
+        return Ok(result.Value);
     }
 }

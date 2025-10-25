@@ -1,4 +1,5 @@
-﻿using application.ratingService;
+﻿/*
+using application.ratingService;
 
 namespace api.controllers;
 
@@ -64,3 +65,4 @@ public class RatingsController : ControllerBase
         return NoContent();
     }
 }
+*/
