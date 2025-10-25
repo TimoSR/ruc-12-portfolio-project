@@ -19,4 +19,14 @@
         <Using Include="Xunit"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\domain\domain.csproj" />
+        <ProjectReference Include="..\infrastructure\infrastructure.csproj" />
+        <ProjectReference Include="..\service-patterns\service-patterns.csproj" />
+    </ItemGroup>
+
 </Project>

@@ -1,4 +1,5 @@
 using domain.account;
+using domain.movie;
 using Microsoft.EntityFrameworkCore;
 using service_patterns;
 
@@ -7,6 +8,7 @@ namespace infrastructure;
 public class MovieDbContext (DbContextOptions<MovieDbContext> options) : DbContext(options)
 {
     public DbSet<Account> Accounts => Set<Account>();
+    public DbSet<Movie> Movies => Set<Movie>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -22,6 +24,24 @@ public class MovieDbContext (DbContextOptions<MovieDbContext> options) : DbConte
             entity.Property(e => e.Username).HasColumnName("username");
             entity.Property(e => e.Password).HasColumnName("password_hash");
             entity.Property(e => e.CreatedAt).HasColumnName("created_at");
+        });
+
+        modelBuilder.Entity<Movie>(entity =>
+        {
+            entity.ToTable("title", "movie_db");
+
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.LegacyId).HasColumnName("legacy_id");
+            entity.Property(e => e.TitleType).HasColumnName("title_type");
+            entity.Property(e => e.PrimaryTitle).HasColumnName("primary_title");
+            entity.Property(e => e.OriginalTitle).HasColumnName("original_title");
+            entity.Property(e => e.IsAdult).HasColumnName("is_adult");
+            entity.Property(e => e.StartYear).HasColumnName("start_year");
+            entity.Property(e => e.EndYear).HasColumnName("end_year");
+            entity.Property(e => e.RuntimeMinutes).HasColumnName("runtime_minutes");
+            entity.Property(e => e.PosterUrl).HasColumnName("poster_url");
+            entity.Property(e => e.Plot).HasColumnName("plot");
         });
     }
 }
