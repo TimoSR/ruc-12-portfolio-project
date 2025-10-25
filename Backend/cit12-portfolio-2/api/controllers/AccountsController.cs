@@ -1,5 +1,6 @@
 ﻿using System.Net.Mime;
 using application.accountService;
+using domain.account;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,7 +22,6 @@ public class AccountsController(IAccountService accountService) : ControllerBase
 
         if (result.IsSuccess)
         {
-            // Prefer CreatedAtAction or CreatedAtRoute if GetById is available
             return CreatedAtAction(
                 nameof(GetById),
                 new { id = result.Value.Id },
@@ -29,15 +29,15 @@ public class AccountsController(IAccountService accountService) : ControllerBase
             );
         }
 
-        return result.Error.Code switch
+        return result.Error switch
         {
-            "Account.DuplicateEmail" or "Account.DuplicateUsername" =>
+            var e when e == AccountErrors.DuplicateEmail || e == AccountErrors.DuplicateUsername =>
                 Conflict(new ProblemDetails
                 {
                     Type = "https://httpstatuses.com/409",
                     Title = "Conflict",
                     Status = StatusCodes.Status409Conflict,
-                    Detail = result.Error.Description,
+                    Detail = e.Description,
                     Instance = HttpContext.TraceIdentifier
                 }),
 
@@ -59,17 +59,30 @@ public class AccountsController(IAccountService accountService) : ControllerBase
     {
         var result = await accountService.GetAccountByIdAsync(id, cancellationToken);
 
-        if (!result.IsSuccess)
+        if (result.IsSuccess)
         {
-            return NotFound(new ProblemDetails
-            {
-                Title = "Not Found",
-                Detail = result.Error.Description,
-                Status = StatusCodes.Status404NotFound,
-                Instance = HttpContext.TraceIdentifier
-            });
+            return Ok(result.Value);
         }
+        
+        return result.Error switch
+        {
+            var e when e == AccountErrors.NotFound =>
+                NotFound(new ProblemDetails
+                {
+                    Title = "Not Found",
+                    Detail = e.Description,
+                    Status = StatusCodes.Status404NotFound,
+                    Instance = HttpContext.TraceIdentifier
+                }),
 
-        return Ok(result.Value);
+            _ => StatusCode(StatusCodes.Status500InternalServerError, new ProblemDetails
+            {
+                Type = "https://httpstatuses.com/500",
+                Title = "Internal Server Error",
+                Status = StatusCodes.Status500InternalServerError,
+                Detail = result.Error.Description,
+                Instance = HttpContext.TraceIdentifier
+            })
+        };
     }
 }
