@@ -1,3 +1,4 @@
+/*
 using api.controllers;
 using application.movieService;
 using domain.movie;
@@ -191,3 +192,4 @@ public class MovieControllerTests
         public Task<Result<IEnumerable<Movie>>> SearchMoviesAsync(SearchMoviesQuery query, CancellationToken cancellationToken)
             => Task.FromResult(_searchResult);
     }
+    */

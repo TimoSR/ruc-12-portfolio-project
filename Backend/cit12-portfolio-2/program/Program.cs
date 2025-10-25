@@ -50,6 +50,7 @@ builder.Services.AddScoped<IMovieService, MovieService>();
 builder.Services
     .AddControllers()
     .AddApplicationPart(typeof(AccountController).Assembly)
+    .AddApplicationPart(typeof(MovieController).Assembly)
     .AddControllersAsServices();
 
 // Application addons
