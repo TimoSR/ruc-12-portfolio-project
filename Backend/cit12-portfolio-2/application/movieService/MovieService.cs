@@ -7,18 +7,29 @@ namespace application.movieService;
 
 public class MovieService(IUnitOfWork unitOfWork, ILogger<MovieService> logger) : IMovieService
 {
-    public async Task<Result<Movie>> GetMovieByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<Result<MovieDto>> GetMovieByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         try
         {
             var movie = await unitOfWork.MovieRepository.GetByIdAsync(id, cancellationToken);
 
             if (movie is null)
-            {
-                return Result<Movie>.Failure(MovieErrors.NotFound);
-            }
+                return Result<MovieDto>.Failure(MovieErrors.NotFound);
+            
+            var dto = new MovieDto(
+                Id: movie.Id,
+                TitleType: movie.TitleType,
+                PrimaryTitle: movie.PrimaryTitle,
+                OriginalTitle: movie.OriginalTitle,
+                IsAdult: movie.IsAdult,
+                StartYear: movie.StartYear,
+                EndYear: movie.EndYear,
+                RuntimeMinutes: movie.RuntimeMinutes,
+                PosterUrl: movie.PosterUrl,
+                Plot: movie.Plot
+            );
 
-            return Result<Movie>.Success(movie);
+            return Result<MovieDto>.Success(dto);
         }
         catch (Exception ex)
         {
@@ -27,18 +38,30 @@ public class MovieService(IUnitOfWork unitOfWork, ILogger<MovieService> logger) 
         }
     }
 
-    public async Task<Result<Movie>> GetMovieByLegacyIdAsync(string legacyId, CancellationToken cancellationToken)
+    public async Task<Result<MovieLegacyDto>> GetMovieByLegacyIdAsync(string legacyId, CancellationToken cancellationToken)
     {
         try
         {
             var movie = await unitOfWork.MovieRepository.GetByLegacyIdAsync(legacyId, cancellationToken);
 
-            if (movie is null)
-            {
-                return Result<Movie>.Failure(MovieErrors.NotFound);
-            }
+            if(movie is null)
+                return Result<MovieLegacyDto>.Failure(MovieErrors.NotFound);
+            
+            var dto = new MovieLegacyDto(
+                Id: movie.Id,
+                LegacyId: movie.LegacyId!,
+                TitleType: movie.TitleType,
+                PrimaryTitle: movie.PrimaryTitle,
+                OriginalTitle: movie.OriginalTitle,
+                IsAdult: movie.IsAdult,
+                StartYear: movie.StartYear,
+                EndYear: movie.EndYear,
+                RuntimeMinutes: movie.RuntimeMinutes,
+                PosterUrl: movie.PosterUrl,
+                Plot: movie.Plot
+            );
 
-            return Result<Movie>.Success(movie);
+            return Result<MovieLegacyDto>.Success(dto);
         }
         catch (Exception ex)
         {
@@ -47,7 +70,12 @@ public class MovieService(IUnitOfWork unitOfWork, ILogger<MovieService> logger) 
         }
     }
 
-    public async Task<Result<IEnumerable<Movie>>> SearchMoviesAsync(SearchMoviesQuery query, CancellationToken cancellationToken)
+    public Task<Result<IEnumerable<MovieDto>>> SearchMoviesAsync(SearchMoviesQuery query, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
+
+    /*public async Task<Result<IEnumerable<MovieDto>>> SearchMoviesAsync(SearchMoviesQuery query, CancellationToken cancellationToken)
     {
         try
         {
@@ -65,5 +93,5 @@ public class MovieService(IUnitOfWork unitOfWork, ILogger<MovieService> logger) 
             logger.LogError(ex, "Unexpected error while searching movies with query {Query}", query.Query);
             throw;
         }
-    }
+    }*/
 }

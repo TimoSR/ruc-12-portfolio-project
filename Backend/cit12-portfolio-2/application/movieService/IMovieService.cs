@@ -5,7 +5,7 @@ namespace application.movieService;
 
 public interface IMovieService
 {
-    Task<Result<Movie>> GetMovieByIdAsync(Guid id, CancellationToken cancellationToken);
-    Task<Result<Movie>> GetMovieByLegacyIdAsync(string legacyId, CancellationToken cancellationToken);
-    Task<Result<IEnumerable<Movie>>> SearchMoviesAsync(SearchMoviesQuery query, CancellationToken cancellationToken);
+    Task<Result<MovieDto>> GetMovieByIdAsync(Guid id, CancellationToken cancellationToken);
+    Task<Result<MovieLegacyDto>> GetMovieByLegacyIdAsync(string legacyId, CancellationToken cancellationToken);
+    Task<Result<IEnumerable<MovieDto>>> SearchMoviesAsync(SearchMoviesQuery query, CancellationToken cancellationToken);
 }
