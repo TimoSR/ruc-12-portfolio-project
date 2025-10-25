@@ -16,4 +16,14 @@ public interface IMovie : IAggregateRoot
     string? PosterUrl { get; }
     string? Plot { get; }
 
+    static abstract Movie Create(
+        string titleType,
+        string primaryTitle,
+        string? originalTitle,
+        bool isAdult,
+        int? startYear,
+        int? endYear,
+        int? runtimeMinutes,
+        string? posterUrl,
+        string? plot);
 }
