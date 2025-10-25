@@ -5,7 +5,7 @@ namespace domain.movie.interfaces;
 public interface IMovie : IAggregateRoot
 {
     Guid Id { get; }
-    string LegacyId { get; }
+    string? LegacyId { get; }
     string TitleType { get; }
     string PrimaryTitle { get; }
     string? OriginalTitle { get; }
@@ -15,4 +15,15 @@ public interface IMovie : IAggregateRoot
     int? RuntimeMinutes { get; }
     string? PosterUrl { get; }
     string? Plot { get; }
+
+    static abstract Movie Create(
+        string titleType,
+        string primaryTitle,
+        string? originalTitle,
+        bool isAdult,
+        int? startYear,
+        int? endYear,
+        int? runtimeMinutes,
+        string? posterUrl,
+        string? plot);
 }
