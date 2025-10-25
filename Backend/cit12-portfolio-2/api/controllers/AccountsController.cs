@@ -8,7 +8,7 @@ namespace api.controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Produces(MediaTypeNames.Application.Json)]
-public class AccountController(IAccountService accountService) : ControllerBase
+public class AccountsController(IAccountService accountService) : ControllerBase
 {
     [HttpPost]
     [ProducesResponseType(typeof(AccountDto), StatusCodes.Status201Created)]

@@ -37,15 +37,14 @@ builder.Services.AddDbContext<MovieDbContext>(options =>
 // This means you get one instance per HTTP request.
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<IAccountService, AccountService>();
 
 // 4. Register you applications services
+builder.Services.AddScoped<IAccountService, AccountService>();
 
 // 5. Register your controllers
-
 builder.Services
     .AddControllers()
-    .AddApplicationPart(typeof(AccountController).Assembly)
+    .AddApplicationPart(typeof(AccountsController).Assembly)
     .AddControllersAsServices();
 
 // Application addons
