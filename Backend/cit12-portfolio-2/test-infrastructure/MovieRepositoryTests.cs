@@ -26,11 +26,11 @@ public class MovieRepositoryTests : IDisposable
         {
             var movies = new List<Movie>
             {
-                new Movie(Guid.NewGuid(), "tt1234567", "movie", "Test Movie 1", 
+                Movie.Create(Guid.NewGuid(), "tt1234567", "movie", "Test Movie 1", 
                     "Original Test Movie 1", false, 2023, null, 120, "https://example.com/poster1.jpg", "Test plot 1"),
-                new Movie(Guid.NewGuid(), "tt1234568", "movie", "Test Movie 2", 
+                Movie.Create(Guid.NewGuid(), "tt1234568", "movie", "Test Movie 2", 
                     null, false, 2022, null, 90, null, "Test plot 2"),
-                new Movie(Guid.NewGuid(), "tt1234569", "tvSeries", "Test Series", 
+                Movie.Create(Guid.NewGuid(), "tt1234569", "tvSeries", "Test Series", 
                     null, false, 2021, 2023, null, null, "Test series plot")
             };
 

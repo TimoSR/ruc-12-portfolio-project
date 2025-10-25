@@ -27,7 +27,7 @@ public class MovieControllerTests
         {
             // Arrange
             var movieId = Guid.NewGuid();
-            var movie = new Movie(movieId, "tt1234567", "movie", "Test Movie", 
+            var movie = Movie.Create(movieId, "tt1234567", "movie", "Test Movie", 
                 "Original Test Movie", false, 2023, null, 120, "https://example.com/poster.jpg", "Test plot");
             
             var mockMovieService = new MockMovieService();
@@ -76,7 +76,7 @@ public class MovieControllerTests
         {
             // Arrange
             var legacyId = "tt1234567";
-            var movie = new Movie(Guid.NewGuid(), legacyId, "movie", "Test Movie", 
+            var movie = Movie.Create(Guid.NewGuid(), legacyId, "movie", "Test Movie", 
                 null, false, 2023, null, 120, null, "Test plot");
             
             var mockMovieService = new MockMovieService();
@@ -125,7 +125,7 @@ public class MovieControllerTests
             var query = new SearchMoviesQuery("Test", 1, 10);
             var movies = new List<Movie>
             {
-                new Movie(Guid.NewGuid(), "tt1234567", "movie", "Test Movie", 
+                Movie.Create(Guid.NewGuid(), "tt1234567", "movie", "Test Movie", 
                     null, false, 2023, null, 120, null, "Test plot")
             };
 

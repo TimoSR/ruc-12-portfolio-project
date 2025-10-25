@@ -17,7 +17,8 @@ public class Movie : AggregateRoot, IMovie
     public string? PosterUrl { get; private set; }
     public string? Plot { get; private set; }
 
-    public Movie(Guid id, string legacyId, string titleType, string primaryTitle, 
+    // Internal constructor for EF Core reconstruction
+    internal Movie(Guid id, string legacyId, string titleType, string primaryTitle, 
         string? originalTitle, bool isAdult, int? startYear, int? endYear, 
         int? runtimeMinutes, string? posterUrl, string? plot)
     {
@@ -32,5 +33,22 @@ public class Movie : AggregateRoot, IMovie
         RuntimeMinutes = runtimeMinutes;
         PosterUrl = posterUrl;
         Plot = plot;
+    }
+    
+    // Public factory method for tests and business logic
+    public static Movie Create(Guid id, string legacyId, string titleType, string primaryTitle, 
+        string? originalTitle, bool isAdult, int? startYear, int? endYear, 
+        int? runtimeMinutes, string? posterUrl, string? plot)
+    {
+        // Validation
+        if (string.IsNullOrWhiteSpace(legacyId))
+            throw new InvalidLegacyIdException();
+        if (string.IsNullOrWhiteSpace(primaryTitle))
+            throw new InvalidPrimaryTitleException();
+        if (string.IsNullOrWhiteSpace(titleType))
+            throw new InvalidTitleTypeException();
+            
+        return new Movie(id, legacyId, titleType, primaryTitle, originalTitle, 
+            isAdult, startYear, endYear, runtimeMinutes, posterUrl, plot);
     }
 }

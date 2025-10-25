@@ -22,7 +22,7 @@ public class MovieTests
             var plot = "A test movie plot";
 
             // Act
-            var movie = new Movie(id, legacyId, titleType, primaryTitle, originalTitle, 
+            var movie = Movie.Create(id, legacyId, titleType, primaryTitle, originalTitle, 
                 isAdult, startYear, endYear, runtimeMinutes, posterUrl, plot);
 
             // Assert
@@ -49,7 +49,7 @@ public class MovieTests
             var primaryTitle = "Test Movie";
 
             // Act
-            var movie = new Movie(id, legacyId, titleType, primaryTitle, 
+            var movie = Movie.Create(id, legacyId, titleType, primaryTitle, 
                 null, false, null, null, null, null, null);
 
             // Assert
@@ -70,7 +70,7 @@ public class MovieTests
         public void Movie_ShouldImplementIMovie()
         {
             // Arrange
-            var movie = new Movie(Guid.NewGuid(), "tt1234567", "movie", "Test Movie", 
+            var movie = Movie.Create(Guid.NewGuid(), "tt1234567", "movie", "Test Movie", 
                 null, false, 2023, null, 120, null, "Test plot");
 
             // Assert
@@ -81,7 +81,7 @@ public class MovieTests
         public void Movie_Properties_ShouldBeReadOnly()
         {
             // Arrange
-            var movie = new Movie(Guid.NewGuid(), "tt1234567", "movie", "Test Movie", 
+            var movie = Movie.Create(Guid.NewGuid(), "tt1234567", "movie", "Test Movie", 
                 null, false, 2023, null, 120, null, "Test plot");
 
             // Assert - Properties should not have public setters
@@ -90,5 +90,32 @@ public class MovieTests
             Assert.NotNull(movie.LegacyId);
             Assert.NotNull(movie.TitleType);
             Assert.NotNull(movie.PrimaryTitle);
+        }
+
+        [Theory]
+        [InlineData(null, "movie", "Test Movie")]
+        [InlineData("tt1234567", null, "Test Movie")]
+        [InlineData("tt1234567", "movie", null)]
+        [InlineData("", "movie", "Test Movie")]
+        [InlineData("tt1234567", "", "Test Movie")]
+        [InlineData("tt1234567", "movie", "")]
+        [InlineData(" ", "movie", "Test Movie")]
+        [InlineData("tt1234567", " ", "Test Movie")]
+        [InlineData("tt1234567", "movie", " ")]
+        public void Create_InvalidInput_ShouldThrowDomainException(string? legacyId, string? titleType, string? primaryTitle)
+        {
+            // Act & Assert
+            if (string.IsNullOrWhiteSpace(legacyId))
+                Assert.Throws<InvalidLegacyIdException>(() => Movie.Create(
+                    Guid.NewGuid(), legacyId, titleType, primaryTitle, 
+                    null, false, 2023, null, 120, null, "Test plot"));
+            else if (string.IsNullOrWhiteSpace(titleType))
+                Assert.Throws<InvalidTitleTypeException>(() => Movie.Create(
+                    Guid.NewGuid(), legacyId, titleType, primaryTitle, 
+                    null, false, 2023, null, 120, null, "Test plot"));
+            else if (string.IsNullOrWhiteSpace(primaryTitle))
+                Assert.Throws<InvalidPrimaryTitleException>(() => Movie.Create(
+                    Guid.NewGuid(), legacyId, titleType, primaryTitle, 
+                    null, false, 2023, null, 120, null, "Test plot"));
         }
     }
