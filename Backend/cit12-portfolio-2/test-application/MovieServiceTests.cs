@@ -1,4 +1,3 @@
-/*
 using application.movieService;
 using domain.movie;
 using domain.movie.interfaces;
@@ -31,8 +30,7 @@ public class MovieServiceTests
         {
             // Arrange
             var movieId = Guid.NewGuid();
-            var expectedMovie = Movie.Create(movieId, "tt1234567", "movie", "Test Movie", 
-                null, false, 2023, null, 120, null, "Test plot");
+            var expectedMovie = Movie.Create("movie", "Test Movie");
             
             var mockUnitOfWork = new MockUnitOfWork();
             mockUnitOfWork.MockMovieRepository.SetupGetByIdAsync(expectedMovie);
@@ -44,7 +42,8 @@ public class MovieServiceTests
 
             // Assert
             Assert.True(result.IsSuccess);
-            Assert.Equal(expectedMovie, result.Value);
+            Assert.NotNull(result.Value);
+            Assert.Equal(expectedMovie.PrimaryTitle, result.Value.PrimaryTitle);
         }
 
         [Fact]
@@ -70,8 +69,7 @@ public class MovieServiceTests
         {
             // Arrange
             var legacyId = "tt1234567";
-            var expectedMovie = Movie.Create(Guid.NewGuid(), legacyId, "movie", "Test Movie", 
-                null, false, 2023, null, 120, null, "Test plot");
+            var expectedMovie = Movie.Create("movie", "Test Movie");
             
             var mockUnitOfWork = new MockUnitOfWork();
             mockUnitOfWork.MockMovieRepository.SetupGetByLegacyIdAsync(expectedMovie);
@@ -83,7 +81,8 @@ public class MovieServiceTests
 
             // Assert
             Assert.True(result.IsSuccess);
-            Assert.Equal(expectedMovie, result.Value);
+            Assert.NotNull(result.Value);
+            Assert.Equal(expectedMovie.PrimaryTitle, result.Value.PrimaryTitle);
         }
 
         [Fact]
@@ -111,10 +110,8 @@ public class MovieServiceTests
             var query = new SearchMoviesQuery("Test", 1, 10);
             var expectedMovies = new List<Movie>
             {
-                Movie.Create(Guid.NewGuid(), "tt1234567", "movie", "Test Movie 1", 
-                    null, false, 2023, null, 120, null, "Test plot 1"),
-                Movie.Create(Guid.NewGuid(), "tt1234568", "movie", "Test Movie 2", 
-                    null, false, 2023, null, 120, null, "Test plot 2")
+                Movie.Create("movie", "Test Movie 1"),
+                Movie.Create("movie", "Test Movie 2")
             };
 
             var mockUnitOfWork = new MockUnitOfWork();
@@ -127,7 +124,8 @@ public class MovieServiceTests
 
             // Assert
             Assert.True(result.IsSuccess);
-            Assert.Equal(expectedMovies, result.Value);
+            Assert.NotNull(result.Value);
+            Assert.Equal(expectedMovies.Count(), result.Value.Count());
         }
 
         [Fact]
@@ -215,4 +213,3 @@ public class MovieServiceTests
         public bool IsEnabled(LogLevel logLevel) => false;
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter) { }
     }
-    */

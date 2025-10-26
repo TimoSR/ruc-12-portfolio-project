@@ -54,7 +54,7 @@ public class MovieController(IMovieService movieService) : ControllerBase
         return Ok(result.Value);
     }
 
-    /*[HttpGet("search")]
+    [HttpGet("search")]
     [ProducesResponseType(typeof(IEnumerable<MovieDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Search([FromQuery] SearchMoviesQuery query, CancellationToken cancellationToken)
@@ -73,22 +73,6 @@ public class MovieController(IMovieService movieService) : ControllerBase
             });
         }
 
-        var movies = result.Value!;
-        
-        var dtos = movies.Select(movie => new MovieDto(
-            movie.Id,
-            movie.LegacyId,
-            movie.TitleType,
-            movie.PrimaryTitle,
-            movie.OriginalTitle,
-            movie.IsAdult,
-            movie.StartYear,
-            movie.EndYear,
-            movie.RuntimeMinutes,
-            movie.PosterUrl,
-            movie.Plot
-        ));
-
-        return Ok(dtos);
-    }*/
+        return Ok(result.Value);
+    }
 }

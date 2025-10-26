@@ -1,4 +1,3 @@
-/*
 using api.controllers;
 using application.movieService;
 using domain.movie;
@@ -28,11 +27,11 @@ public class MovieControllerTests
         {
             // Arrange
             var movieId = Guid.NewGuid();
-            var movie = Movie.Create(movieId, "tt1234567", "movie", "Test Movie", 
-                "Original Test Movie", false, 2023, null, 120, "https://example.com/poster.jpg", "Test plot");
+            var movie = Movie.Create("movie", "Test Movie");
             
             var mockMovieService = new MockMovieService();
-            mockMovieService.SetupGetByIdAsync(Result<Movie>.Success(movie));
+            var expectedMovieDto = new MovieDto(movieId, "movie", "Test Movie", "Original Test Movie", false, 2023, null, 120, "https://example.com/poster.jpg", "Test plot");
+            mockMovieService.SetupGetByIdAsync(Result<MovieDto>.Success(expectedMovieDto));
             var controller = new MovieController(mockMovieService);
             controller.ControllerContext = new ControllerContext
             {
@@ -46,7 +45,6 @@ public class MovieControllerTests
             var okResult = Assert.IsType<OkObjectResult>(result);
             var movieDto = Assert.IsType<MovieDto>(okResult.Value);
             Assert.Equal(movieId, movieDto.Id);
-            Assert.Equal("tt1234567", movieDto.LegacyId);
             Assert.Equal("Test Movie", movieDto.PrimaryTitle);
         }
 
@@ -56,7 +54,7 @@ public class MovieControllerTests
             // Arrange
             var movieId = Guid.NewGuid();
             var mockMovieService = new MockMovieService();
-            mockMovieService.SetupGetByIdAsync(Result<Movie>.Failure(MovieErrors.NotFound));
+            mockMovieService.SetupGetByIdAsync(Result<MovieDto>.Failure(MovieErrors.NotFound));
             var controller = new MovieController(mockMovieService);
             controller.ControllerContext = new ControllerContext
             {
@@ -77,11 +75,11 @@ public class MovieControllerTests
         {
             // Arrange
             var legacyId = "tt1234567";
-            var movie = Movie.Create(Guid.NewGuid(), legacyId, "movie", "Test Movie", 
-                null, false, 2023, null, 120, null, "Test plot");
+            var movie = Movie.Create("movie", "Test Movie");
             
             var mockMovieService = new MockMovieService();
-            mockMovieService.SetupGetByLegacyIdAsync(Result<Movie>.Success(movie));
+            var expectedMovieLegacyDto = new MovieLegacyDto(Guid.NewGuid(), legacyId, "movie", "Test Movie", null, false, 2023, null, 120, null, "Test plot");
+            mockMovieService.SetupGetByLegacyIdAsync(Result<MovieLegacyDto>.Success(expectedMovieLegacyDto));
             var controller = new MovieController(mockMovieService);
             controller.ControllerContext = new ControllerContext
             {
@@ -93,8 +91,8 @@ public class MovieControllerTests
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var movieDto = Assert.IsType<MovieDto>(okResult.Value);
-            Assert.Equal(legacyId, movieDto.LegacyId);
+            var movieLegacyDto = Assert.IsType<MovieLegacyDto>(okResult.Value);
+            Assert.Equal(legacyId, movieLegacyDto.LegacyId);
         }
 
         [Fact]
@@ -103,7 +101,7 @@ public class MovieControllerTests
             // Arrange
             var legacyId = "tt9999999";
             var mockMovieService = new MockMovieService();
-            mockMovieService.SetupGetByLegacyIdAsync(Result<Movie>.Failure(MovieErrors.NotFound));
+            mockMovieService.SetupGetByLegacyIdAsync(Result<MovieLegacyDto>.Failure(MovieErrors.NotFound));
             var controller = new MovieController(mockMovieService);
             controller.ControllerContext = new ControllerContext
             {
@@ -126,12 +124,12 @@ public class MovieControllerTests
             var query = new SearchMoviesQuery("Test", 1, 10);
             var movies = new List<Movie>
             {
-                Movie.Create(Guid.NewGuid(), "tt1234567", "movie", "Test Movie", 
-                    null, false, 2023, null, 120, null, "Test plot")
+                Movie.Create("movie", "Test Movie")
             };
 
             var mockMovieService = new MockMovieService();
-            mockMovieService.SetupSearchMoviesAsync(Result<IEnumerable<Movie>>.Success(movies));
+            var expectedMovieDtos = new List<MovieDto> { new MovieDto(Guid.NewGuid(), "movie", "Test Movie", null, false, 2023, null, 120, null, "Test plot") };
+            mockMovieService.SetupSearchMoviesAsync(Result<IEnumerable<MovieDto>>.Success(expectedMovieDtos));
             var controller = new MovieController(mockMovieService);
             controller.ControllerContext = new ControllerContext
             {
@@ -155,7 +153,7 @@ public class MovieControllerTests
             var emptyMovies = Enumerable.Empty<Movie>();
 
             var mockMovieService = new MockMovieService();
-            mockMovieService.SetupSearchMoviesAsync(Result<IEnumerable<Movie>>.Success(emptyMovies));
+            mockMovieService.SetupSearchMoviesAsync(Result<IEnumerable<MovieDto>>.Success(Enumerable.Empty<MovieDto>()));
             var controller = new MovieController(mockMovieService);
             controller.ControllerContext = new ControllerContext
             {
@@ -175,21 +173,20 @@ public class MovieControllerTests
     // Simple mock implementation without external dependencies
     public class MockMovieService : IMovieService
     {
-        private Result<Movie> _getByIdResult = Result<Movie>.Failure(MovieErrors.NotFound);
-        private Result<Movie> _getByLegacyIdResult = Result<Movie>.Failure(MovieErrors.NotFound);
-        private Result<IEnumerable<Movie>> _searchResult = Result<IEnumerable<Movie>>.Success(Enumerable.Empty<Movie>());
+        private Result<MovieDto> _getByIdResult = Result<MovieDto>.Failure(MovieErrors.NotFound);
+        private Result<MovieLegacyDto> _getByLegacyIdResult = Result<MovieLegacyDto>.Failure(MovieErrors.NotFound);
+        private Result<IEnumerable<MovieDto>> _searchResult = Result<IEnumerable<MovieDto>>.Success(Enumerable.Empty<MovieDto>());
 
-        public void SetupGetByIdAsync(Result<Movie> result) => _getByIdResult = result;
-        public void SetupGetByLegacyIdAsync(Result<Movie> result) => _getByLegacyIdResult = result;
-        public void SetupSearchMoviesAsync(Result<IEnumerable<Movie>> result) => _searchResult = result;
+        public void SetupGetByIdAsync(Result<MovieDto> result) => _getByIdResult = result;
+        public void SetupGetByLegacyIdAsync(Result<MovieLegacyDto> result) => _getByLegacyIdResult = result;
+        public void SetupSearchMoviesAsync(Result<IEnumerable<MovieDto>> result) => _searchResult = result;
 
-        public Task<Result<Movie>> GetMovieByIdAsync(Guid id, CancellationToken cancellationToken)
+        public Task<Result<MovieDto>> GetMovieByIdAsync(Guid id, CancellationToken cancellationToken)
             => Task.FromResult(_getByIdResult);
 
-        public Task<Result<Movie>> GetMovieByLegacyIdAsync(string legacyId, CancellationToken cancellationToken)
+        public Task<Result<MovieLegacyDto>> GetMovieByLegacyIdAsync(string legacyId, CancellationToken cancellationToken)
             => Task.FromResult(_getByLegacyIdResult);
 
-        public Task<Result<IEnumerable<Movie>>> SearchMoviesAsync(SearchMoviesQuery query, CancellationToken cancellationToken)
+        public Task<Result<IEnumerable<MovieDto>>> SearchMoviesAsync(SearchMoviesQuery query, CancellationToken cancellationToken)
             => Task.FromResult(_searchResult);
     }
-    */

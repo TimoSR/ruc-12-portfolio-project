@@ -8,19 +8,19 @@ public interface IMovie : IAggregateRoot
     string LegacyId { get; }
     string TitleType { get; }
     string PrimaryTitle { get; }
-    string? OriginalTitle { get; }
+    string OriginalTitle { get; }
     bool IsAdult { get; }
-    int? StartYear { get; }
+    int StartYear { get; }
     int? EndYear { get; }
-    int? RuntimeMinutes { get; }
+    int RuntimeMinutes { get; }
     string? PosterUrl { get; }
-    string? Plot { get; }
+    string Plot { get; }
 
     static abstract Movie Create(
         string titleType,
         string primaryTitle,
         string? originalTitle,
-        bool isAdult,
+        bool? isAdult,
         int? startYear,
         int? endYear,
         int? runtimeMinutes,

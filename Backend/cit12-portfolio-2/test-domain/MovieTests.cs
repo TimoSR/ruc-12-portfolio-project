@@ -11,24 +11,18 @@ public class MovieTests
         // Arrange
         IMovie movie = Movie.Create(
             titleType: "movie",
-            primaryTitle: "Test Movie",
-            originalTitle: "Original Test Movie",
-            isAdult: false,
-            startYear: 2023,
-            runtimeMinutes: 120,
-            posterUrl: "https://example.com/poster.jpg",
-            plot: "A test movie plot");
+            primaryTitle: "Test Movie");
 
         // Assert
         Assert.Equal("movie", movie.TitleType);
         Assert.Equal("Test Movie", movie.PrimaryTitle);
-        Assert.Equal("Original Test Movie", movie.OriginalTitle);
-        Assert.False(movie.IsAdult);
-        Assert.Equal(2023, movie.StartYear);
-        Assert.Null(movie.EndYear); // default
-        Assert.Equal(120, movie.RuntimeMinutes);
-        Assert.Equal("https://example.com/poster.jpg", movie.PosterUrl);
-        Assert.Equal("A test movie plot", movie.Plot);
+        Assert.Equal("Test Movie", movie.OriginalTitle); // Default to primaryTitle
+        Assert.False(movie.IsAdult); // Default to false
+        Assert.Equal(DateTime.Now.Year, movie.StartYear); // Default to current year
+        Assert.Null(movie.EndYear); // Default to null
+        Assert.Equal(90, movie.RuntimeMinutes); // Default to 90
+        Assert.Null(movie.PosterUrl); // Default to null
+        Assert.Equal("No plot available", movie.Plot); // Default plot
     }
     
     [Fact]
@@ -37,27 +31,20 @@ public class MovieTests
         // Act
         IMovie movie = Movie.Create(
             titleType: "movie",
-            primaryTitle: "Minimal Movie",
-            originalTitle: null,
-            isAdult: false,
-            startYear: null,
-            endYear: null,
-            runtimeMinutes: null,
-            posterUrl: null,
-            plot: null);
+            primaryTitle: "Minimal Movie");
 
         // Assert
         Assert.Equal("movie", movie.TitleType);
         Assert.Equal("Minimal Movie", movie.PrimaryTitle);
 
-        // Optional fields should stay null
-        Assert.Null(movie.OriginalTitle);
-        Assert.False(movie.IsAdult);
-        Assert.Null(movie.StartYear);
-        Assert.Null(movie.EndYear);
-        Assert.Null(movie.RuntimeMinutes);
-        Assert.Null(movie.PosterUrl);
-        Assert.Null(movie.Plot);
+        // Fields get default values
+        Assert.Equal("Minimal Movie", movie.OriginalTitle); // Default to primaryTitle
+        Assert.False(movie.IsAdult); // Default to false
+        Assert.Equal(DateTime.Now.Year, movie.StartYear); // Default to current year
+        Assert.Null(movie.EndYear); // Default to null
+        Assert.Equal(90, movie.RuntimeMinutes); // Default to 90
+        Assert.Null(movie.PosterUrl); // Default to null
+        Assert.Equal("No plot available", movie.Plot); // Default plot
 
         // Domain event emitted
         Assert.Contains(movie.DomainEvents, e => e is MovieCreatedDomainEvent);
@@ -69,21 +56,14 @@ public class MovieTests
         // Act
         IMovie movie = Movie.Create(
             "  movie  ",
-            "  Test Title  ",
-            "  Original Title  ",
-            false,
-            2000,
-            2005,
-            90,
-            "  https://trimmed.com  ",
-            "  Trimmed Plot  ");
+            "  Test Title  ");
 
         // Assert
         Assert.Equal("movie", movie.TitleType);
         Assert.Equal("Test Title", movie.PrimaryTitle);
-        Assert.Equal("Original Title", movie.OriginalTitle);
-        Assert.Equal("https://trimmed.com", movie.PosterUrl);
-        Assert.Equal("Trimmed Plot", movie.Plot);
+        Assert.Equal("Test Title", movie.OriginalTitle); // Default to primaryTitle
+        Assert.Null(movie.PosterUrl); // Default to null
+        Assert.Equal("No plot available", movie.Plot); // Default plot
     }
     
     [Fact]
@@ -131,7 +111,7 @@ public class MovieTests
     {
         // Act & Assert
         Assert.Throws<ArgumentException>(() =>
-            Movie.Create("movie", "", null, false, null, null, null, null, null));
+            Movie.Create("movie", ""));
     }
 
     [Fact]
@@ -139,49 +119,39 @@ public class MovieTests
     {
         // Act & Assert
         Assert.Throws<ArgumentException>(() =>
-            Movie.Create("", "Title", null, false, null, null, null, null, null));
+            Movie.Create("", "Title"));
     }
 
     [Fact]
-    public void Create_ShouldThrow_WhenEndYearBeforeStartYear()
+    public void Create_ShouldGenerateUniqueLegacyId()
     {
-        // Act & Assert
-        Assert.Throws<ArgumentException>(() =>
-            Movie.Create("movie", "Title", null, false, 2025, 2020, null, null, null));
+        // Act
+        var movie1 = Movie.Create("movie", "Title 1");
+        var movie2 = Movie.Create("movie", "Title 2");
+
+        // Assert
+        Assert.NotEqual(movie1.LegacyId, movie2.LegacyId);
+        Assert.StartsWith("tt", movie1.LegacyId);
+        Assert.StartsWith("tt", movie2.LegacyId);
     }
 
     [Fact]
-    public void Create_ShouldThrow_WhenRuntimeMinutesIsInvalid()
-    {
-        // Act & Assert
-        Assert.Throws<ArgumentException>(() =>
-            Movie.Create("movie", "Title", null, false, null, null, 0, null, null));
-    }
-
-    [Fact]
-    public void Create_ShouldAllowNullOptionalFields()
+    public void Create_ShouldSetDefaultValues()
     {
         // Act
         IMovie movie = Movie.Create(
             "movie",
-            "Test Movie",
-            null,
-            false,
-            null,
-            null,
-            null,
-            null,
-            null);
+            "Test Movie");
 
         // Assert
         Assert.Equal("movie", movie.TitleType);
         Assert.Equal("Test Movie", movie.PrimaryTitle);
-        Assert.Null(movie.OriginalTitle);
-        Assert.False(movie.IsAdult);
-        Assert.Null(movie.StartYear);
-        Assert.Null(movie.EndYear);
-        Assert.Null(movie.RuntimeMinutes);
-        Assert.Null(movie.PosterUrl);
-        Assert.Null(movie.Plot);
+        Assert.Equal("Test Movie", movie.OriginalTitle); // Default to primaryTitle
+        Assert.False(movie.IsAdult); // Default to false
+        Assert.Equal(DateTime.Now.Year, movie.StartYear); // Default to current year
+        Assert.Null(movie.EndYear); // Default to null
+        Assert.Equal(90, movie.RuntimeMinutes); // Default to 90
+        Assert.Null(movie.PosterUrl); // Default to null
+        Assert.Equal("No plot available", movie.Plot); // Default plot
     }
 }

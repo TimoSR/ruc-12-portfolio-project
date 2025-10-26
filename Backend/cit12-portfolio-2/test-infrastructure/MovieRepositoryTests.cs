@@ -1,4 +1,3 @@
-/*
 using domain.movie;
 using infrastructure;
 using infrastructure.repositories;
@@ -27,12 +26,9 @@ public class MovieRepositoryTests : IDisposable
         {
             var movies = new List<Movie>
             {
-                Movie.Create(Guid.NewGuid(), "tt1234567", "movie", "Test Movie 1", 
-                    "Original Test Movie 1", false, 2023, null, 120, "https://example.com/poster1.jpg", "Test plot 1"),
-                Movie.Create(Guid.NewGuid(), "tt1234568", "movie", "Test Movie 2", 
-                    null, false, 2022, null, 90, null, "Test plot 2"),
-                Movie.Create(Guid.NewGuid(), "tt1234569", "tvSeries", "Test Series", 
-                    null, false, 2021, 2023, null, null, "Test series plot")
+                Movie.Create("movie", "Test Movie 1"),
+                Movie.Create("movie", "Test Movie 2"),
+                Movie.Create("tvSeries", "Test Series")
             };
 
             _dbContext.Movies.AddRange(movies);
@@ -147,4 +143,3 @@ public class MovieRepositoryTests : IDisposable
             _dbContext.Dispose();
         }
     }
-    */

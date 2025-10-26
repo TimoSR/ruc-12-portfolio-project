@@ -70,28 +70,37 @@ public class MovieService(IUnitOfWork unitOfWork, ILogger<MovieService> logger) 
         }
     }
 
-    public Task<Result<IEnumerable<MovieDto>>> SearchMoviesAsync(SearchMoviesQuery query, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
-    }
-
-    /*public async Task<Result<IEnumerable<MovieDto>>> SearchMoviesAsync(SearchMoviesQuery query, CancellationToken cancellationToken)
+    public async Task<Result<IEnumerable<MovieDto>>> SearchMoviesAsync(SearchMoviesQuery query, CancellationToken cancellationToken)
     {
         try
         {
             if (string.IsNullOrWhiteSpace(query.Query))
             {
-                return Result<IEnumerable<Movie>>.Success(Enumerable.Empty<Movie>());
+                return Result<IEnumerable<MovieDto>>.Success(Enumerable.Empty<MovieDto>());
             }
 
             var movies = await unitOfWork.MovieRepository.SearchAsync(query.Query, query.Page, query.PageSize, cancellationToken);
 
-            return Result<IEnumerable<Movie>>.Success(movies);
+            var dtos = movies.Select(movie => new MovieDto(
+                Id: movie.Id,
+                TitleType: movie.TitleType,
+                PrimaryTitle: movie.PrimaryTitle,
+                OriginalTitle: movie.OriginalTitle,
+                IsAdult: movie.IsAdult,
+                StartYear: movie.StartYear,
+                EndYear: movie.EndYear,
+                RuntimeMinutes: movie.RuntimeMinutes,
+                PosterUrl: movie.PosterUrl,
+                Plot: movie.Plot
+            ));
+
+            return Result<IEnumerable<MovieDto>>.Success(dtos);
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Unexpected error while searching movies with query {Query}", query.Query);
             throw;
         }
-    }*/
+    }
+
 }
