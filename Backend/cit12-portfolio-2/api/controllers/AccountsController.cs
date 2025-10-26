@@ -69,6 +69,7 @@ public class AccountsController(IAccountService accountService) : ControllerBase
             var e when e == AccountErrors.NotFound =>
                 NotFound(new ProblemDetails
                 {
+                    Type = "https://httpstatuses.com/404",
                     Title = "Not Found",
                     Detail = e.Description,
                     Status = StatusCodes.Status404NotFound,
