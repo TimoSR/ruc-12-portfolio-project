@@ -12,7 +12,7 @@ public sealed class UnitOfWorkPostgresTests : IAsyncLifetime
 {
     private readonly PostgreSqlContainer _pgContainer;
     private MovieDbContext _dbContext = default!;
-    private UnitOfWork _unitOfWork = default!;
+    private IUnitOfWork _unitOfWork = default!;
     private readonly ITestOutputHelper _testLog;
 
     public UnitOfWorkPostgresTests(ITestOutputHelper testLog)
