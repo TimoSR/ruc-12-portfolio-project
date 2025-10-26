@@ -114,7 +114,7 @@ public sealed class UnitOfWorkPostgresTests : IAsyncLifetime
 
         // Assert
         account.Id.Should().NotBe(Guid.Empty, "the database-generated Id should be populated after commit");
-        _testLog.WriteLine($"[CommitTransaction_ShouldPersistChanges] Generated DB Account ID: {account.Id}");
+        _testLog.WriteLine($"Generated DB Account ID: {account.Id}");
 
         var count = await _dbContext.Accounts.CountAsync();
         count.Should().Be(1);
