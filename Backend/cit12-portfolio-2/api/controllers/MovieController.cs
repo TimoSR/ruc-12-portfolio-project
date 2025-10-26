@@ -33,7 +33,7 @@ public class MovieController(IMovieService movieService) : ControllerBase
     }
 
     [HttpGet("legacy/{legacyId}")]
-    [ProducesResponseType(typeof(MovieDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(MovieLegacyDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetByLegacyId(string legacyId, CancellationToken cancellationToken)
