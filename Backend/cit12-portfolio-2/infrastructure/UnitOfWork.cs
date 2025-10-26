@@ -7,16 +7,19 @@ namespace infrastructure;
 public class UnitOfWork : IUnitOfWork
 {
     public IAccountRepository AccountRepository { get; }
+    public IRatingRepository RatingRepository { get; }
 
     private readonly MovieDbContext _dbContext;
     private IDbContextTransaction? _currentTransaction;
 
     public UnitOfWork(
         MovieDbContext dbContext,
-        IAccountRepository accountRepository)
+        IAccountRepository accountRepository,
+        IRatingRepository ratingRepository)
     {
         _dbContext = dbContext;
         AccountRepository = accountRepository;
+        RatingRepository =  ratingRepository;
     }
 
     public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)

@@ -1,5 +1,4 @@
-﻿/*
-using application.ratingService;
+﻿using application.ratingService;
 
 namespace api.controllers;
 
@@ -30,7 +29,7 @@ public class RatingsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(Guid accountId, [FromBody] CreateRatingDto dto, CancellationToken cancellationToken)
     {
-        var rating = await _ratingService.CreateAsync(accountId, dto, cancellationToken);
+        var rating = await _ratingService.CreateAsync(dto, cancellationToken);
         return CreatedAtAction(nameof(GetById), new { accountId, ratingId = rating.Id }, rating);
     }
 
@@ -65,4 +64,3 @@ public class RatingsController : ControllerBase
         return NoContent();
     }
 }
-*/
