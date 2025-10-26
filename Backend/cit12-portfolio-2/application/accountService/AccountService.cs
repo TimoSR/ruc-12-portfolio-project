@@ -35,14 +35,15 @@ public class AccountService(IUnitOfWork unitOfWork, ILogger<AccountService> logg
             );
 
             // 4. Persist the new account
-            var account = await unitOfWork.AccountRepository.AddAsync(newAccount, cancellationToken);
+            await unitOfWork.AccountRepository.AddAsync(newAccount, cancellationToken);
 
             // 5. Commit transaction
             await unitOfWork.CommitTransactionAsync(cancellationToken);
 
-            var dto = new AccountDto(Id: account.Id, Username: account.Username);
+            // 6. We can now add return id after the commit, due to the object being tracked by dbContext
+            var dto = new AccountDto(Id: newAccount.Id, Username: newAccount.Username);
 
-            // 6. Return the created account as a successful result
+            // 7. Return the created account as a successful result
             return Result<AccountDto>.Success(dto);
         }
         catch (Exception ex)

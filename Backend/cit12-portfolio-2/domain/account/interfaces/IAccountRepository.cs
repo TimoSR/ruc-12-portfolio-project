@@ -11,6 +11,6 @@ public interface IAccountRepository : IRepository<Account>
     Task<Account?> GetByEmailAsync(string email, CancellationToken cancellationToken = default);
     Task<Account?> GetByUserNameAsync(string username, CancellationToken cancellationToken = default);
     Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken = default);
-    Task<Account> AddAsync(Account account, CancellationToken cancellationToken = default);
+    Task AddAsync(Account account, CancellationToken cancellationToken = default);
     Task<Account?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 }
