@@ -11,8 +11,7 @@ public class RatingRepository : IRatingRepository
     {
         _context = context;
     }
-
-    // ✅ Correct
+    
     public IAsyncEnumerable<Rating> GetByAccountIdAsync(Guid accountId)
     {
         return _context.Ratings
@@ -20,11 +19,11 @@ public class RatingRepository : IRatingRepository
             .AsAsyncEnumerable(); 
     }
 
-
-
-    public Task<Rating?> GetByIdAsync(Guid accountId, Guid ratingId, CancellationToken token)
+    public async Task<Rating?> GetByIdAsync(Guid ratingId, CancellationToken token)
     {
-        throw new NotImplementedException();
+        return await _context.Ratings
+            .AsNoTracking()
+            .FirstOrDefaultAsync(r => r.Id == ratingId, token);
     }
 
     public Task AddAsync(Rating rating, CancellationToken token)

@@ -2,6 +2,7 @@
 using domain.account;
 using domain.ratings;
 using infrastructure;
+using service_patterns;
 
 public class RatingService : IRatingService
 {
@@ -12,9 +13,8 @@ public class RatingService : IRatingService
         _unitOfWork = unitOfWork;
     }
 
-    public async Task AddRatingAsync(RatingCommandDto commandDto, CancellationToken cancellationToken)
+    public async Task<Result<Rating>> AddRatingAsync(RatingCommandDto commandDto, CancellationToken cancellationToken)
     {
-        
         // 1. You might not even need the account object itself!
         // You could just check if it exists.
         var accountExists = await _unitOfWork.AccountRepository.ExistsAsync(commandDto.AccountId, cancellationToken);
@@ -29,7 +29,11 @@ public class RatingService : IRatingService
         await _unitOfWork.BeginTransactionAsync(cancellationToken);
             
         // 2. Create the new, separate aggregate
-        var rating = Rating.Create(commandDto.AccountId, commandDto.TitleId, commandDto.Score, commandDto.Comment);
+        var rating = Rating.Create(
+            accountId: commandDto.AccountId, 
+            titleId: commandDto.TitleId, 
+            score: commandDto.Score, 
+            comment: commandDto.Comment);
         
         // 3. Add it to its own repository
         await _unitOfWork.RatingRepository.AddAsync(rating, cancellationToken);
@@ -37,9 +41,21 @@ public class RatingService : IRatingService
         
         // 4. Save changes for the rating
         await _unitOfWork.CommitTransactionAsync(cancellationToken);
+        
+        return Result<Rating>.Success(rating);
     }
     
-    public async Task<List<Rating>> GetRatingsAsync(Guid accountId, CancellationToken token)
+    public async Task<Result<Rating>> GetRatingByIdAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var rating = await _unitOfWork.RatingRepository.GetByIdAsync(id, cancellationToken);
+
+        if (rating is null)
+            return Result<Rating>.Failure(RatingErrors.NotFound);
+
+        return Result<Rating>.Success(rating);
+    }
+    
+    public async Task<Result<List<Rating>>> GetRatingsAsync(Guid accountId, CancellationToken token)
     {
         var ratings = new List<Rating>();
 
@@ -47,8 +63,8 @@ public class RatingService : IRatingService
         {
             ratings.Add(rating);
         }
-
-        return ratings;
+        
+        return Result<List<Rating>>.Success(ratings);
     }
 
 }

@@ -1,7 +1,9 @@
 using api.controllers;
 using application.accountService;
+using application.ratingService;
 using Microsoft.EntityFrameworkCore;
 using domain.account.interfaces;
+using domain.ratings;
 using infrastructure;
 using infrastructure.repositories;
 using program;
@@ -35,16 +37,19 @@ builder.Services.AddDbContext<MovieDbContext>(options =>
 
 // 3. Register your repositories and Unit of Work as Scoped
 // This means you get one instance per HTTP request.
+builder.Services.AddScoped<IRatingRepository, RatingRepository>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // 4. Register you applications services
 builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IRatingService, RatingService>();
 
 // 5. Register your controllers
 builder.Services
     .AddControllers()
     .AddApplicationPart(typeof(AccountsController).Assembly)
+    .AddApplicationPart(typeof(RatingsController).Assembly)
     .AddControllersAsServices();
 
 // Application addons

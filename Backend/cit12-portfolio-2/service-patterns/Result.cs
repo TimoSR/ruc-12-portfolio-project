@@ -42,7 +42,7 @@ public class Result<T> : Result
     }
 
     public static Result<T> Success(T value) => new(value, true, Error.None);
-    public static new Result<T> Failure(Error error) => new(default!, false, error);
+    public static new Result<T> Failure(Error? error = null, string? errorString = null) => new(default!, false, error);
 
     // Safe conversion to untyped Result
     public static Result ToResult(Result<T> result) =>
