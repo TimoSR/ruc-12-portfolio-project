@@ -14,8 +14,4 @@ public interface IAccountRepository : IRepository<Account>
     Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken = default);
     Task AddAsync(Account account, CancellationToken cancellationToken = default);
     Task<Account?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
-    Task AddRating(Rating rating, CancellationToken cancellationToken = default);
-    Task<Rating?> GetRatingAsync(Guid id, CancellationToken cancellationToken = default);
-    Task<List<Rating>> GetRatingsAsync(Guid id, CancellationToken cancellationToken = default);
-    Task UpdateRating(Rating rating, CancellationToken cancellationToken = default);
 }

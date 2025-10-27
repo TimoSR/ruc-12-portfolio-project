@@ -41,7 +41,7 @@ public class MovieDbContext (DbContextOptions<MovieDbContext> options) : DbConte
             entity.Property(x => x.Id).HasColumnName("id");
             entity.Property(x => x.AccountId).HasColumnName("account_id");
             entity.Property(x => x.TitleId).HasColumnName("title_id");
-            entity.Property(x => x.Value).HasColumnName("rating");
+            entity.Property(x => x.Score).HasColumnName("rating");
             entity.Property(x => x.Comment).HasColumnName("comment");
             entity.Property(x => x.CreatedAt).HasColumnName("created_at");
             entity.Property(x => x.UpdatedAt).HasColumnName("updated_at");

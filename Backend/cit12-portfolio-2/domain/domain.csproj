@@ -10,4 +10,8 @@
       <ProjectReference Include="..\service-patterns\service-patterns.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="account\ValueObjects\" />
+    </ItemGroup>
+
 </Project>

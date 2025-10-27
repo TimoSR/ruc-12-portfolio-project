@@ -7,26 +7,26 @@ public class Rating
     public Guid? Id { get; private set; }
     public Guid AccountId { get; private set; }
     public Guid TitleId { get; private set; }
-    public int Value { get; private set; }
+    public int Score { get; private set; }
     public string? Comment { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime? UpdatedAt { get; private set; }
 
-    internal Rating(Guid id, Guid accountId, Guid titleId, int value, string? comment = null)
+    internal Rating(Guid id, Guid accountId, Guid titleId, int score, string? comment = null)
     {
         Id = id;
         AccountId = accountId;
         TitleId = titleId;
-        Value = value;
+        Score = score;
         Comment = comment;
         CreatedAt = DateTime.UtcNow;
     }
     
-    private Rating(Guid accountId, Guid titleId, int value, string? comment = null)
+    private Rating(Guid accountId, Guid titleId, int score, string? comment = null)
     {
         AccountId = accountId;
         TitleId = titleId;
-        Value = value;
+        Score = score;
         Comment = comment;
         CreatedAt = DateTime.UtcNow;
     }
@@ -38,7 +38,7 @@ public class Rating
 
     public void Update(int value, string? comment = null)
     {
-        Value = value;
+        Score = value;
         Comment = comment;
         UpdatedAt = DateTime.UtcNow;
     }

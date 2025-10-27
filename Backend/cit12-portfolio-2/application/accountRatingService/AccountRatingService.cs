@@ -22,11 +22,12 @@ public class AccountRatingService
     public async Task<IEnumerable<RatingDto>> GetByAccountIdAsync(Guid accountId, CancellationToken token)
     {
         var ratings = await _ratingRepository.GetByAccountIdAsync(accountId, token);
+        
         return ratings.Select(r => new RatingDto(
             r.Id!.Value,
             r.AccountId,
             r.TitleId,
-            r.Value,
+            r.Score,
             r.Comment,
             r.CreatedAt,
             r.UpdatedAt));
@@ -41,7 +42,7 @@ public class AccountRatingService
                 rating.Id!.Value,
                 rating.AccountId,
                 rating.TitleId,
-                rating.Value,
+                rating.Score,
                 rating.Comment,
                 rating.CreatedAt,
                 rating.UpdatedAt);
@@ -57,6 +58,7 @@ public class AccountRatingService
             ?? throw new KeyNotFoundException("Account not found.");
 
         var existing = await _ratingRepository.GetByAccountAndTitleAsync(accountId, dto.TitleId, token);
+        
         if (existing != null)
             throw new InvalidOperationException("A rating already exists for this title.");
 
@@ -73,7 +75,7 @@ public class AccountRatingService
             newRating.UpdatedAt);
     }
 
-    public async Task<RatingDto> ReplaceAsync(Guid accountId, Guid ratingId, UpdateRatingDto dto, CancellationToken token)
+    /*public async Task<RatingDto> ReplaceAsync(Guid accountId, Guid ratingId, UpdateRatingDto dto, CancellationToken token)
     {
         var account = await _accountRepository.GetByIdAsync(accountId, token)
             ?? throw new KeyNotFoundException("Account not found.");
@@ -135,5 +137,5 @@ public class AccountRatingService
 
         await _accountRepository.UpdateAsync(account, token);
         await _accountRepository.SaveChangesAsync(token);
-    }
+    }*/
 }

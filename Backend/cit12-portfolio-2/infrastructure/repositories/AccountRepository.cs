@@ -1,6 +1,5 @@
 using domain.account;
 using domain.account.interfaces;
-using domain.account.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 
 namespace infrastructure.repositories;
@@ -49,33 +48,5 @@ public sealed class AccountRepository : IAccountRepository
         return await _context.Accounts
             .AsNoTracking() // Optional: skip EF change tracking for read-only query
             .FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
-    }
-
-    public async Task AddRating(Rating rating, CancellationToken cancellationToken = default)
-    {
-        await _context.Ratings.AddAsync(rating, cancellationToken);
-        await _context.SaveChangesAsync(cancellationToken);
-    }
-
-    public async Task<Rating?> GetRatingAsync(Guid id, CancellationToken cancellationToken = default)
-    {
-        return await _context.Ratings
-            .AsNoTracking()
-            .FirstOrDefaultAsync(r => r.Id == id, cancellationToken);
-    }
-
-    public async Task<List<Rating>> GetRatingsAsync(Guid accountId, CancellationToken cancellationToken = default)
-    {
-        return await _context.Ratings
-            .AsNoTracking()
-            .Where(r => r.AccountId == accountId)
-            .OrderByDescending(r => r.CreatedAt)
-            .ToListAsync(cancellationToken);
-    }
-
-    public async Task UpdateRating(Rating rating, CancellationToken cancellationToken = default)
-    {
-        _context.Ratings.Update(rating);
-        await _context.SaveChangesAsync(cancellationToken);
     }
 }
