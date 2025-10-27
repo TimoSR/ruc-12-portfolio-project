@@ -1,12 +1,13 @@
 ﻿using System.Net.Mime;
 using application.accountService;
+using domain.account;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/v{version:apiVersion}/[controller]")]
 [Produces(MediaTypeNames.Application.Json)]
 public class AccountsController(IAccountService accountService) : ControllerBase
 {
@@ -15,33 +16,28 @@ public class AccountsController(IAccountService accountService) : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> Create([FromBody] CreateAccountCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> Create([FromBody] CreateAccountCommandDto commandDto, CancellationToken cancellationToken)
     {
-        var result = await accountService.CreateAccountAsync(command, cancellationToken);
+        var result = await accountService.CreateAccountAsync(commandDto, cancellationToken);
 
         if (result.IsSuccess)
         {
-            var account = result.Value!;
-        
-            var dto = new AccountDto(account.Id, account.Email, account.Username);
-
-            // Prefer CreatedAtAction or CreatedAtRoute if GetById is available
             return CreatedAtAction(
                 nameof(GetById),
-                new { id = dto.Id },
-                dto
+                new { id = result.Value.Id },
+                result.Value
             );
         }
 
-        return result.Error.Code switch
+        return result.Error switch
         {
-            "Account.DuplicateEmail" or "Account.DuplicateUsername" =>
+            var e when e == AccountErrors.DuplicateEmail || e == AccountErrors.DuplicateUsername =>
                 Conflict(new ProblemDetails
                 {
                     Type = "https://httpstatuses.com/409",
                     Title = "Conflict",
                     Status = StatusCodes.Status409Conflict,
-                    Detail = result.Error.Description,
+                    Detail = e.Description,
                     Instance = HttpContext.TraceIdentifier
                 }),
 
@@ -63,20 +59,31 @@ public class AccountsController(IAccountService accountService) : ControllerBase
     {
         var result = await accountService.GetAccountByIdAsync(id, cancellationToken);
 
-        if (!result.IsSuccess)
+        if (result.IsSuccess)
         {
-            return NotFound(new ProblemDetails
-            {
-                Title = "Not Found",
-                Detail = result.Error.Description,
-                Status = StatusCodes.Status404NotFound,
-                Instance = HttpContext.TraceIdentifier
-            });
+            return Ok(result.Value);
         }
+        
+        return result.Error switch
+        {
+            var e when e == AccountErrors.NotFound =>
+                NotFound(new ProblemDetails
+                {
+                    Type = "https://httpstatuses.com/404",
+                    Title = "Not Found",
+                    Detail = e.Description,
+                    Status = StatusCodes.Status404NotFound,
+                    Instance = HttpContext.TraceIdentifier
+                }),
 
-        var account = result.Value!;
-        var dto = new AccountDto(account.Id, account.Email, account.Username);
-
-        return Ok(dto);
+            _ => StatusCode(StatusCodes.Status500InternalServerError, new ProblemDetails
+            {
+                Type = "https://httpstatuses.com/500",
+                Title = "Internal Server Error",
+                Status = StatusCodes.Status500InternalServerError,
+                Detail = result.Error.Description,
+                Instance = HttpContext.TraceIdentifier
+            })
+        };
     }
 }

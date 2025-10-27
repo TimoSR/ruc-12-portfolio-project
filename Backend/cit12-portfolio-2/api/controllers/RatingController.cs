@@ -1,4 +1,6 @@
 ﻿using application.ratingService;
+using domain.account;
+using Microsoft.AspNetCore.Http;
 
 namespace api.controllers;
 
@@ -8,8 +10,9 @@ using System.Threading;
 using System.Threading.Tasks;
 
 [ApiController]
-[Route("api/accounts/{accountId:guid}/ratings")]
+[Route("api/v{version:apiVersion}/accounts/{accountId:guid}/ratings")]
 [Produces(MediaTypeNames.Application.Json)]
+[ApiVersion("1.0")]
 public class RatingsController : ControllerBase
 {
     private readonly IRatingService _ratingService;
@@ -18,49 +21,80 @@ public class RatingsController : ControllerBase
     {
         _ratingService = ratingService;
     }
-
-    [HttpGet]
-    public async Task<IActionResult> GetAll(Guid accountId, CancellationToken cancellationToken)
-    {
-        var ratings = await _ratingService.GetByAccountIdAsync(accountId, cancellationToken);
-        return Ok(ratings);
-    }
-
+    
     [HttpPost]
-    public async Task<IActionResult> Create(Guid accountId, [FromBody] CreateRatingDto dto, CancellationToken cancellationToken)
+    [ProducesResponseType(typeof(RatingDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> Create([FromRoute] Guid accountId, [FromBody] RatingCommandDto commandDto, CancellationToken cancellationToken)
     {
-        var rating = await _ratingService.CreateAsync(accountId, dto, cancellationToken);
-        return CreatedAtAction(nameof(GetById), new { accountId, ratingId = rating.Id }, rating);
-    }
+        var result = await _ratingService.AddRatingAsync(accountId, commandDto, cancellationToken);
 
+        if (result.IsSuccess)
+        {
+            return CreatedAtAction(
+                nameof(GetById),
+                new { accountId, ratingId = result.Value.Id },
+                result.Value
+            );
+        }
+
+        return result.Error switch
+        {
+            var e when e == AccountErrors.DuplicateEmail || e == AccountErrors.DuplicateUsername =>
+                Conflict(new ProblemDetails
+                {
+                    Type = "https://httpstatuses.com/409",
+                    Title = "Conflict",
+                    Status = StatusCodes.Status409Conflict,
+                    Detail = e.Description,
+                    Instance = HttpContext.TraceIdentifier
+                }),
+
+            _ => StatusCode(StatusCodes.Status500InternalServerError, new ProblemDetails
+            {
+                Type = "https://httpstatuses.com/500",
+                Title = "Internal Server Error",
+                Status = StatusCodes.Status500InternalServerError,
+                Detail = result.Error.Description,
+                Instance = HttpContext.TraceIdentifier
+            })
+        };
+    }
+    
     [HttpGet("{ratingId:guid}")]
-    public async Task<IActionResult> GetById(Guid accountId, Guid ratingId, CancellationToken cancellationToken)
+    [ProducesResponseType(typeof(RatingDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetById(Guid ratingId, CancellationToken cancellationToken)
     {
-        var rating = await _ratingService.GetByIdAsync(accountId, ratingId, cancellationToken);
-        if (rating == null)
-            return NotFound();
+        var result = await _ratingService.GetRatingByIdAsync(ratingId, cancellationToken);
 
-        return Ok(rating);
-    }
+        if (result.IsSuccess)
+        {
+            return Ok(result.Value);
+        }
+        
+        return result.Error switch
+        {
+            var e when e == AccountErrors.NotFound =>
+                NotFound(new ProblemDetails
+                {
+                    Type = "https://httpstatuses.com/404",
+                    Title = "Not Found",
+                    Detail = e.Description,
+                    Status = StatusCodes.Status404NotFound,
+                    Instance = HttpContext.TraceIdentifier
+                }),
 
-    [HttpPut("{ratingId:guid}")]
-    public async Task<IActionResult> Replace(Guid accountId, Guid ratingId, [FromBody] UpdateRatingDto dto, CancellationToken cancellationToken)
-    {
-        var updated = await _ratingService.ReplaceAsync(accountId, ratingId, dto, cancellationToken);
-        return Ok(updated);
-    }
-
-    [HttpPatch("{ratingId:guid}")]
-    public async Task<IActionResult> UpdatePartial(Guid accountId, Guid ratingId, [FromBody] JsonPatchDocument<UpdateRatingDto> patch, CancellationToken cancellationToken)
-    {
-        var updated = await _ratingService.UpdatePartialAsync(accountId, ratingId, patch, cancellationToken);
-        return Ok(updated);
-    }
-
-    [HttpDelete("{ratingId:guid}")]
-    public async Task<IActionResult> Delete(Guid accountId, Guid ratingId, CancellationToken cancellationToken)
-    {
-        await _ratingService.DeleteAsync(accountId, ratingId, cancellationToken);
-        return NoContent();
+            _ => StatusCode(StatusCodes.Status500InternalServerError, new ProblemDetails
+            {
+                Type = "https://httpstatuses.com/500",
+                Title = "Internal Server Error",
+                Status = StatusCodes.Status500InternalServerError,
+                Detail = result.Error.Description,
+                Instance = HttpContext.TraceIdentifier
+            })
+        };
     }
 }

@@ -9,7 +9,6 @@ public interface IAccount : IAggregateRoot
     string Username { get; }
     string Password { get; }
     DateTime CreatedAt { get; }
-    
     void ChangeEmail(string newEmail);
     void ChangePassword(string newPassword);
     static abstract Account Create(string email, string userName, string password);

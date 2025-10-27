@@ -6,16 +6,16 @@ namespace infrastructure.repositories;
 
 public sealed class AccountRepository : IAccountRepository
 {
-    private readonly MovieDbContext _dbContext;
+    private readonly MovieDbContext _context;
 
-    public AccountRepository(MovieDbContext dbContext)
+    public AccountRepository(MovieDbContext context)
     {
-        _dbContext = dbContext;
+        _context = context;
     }
     
     public async Task<Account?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
     {
-        var account = await _dbContext.Accounts
+        var account = await _context.Accounts
             .AsNoTracking()
             .SingleOrDefaultAsync(a => a.Email == email, cancellationToken);
 
@@ -25,7 +25,7 @@ public sealed class AccountRepository : IAccountRepository
 
     public async Task<Account?> GetByUserNameAsync(string username, CancellationToken cancellationToken = default)
     {
-        var account = await _dbContext.Accounts
+        var account = await _context.Accounts
             .AsNoTracking()
             .SingleOrDefaultAsync(a => a.Username == username, cancellationToken);
 
@@ -33,19 +33,21 @@ public sealed class AccountRepository : IAccountRepository
         return account;
     }
 
-    public Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return await _context.Accounts
+            .AsNoTracking()
+            .AnyAsync(r => r.Id == id, cancellationToken);
     }
 
     public async Task AddAsync(Account account, CancellationToken cancellationToken = default)
     {
-        await _dbContext.Accounts.AddAsync(account, cancellationToken);
+        await _context.Accounts.AddAsync(account, cancellationToken);
     }
     
     public async Task<Account?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        return await _dbContext.Accounts
+        return await _context.Accounts
             .AsNoTracking() // Optional: skip EF change tracking for read-only query
             .FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
     }

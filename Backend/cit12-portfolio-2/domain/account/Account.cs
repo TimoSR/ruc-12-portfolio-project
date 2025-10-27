@@ -10,8 +10,13 @@ public class Account : AggregateRoot, IAccount
     public string Username {get; private set;}
     public string Password {get; private set;}
     public DateTime CreatedAt { get; private set; }
-
-    internal Account(Guid id, string email, string username, string password, DateTime createdAt)
+    
+    internal Account(
+        Guid id, 
+        string email, 
+        string username, 
+        string password, 
+        DateTime createdAt) 
     {
         Id = id;
         Email = email;
@@ -68,4 +73,6 @@ public class Account : AggregateRoot, IAccount
         Password = newPassword;
         AddDomainEvent(new PasswordChangedEvent(Id, DateTime.UtcNow));
     }
+
+    
 }
