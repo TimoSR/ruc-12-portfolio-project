@@ -1,5 +1,5 @@
 using domain.account;
-using domain.account.ValueObjects;
+using domain.ratings;
 using Microsoft.EntityFrameworkCore;
 using service_patterns;
 
@@ -24,14 +24,6 @@ public class MovieDbContext (DbContextOptions<MovieDbContext> options) : DbConte
             entity.Property(e => e.Username).HasColumnName("username");
             entity.Property(e => e.Password).HasColumnName("password_hash");
             entity.Property(e => e.CreatedAt).HasColumnName("created_at");
-            
-            entity.HasMany<Rating>("_ratingsHistory")
-                .WithOne()
-                .HasForeignKey(r => r.AccountId)
-                .OnDelete(DeleteBehavior.Cascade);
-            
-            entity.Navigation("_ratingsHistory")
-                .UsePropertyAccessMode(PropertyAccessMode.Field);
         });
         
         modelBuilder.Entity<Rating>(entity =>
@@ -45,8 +37,6 @@ public class MovieDbContext (DbContextOptions<MovieDbContext> options) : DbConte
             entity.Property(x => x.Comment).HasColumnName("comment");
             entity.Property(x => x.CreatedAt).HasColumnName("created_at");
             entity.Property(x => x.UpdatedAt).HasColumnName("updated_at");
-
-            entity.HasIndex(x => new { x.AccountId, x.TitleId }).IsUnique();
         });
     }
 }

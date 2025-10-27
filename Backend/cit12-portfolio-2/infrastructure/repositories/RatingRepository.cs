@@ -1,5 +1,4 @@
-﻿using domain.account.interfaces;
-using domain.account.ValueObjects;
+﻿using domain.ratings;
 using Microsoft.EntityFrameworkCore;
 
 namespace infrastructure.repositories;
@@ -13,44 +12,38 @@ public class RatingRepository : IRatingRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<Rating>> GetByAccountIdAsync(Guid accountId, CancellationToken token)
+    // ✅ Correct
+    public IAsyncEnumerable<Rating> GetByAccountIdAsync(Guid accountId)
     {
-        return await _context.Ratings
-            .AsNoTracking()
+        return _context.Ratings
             .Where(r => r.AccountId == accountId)
-            .OrderByDescending(r => r.CreatedAt)
-            .ToListAsync(token);
+            .AsAsyncEnumerable(); 
     }
 
-    public async Task<Rating?> GetByIdAsync(Guid accountId, Guid ratingId, CancellationToken token)
+
+
+    public Task<Rating?> GetByIdAsync(Guid accountId, Guid ratingId, CancellationToken token)
     {
-        return await _context.Ratings
-            .FirstOrDefaultAsync(r => r.AccountId == accountId && r.Id == ratingId, token);
+        throw new NotImplementedException();
     }
 
-    public async Task<Rating?> GetByAccountAndTitleAsync(Guid accountId, Guid titleId, CancellationToken token)
+    public Task AddAsync(Rating rating, CancellationToken token)
     {
-        return await _context.Ratings
-            .FirstOrDefaultAsync(r => r.AccountId == accountId && r.TitleId == titleId, token);
+        throw new NotImplementedException();
     }
 
-    public async Task AddAsync(Rating rating, CancellationToken token)
+    public Task UpdateAsync(Rating rating, CancellationToken token)
     {
-        await _context.Ratings.AddAsync(rating, token);
+        throw new NotImplementedException();
     }
 
-    public async Task UpdateAsync(Rating rating, CancellationToken token)
+    public Task DeleteAsync(Guid accountId, Guid ratingId, CancellationToken token)
     {
-        _context.Ratings.Update(rating);
-        await Task.CompletedTask;
+        throw new NotImplementedException();
     }
 
-    public async Task DeleteAsync(Guid accountId, Guid ratingId, CancellationToken token)
+    public Task<Rating?> GetByAccountAndTitleAsync(Guid accountId, Guid titleId, CancellationToken token)
     {
-        var existing = await _context.Ratings
-            .FirstOrDefaultAsync(r => r.AccountId == accountId && r.Id == ratingId, token);
-
-        if (existing != null)
-            _context.Ratings.Remove(existing);
+        throw new NotImplementedException();
     }
 }

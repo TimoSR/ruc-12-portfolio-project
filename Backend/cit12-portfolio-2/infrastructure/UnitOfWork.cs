@@ -1,4 +1,5 @@
 using domain.account.interfaces;
+using domain.ratings;
 using Microsoft.EntityFrameworkCore.Storage;
 using service_patterns;
 

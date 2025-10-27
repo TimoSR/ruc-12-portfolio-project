@@ -1,6 +1,4 @@
-﻿using domain.account.entities;
-using domain.account.interfaces;
-using domain.account.ValueObjects;
+﻿using domain.account.interfaces;
 using service_patterns;
 
 namespace domain.account;
@@ -12,24 +10,13 @@ public class Account : AggregateRoot, IAccount
     public string Username {get; private set;}
     public string Password {get; private set;}
     public DateTime CreatedAt { get; private set; }
-    public List<TitleRating> Ratings { get; private set; }
-    
-    internal Account(Guid id, string email, string username, string password, DateTime createdAt)
-    {
-        Id = id;
-        Email = email;
-        Username = username;
-        Password = password;
-        CreatedAt = createdAt;
-    }
     
     internal Account(
         Guid id, 
         string email, 
         string username, 
         string password, 
-        DateTime createdAt, 
-        List<Rating> ratings)
+        DateTime createdAt) 
     {
         Id = id;
         Email = email;

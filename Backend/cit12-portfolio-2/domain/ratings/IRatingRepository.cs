@@ -1,15 +1,15 @@
-﻿using domain.account.ValueObjects;
+﻿using service_patterns;
 
-namespace domain.account.interfaces;
+namespace domain.ratings;
 
-public interface IRatingRepository
+public interface IRatingRepository : IRepository<Rating>
 {
-    Task<IEnumerable<Rating>> GetByAccountIdAsync(Guid accountId, CancellationToken token);
+    IAsyncEnumerable<Rating> GetByAccountIdAsync(Guid accountId);
     Task<Rating?> GetByIdAsync(Guid accountId, Guid ratingId, CancellationToken token);
     Task AddAsync(Rating rating, CancellationToken token);
     Task UpdateAsync(Rating rating, CancellationToken token);
     Task DeleteAsync(Guid accountId, Guid ratingId, CancellationToken token);
     
-  // Optional helpers if you need them later:
+    // Optional helpers if you need them later:
     Task<Rating?> GetByAccountAndTitleAsync(Guid accountId, Guid titleId, CancellationToken token);
 }

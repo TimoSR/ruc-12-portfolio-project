@@ -1,4 +1,6 @@
 ﻿using domain.account;
+using domain.account.interfaces;
+using domain.ratings;
 using FluentAssertions;
 using infrastructure;
 using infrastructure.repositories;
@@ -67,8 +69,9 @@ public sealed class UnitOfWorkPostgresTests : IAsyncLifetime
         _dbContext = new MovieDbContext(options);
         await _dbContext.Database.EnsureCreatedAsync();
 
-        var repo = new AccountRepository(_dbContext);
-        _unitOfWork = new UnitOfWork(_dbContext, repo);
+        IAccountRepository repo1 = new AccountRepository(_dbContext);
+        IRatingRepository repo2 = new RatingRepository(_dbContext);
+        _unitOfWork = new UnitOfWork(_dbContext, repo1, repo2);
     }
 
     public async Task DisposeAsync()
