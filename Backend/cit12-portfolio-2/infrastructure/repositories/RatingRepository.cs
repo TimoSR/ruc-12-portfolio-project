@@ -26,9 +26,9 @@ public class RatingRepository : IRatingRepository
             .FirstOrDefaultAsync(r => r.Id == ratingId, token);
     }
 
-    public Task AddAsync(Rating rating, CancellationToken token)
+    public async Task AddAsync(Rating rating, CancellationToken token)
     {
-        throw new NotImplementedException();
+        await _context.Ratings.AddAsync(rating, token);
     }
 
     public Task UpdateAsync(Rating rating, CancellationToken token)

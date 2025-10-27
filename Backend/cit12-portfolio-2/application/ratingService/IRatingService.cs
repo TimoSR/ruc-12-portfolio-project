@@ -5,7 +5,7 @@ namespace application.ratingService;
 
 public interface IRatingService
 {
-    public Task<Result<Rating>> AddRatingAsync(RatingCommandDto commandDto, CancellationToken cancellationToken);
-    public Task<Result<Rating>> GetRatingByIdAsync(Guid id, CancellationToken cancellationToken);
-    public Task<Result<List<Rating>>> GetRatingsAsync(Guid accountId, CancellationToken token);
+    public Task<Result<RatingDto>> AddRatingAsync(Guid accountId, RatingCommandDto commandDto, CancellationToken cancellationToken);
+    public Task<Result<RatingDto>> GetRatingByIdAsync(Guid id, CancellationToken cancellationToken);
+    public Task<Result<List<RatingDto>>> GetRatingsAsync(Guid accountId, CancellationToken token);
 }

@@ -1,7 +1,5 @@
-﻿using application.accountService;
-using application.ratingService;
+﻿using application.ratingService;
 using domain.account;
-using domain.ratings;
 using Microsoft.AspNetCore.Http;
 
 namespace api.controllers;
@@ -12,8 +10,9 @@ using System.Threading;
 using System.Threading.Tasks;
 
 [ApiController]
-[Route("api/accounts/{accountId:guid}/ratings")]
+[Route("api/v{version:apiVersion}/accounts/{accountId:guid}/ratings")]
 [Produces(MediaTypeNames.Application.Json)]
+[ApiVersion("1.0")]
 public class RatingsController : ControllerBase
 {
     private readonly IRatingService _ratingService;
@@ -24,19 +23,19 @@ public class RatingsController : ControllerBase
     }
     
     [HttpPost]
-    [ProducesResponseType(typeof(RatingCommandDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(RatingDto), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> Create([FromBody] RatingCommandDto commandDto, CancellationToken cancellationToken)
+    public async Task<IActionResult> Create([FromRoute] Guid accountId, [FromBody] RatingCommandDto commandDto, CancellationToken cancellationToken)
     {
-        var result = await _ratingService.AddRatingAsync(commandDto, cancellationToken);
+        var result = await _ratingService.AddRatingAsync(accountId, commandDto, cancellationToken);
 
         if (result.IsSuccess)
         {
             return CreatedAtAction(
                 nameof(GetById),
-                new { id = result.Value.Id },
+                new { accountId, ratingId = result.Value.Id },
                 result.Value
             );
         }
@@ -64,12 +63,12 @@ public class RatingsController : ControllerBase
         };
     }
     
-    [HttpGet("{id:guid}")]
-    [ProducesResponseType(typeof(Rating), StatusCodes.Status200OK)]
+    [HttpGet("{ratingId:guid}")]
+    [ProducesResponseType(typeof(RatingDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetById(Guid ratingId, CancellationToken cancellationToken)
     {
-        var result = await _ratingService.GetRatingByIdAsync(id, cancellationToken);
+        var result = await _ratingService.GetRatingByIdAsync(ratingId, cancellationToken);
 
         if (result.IsSuccess)
         {

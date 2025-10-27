@@ -33,9 +33,11 @@ public sealed class AccountRepository : IAccountRepository
         return account;
     }
 
-    public Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return await _context.Accounts
+            .AsNoTracking()
+            .AnyAsync(r => r.Id == id, cancellationToken);
     }
 
     public async Task AddAsync(Account account, CancellationToken cancellationToken = default)

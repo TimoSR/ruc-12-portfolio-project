@@ -6,6 +6,7 @@ using domain.account.interfaces;
 using domain.ratings;
 using infrastructure;
 using infrastructure.repositories;
+using Microsoft.AspNetCore.Mvc;
 using program;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -45,6 +46,13 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IRatingService, RatingService>();
 
+builder.Services.AddApiVersioning(options =>
+{
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.ReportApiVersions = true;
+});
+
 // 5. Register your controllers
 builder.Services
     .AddControllers()
@@ -55,6 +63,13 @@ builder.Services
 // Application addons
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddVersionedApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'VVV"; // Format v1, v2, etc.
+    options.SubstituteApiVersionInUrl = true;
+});
+
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddRouting(options =>

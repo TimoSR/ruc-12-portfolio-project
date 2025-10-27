@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace api.controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/v{version:apiVersion}/[controller]")]
 [Produces(MediaTypeNames.Application.Json)]
 public class AccountsController(IAccountService accountService) : ControllerBase
 {

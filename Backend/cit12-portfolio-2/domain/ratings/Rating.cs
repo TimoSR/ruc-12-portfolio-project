@@ -11,7 +11,6 @@ public class Rating : AggregateRoot
     public int Score { get; private set; } // e.g., 1-10
     public string? Comment { get; private set; }
     public DateTime CreatedAt { get; private set; }
-    public DateTime UpdatedAt { get; private set; }
 
     internal Rating(Guid id, Guid accountId, Guid titleId, int score, string? comment, DateTime createdAt)
     {

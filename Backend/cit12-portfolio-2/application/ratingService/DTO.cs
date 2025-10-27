@@ -2,4 +2,5 @@
 
 namespace application.ratingService;
 
-public record RatingCommandDto(Guid AccountId, Guid TitleId, int Score, string? Comment) : IDTO;
+public record RatingDto(Guid Id, Guid AccountId, Guid TitleId, int Score, string? Comment): IDTO;
+public record RatingCommandDto(Guid TitleId, int Score, string? Comment): IDTO;
