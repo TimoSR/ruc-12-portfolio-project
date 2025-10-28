@@ -1,37 +1,37 @@
-using domain.movie;
+using domain.title;
 using infrastructure;
 using infrastructure.repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace test_infrastructure;
 
-public class MovieRepositoryTests : IDisposable
+public class TitleRepositoryTests : IDisposable
 {
         private readonly MovieDbContext _dbContext;
-        private readonly MovieRepository _repository;
+        private readonly TitleRepository _repository;
 
-        public MovieRepositoryTests()
+        public TitleRepositoryTests()
         {
             var options = new DbContextOptionsBuilder<MovieDbContext>()
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
 
             _dbContext = new MovieDbContext(options);
-            _repository = new MovieRepository(_dbContext);
+            _repository = new TitleRepository(_dbContext);
             
             SeedTestData();
         }
 
         private void SeedTestData()
         {
-            var movies = new List<Movie>
+            var titles = new List<Title>
             {
-                Movie.Create("movie", "Test Movie 1"),
-                Movie.Create("movie", "Test Movie 2"),
-                Movie.Create("tvSeries", "Test Series")
+                Title.Create("movie", "Test Movie 1"),
+                Title.Create("movie", "Test Movie 2"),
+                Title.Create("tvSeries", "Test Series")
             };
 
-            _dbContext.Movies.AddRange(movies);
+            _dbContext.Movies.AddRange(titles);
             _dbContext.SaveChanges();
         }
 
@@ -39,17 +39,17 @@ public class MovieRepositoryTests : IDisposable
         public async Task GetByIdAsync_ExistingMovie_ShouldReturnMovie()
         {
             // Arrange
-            var movie = _dbContext.Movies.First();
-            var movieId = movie.Id;
+            var title = _dbContext.Movies.First();
+            var titleId = title.Id;
 
             // Act
-            var result = await _repository.GetByIdAsync(movieId);
+            var result = await _repository.GetByIdAsync(titleId);
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(movieId, result.Id);
-            Assert.Equal(movie.LegacyId, result.LegacyId);
-            Assert.Equal(movie.PrimaryTitle, result.PrimaryTitle);
+            Assert.Equal(titleId, result.Id);
+            Assert.Equal(title.LegacyId, result.LegacyId);
+            Assert.Equal(title.PrimaryTitle, result.PrimaryTitle);
         }
 
         [Fact]
@@ -69,8 +69,8 @@ public class MovieRepositoryTests : IDisposable
         public async Task GetByLegacyIdAsync_ExistingMovie_ShouldReturnMovie()
         {
             // Arrange
-            var movie = _dbContext.Movies.First();
-            var legacyId = movie.LegacyId;
+            var title = _dbContext.Movies.First();
+            var legacyId = title.LegacyId;
 
             // Act
             var result = await _repository.GetByLegacyIdAsync(legacyId);
@@ -78,7 +78,7 @@ public class MovieRepositoryTests : IDisposable
             // Assert
             Assert.NotNull(result);
             Assert.Equal(legacyId, result.LegacyId);
-            Assert.Equal(movie.Id, result.Id);
+            Assert.Equal(title.Id, result.Id);
         }
 
         [Fact]
@@ -106,7 +106,7 @@ public class MovieRepositoryTests : IDisposable
             // Assert
             Assert.NotNull(result);
             Assert.NotEmpty(result);
-            Assert.All(result, movie => Assert.Contains("Test", movie.PrimaryTitle));
+            Assert.All(result, title => Assert.Contains("Test", title.PrimaryTitle));
         }
 
         [Fact]

@@ -1,5 +1,5 @@
 using domain.account.interfaces;
-using domain.movie.interfaces;
+using domain.title.interfaces;
 using Microsoft.EntityFrameworkCore.Storage;
 using service_patterns;
 
@@ -8,7 +8,7 @@ namespace infrastructure;
 public class UnitOfWork : IUnitOfWork
 {
     public IAccountRepository AccountRepository { get; }
-    public IMovieRepository MovieRepository { get; }
+    public ITitleRepository TitleRepository { get; }
 
     private readonly MovieDbContext _dbContext;
     private IDbContextTransaction? _currentTransaction;
@@ -16,11 +16,11 @@ public class UnitOfWork : IUnitOfWork
     public UnitOfWork(
         MovieDbContext dbContext,
         IAccountRepository accountRepository,
-        IMovieRepository movieRepository)
+        ITitleRepository titleRepository)
     {
         _dbContext = dbContext;
         AccountRepository = accountRepository;
-        MovieRepository = movieRepository;
+        TitleRepository = titleRepository;
     }
 
     public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)

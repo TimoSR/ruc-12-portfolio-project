@@ -1,8 +1,8 @@
 using service_patterns;
 
-namespace domain.movie.interfaces;
+namespace domain.title.interfaces;
 
-public interface IMovie : IAggregateRoot
+public interface ITitle : IAggregateRoot
 {
     Guid Id { get; }
     string LegacyId { get; }
@@ -12,11 +12,11 @@ public interface IMovie : IAggregateRoot
     bool IsAdult { get; }
     int StartYear { get; }
     int? EndYear { get; }
-    int RuntimeMinutes { get; }
+    int? RuntimeMinutes { get; }
     string? PosterUrl { get; }
-    string Plot { get; }
+    string? Plot { get; }
 
-    static abstract Movie Create(
+    static abstract Title Create(
         string titleType,
         string primaryTitle,
         string? originalTitle,
@@ -26,4 +26,12 @@ public interface IMovie : IAggregateRoot
         int? runtimeMinutes,
         string? posterUrl,
         string? plot);
+
+    void UpdatePosterUrl(string? newPosterUrl);
+    void UpdatePlot(string? newPlot);
+    void UpdateRuntimeMinutes(int? runtimeMinutes);
+    void ChangePrimaryTitle(string newTitle);
+    void ChangeOriginalTitle(string newTitle);
+    void ChangeStartYear(int newYear);
+    void ChangeEndYear(int? newYear);
 }

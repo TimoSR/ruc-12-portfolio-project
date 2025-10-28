@@ -1,5 +1,5 @@
 using domain.account;
-using domain.movie;
+using domain.title;
 using Microsoft.EntityFrameworkCore;
 using service_patterns;
 
@@ -8,7 +8,7 @@ namespace infrastructure;
 public class MovieDbContext (DbContextOptions<MovieDbContext> options) : DbContext(options)
 {
     public DbSet<Account> Accounts => Set<Account>();
-    public DbSet<Movie> Movies => Set<Movie>();
+    public DbSet<Title> Movies => Set<Title>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -26,7 +26,7 @@ public class MovieDbContext (DbContextOptions<MovieDbContext> options) : DbConte
             entity.Property(e => e.CreatedAt).HasColumnName("created_at");
         });
 
-        modelBuilder.Entity<Movie>(entity =>
+        modelBuilder.Entity<Title>(entity =>
         {
             entity.ToTable("title", "movie_db");
 
