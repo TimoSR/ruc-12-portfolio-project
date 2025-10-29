@@ -33,7 +33,7 @@ public class TitlesController(ITitleService titleService) : ControllerBase
         return Ok(result.Value);
     }
 
-    [HttpGet("{legacyId:guid}")]
+    [HttpGet("{legacyId}")]
     [ProducesResponseType(typeof(TitleLegacyDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]

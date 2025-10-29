@@ -9,6 +9,7 @@ namespace api.controllers;
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
 [Produces(MediaTypeNames.Application.Json)]
+[ApiVersion("1.0")]
 public class AccountsController(IAccountService accountService) : ControllerBase
 {
     [HttpPost]
