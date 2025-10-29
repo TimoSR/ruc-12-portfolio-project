@@ -15,14 +15,14 @@ public sealed class TitleRepository : ITitleRepository
     
     public async Task<Title?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await _dbContext.Movies
+        return await _dbContext.Titles
             .AsNoTracking()
             .FirstOrDefaultAsync(m => m.Id == id, cancellationToken);
     }
 
     public async Task<Title?> GetByLegacyIdAsync(string legacyId, CancellationToken cancellationToken = default)
     {
-        return await _dbContext.Movies
+        return await _dbContext.Titles
             .AsNoTracking()
             .FirstOrDefaultAsync(m => m.LegacyId == legacyId, cancellationToken);
     }
@@ -34,7 +34,7 @@ public sealed class TitleRepository : ITitleRepository
         // If query is empty, return all titles (for debugging)
         if (string.IsNullOrWhiteSpace(query))
         {
-            return await _dbContext.Movies
+            return await _dbContext.Titles
                 .AsNoTracking()
                 .OrderBy(m => m.PrimaryTitle)
                 .Skip(skip)
@@ -42,39 +42,60 @@ public sealed class TitleRepository : ITitleRepository
                 .ToListAsync(cancellationToken);
         }
         
-        return await _dbContext.Movies
+        var lowerQuery = query.ToLower();
+
+        var queryable = _dbContext.Titles
             .AsNoTracking()
-            .Where(m => EF.Functions.ILike(m.PrimaryTitle, $"%{query}%") ||
-                       EF.Functions.ILike(m.OriginalTitle, $"%{query}%") ||
-                       (m.Plot != null && EF.Functions.ILike(m.Plot, $"%{query}%")))
-            .OrderBy(m => m.PrimaryTitle)
+            .Where(t =>
+                EF.Functions.ILike(t.PrimaryTitle, $"%{query}%") ||
+                (t.OriginalTitle != null && EF.Functions.ILike(t.OriginalTitle, $"%{query}%")) ||
+                (t.Plot != null && EF.Functions.ILike(t.Plot, $"%{query}%"))
+            )
+            .Select(t => new
+            {
+                Title = t,
+                Rank =
+                    (t.PrimaryTitle.ToLower() == lowerQuery ? 4.0 : 0.0) +                   // exact title match
+                    (t.PrimaryTitle.ToLower().StartsWith(lowerQuery) ? 2.0 : 0.0) +          // prefix match
+                    (t.PrimaryTitle.ToLower().Contains(lowerQuery) ? 1.0 : 0.0) +            // substring match
+                    (t.OriginalTitle != null && t.OriginalTitle.ToLower() == lowerQuery ? 1.5 : 0.0) + // exact original match
+                    (t.OriginalTitle != null && t.OriginalTitle.ToLower().Contains(lowerQuery) ? 0.5 : 0.0) +
+                    (t.Plot != null && t.Plot.ToLower().Contains(lowerQuery) ? 0.2 : 0.0)    // weak plot influence
+            })
+            .OrderByDescending(x => x.Rank)
+            .ThenBy(x => x.Title.PrimaryTitle)  // tie-break by title
             .Skip(skip)
-            .Take(pageSize)
+            .Take(pageSize);
+
+        var results = await queryable
+            .Select(x => x.Title)
             .ToListAsync(cancellationToken);
+
+        return results;
     }
 
     public async Task AddAsync(Title title, CancellationToken cancellationToken = default)
     {
-        await _dbContext.Movies.AddAsync(title, cancellationToken);
+        await _dbContext.Titles.AddAsync(title, cancellationToken);
     }
 
     public Task UpdateAsync(Title title, CancellationToken cancellationToken = default)
     {
-        _dbContext.Movies.Update(title);
+        _dbContext.Titles.Update(title);
         return Task.CompletedTask;
     }
 
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        var title = await _dbContext.Movies.FindAsync(new object[] { id }, cancellationToken);
+        var title = await _dbContext.Titles.FindAsync(new object[] { id }, cancellationToken);
         if (title != null)
         {
-            _dbContext.Movies.Remove(title);
+            _dbContext.Titles.Remove(title);
         }
     }
 
     public async Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await _dbContext.Movies.AnyAsync(m => m.Id == id, cancellationToken);
+        return await _dbContext.Titles.AnyAsync(m => m.Id == id, cancellationToken);
     }
 }

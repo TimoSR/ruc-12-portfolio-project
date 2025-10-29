@@ -7,7 +7,7 @@ using service_patterns;
 
 namespace test_api;
 
-public class TitleControllerTests
+public class TitlesControllerTests
 {
         [Fact]
         public void TitleController_Constructor_ShouldCreateInstance()
@@ -16,7 +16,7 @@ public class TitleControllerTests
             var mockTitleService = new MockTitleService();
 
             // Act
-            var controller = new TitleController(mockTitleService);
+            var controller = new TitlesController(mockTitleService);
 
             // Assert
             Assert.NotNull(controller);
@@ -32,7 +32,7 @@ public class TitleControllerTests
             var mockTitleService = new MockTitleService();
             var expectedTitleDto = new TitleDto(titleId, "movie", "Test Title", "Original Test Title", false, 2023, null, 120, "https://example.com/poster.jpg", "Test plot");
             mockTitleService.SetupGetByIdAsync(Result<TitleDto>.Success(expectedTitleDto));
-            var controller = new TitleController(mockTitleService);
+            var controller = new TitlesController(mockTitleService);
             controller.ControllerContext = new ControllerContext
             {
                 HttpContext = new DefaultHttpContext()
@@ -55,7 +55,7 @@ public class TitleControllerTests
             var titleId = Guid.NewGuid();
             var mockTitleService = new MockTitleService();
             mockTitleService.SetupGetByIdAsync(Result<TitleDto>.Failure(TitleErrors.NotFound));
-            var controller = new TitleController(mockTitleService);
+            var controller = new TitlesController(mockTitleService);
             controller.ControllerContext = new ControllerContext
             {
                 HttpContext = new DefaultHttpContext()
@@ -80,7 +80,7 @@ public class TitleControllerTests
             var mockTitleService = new MockTitleService();
             var expectedTitleLegacyDto = new TitleLegacyDto(Guid.NewGuid(), legacyId, "movie", "Test Title", null, false, 2023, null, 120, null, "Test plot");
             mockTitleService.SetupGetByLegacyIdAsync(Result<TitleLegacyDto>.Success(expectedTitleLegacyDto));
-            var controller = new TitleController(mockTitleService);
+            var controller = new TitlesController(mockTitleService);
             controller.ControllerContext = new ControllerContext
             {
                 HttpContext = new DefaultHttpContext()
@@ -102,7 +102,7 @@ public class TitleControllerTests
             var legacyId = "tt9999999";
             var mockTitleService = new MockTitleService();
             mockTitleService.SetupGetByLegacyIdAsync(Result<TitleLegacyDto>.Failure(TitleErrors.NotFound));
-            var controller = new TitleController(mockTitleService);
+            var controller = new TitlesController(mockTitleService);
             controller.ControllerContext = new ControllerContext
             {
                 HttpContext = new DefaultHttpContext()
@@ -130,7 +130,7 @@ public class TitleControllerTests
             var mockTitleService = new MockTitleService();
             var expectedTitleDtos = new List<TitleDto> { new TitleDto(Guid.NewGuid(), "movie", "Test Title", null, false, 2023, null, 120, null, "Test plot") };
             mockTitleService.SetupSearchTitlesAsync(Result<IEnumerable<TitleDto>>.Success(expectedTitleDtos));
-            var controller = new TitleController(mockTitleService);
+            var controller = new TitlesController(mockTitleService);
             controller.ControllerContext = new ControllerContext
             {
                 HttpContext = new DefaultHttpContext()
@@ -154,7 +154,7 @@ public class TitleControllerTests
 
             var mockTitleService = new MockTitleService();
             mockTitleService.SetupSearchTitlesAsync(Result<IEnumerable<TitleDto>>.Success(Enumerable.Empty<TitleDto>()));
-            var controller = new TitleController(mockTitleService);
+            var controller = new TitlesController(mockTitleService);
             controller.ControllerContext = new ControllerContext
             {
                 HttpContext = new DefaultHttpContext()

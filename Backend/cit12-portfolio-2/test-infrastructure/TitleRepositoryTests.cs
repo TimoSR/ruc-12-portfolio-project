@@ -31,7 +31,7 @@ public class TitleRepositoryTests : IDisposable
                 Title.Create("tvSeries", "Test Series")
             };
 
-            _dbContext.Movies.AddRange(titles);
+            _dbContext.Titles.AddRange(titles);
             _dbContext.SaveChanges();
         }
 
@@ -39,7 +39,7 @@ public class TitleRepositoryTests : IDisposable
         public async Task GetByIdAsync_ExistingMovie_ShouldReturnMovie()
         {
             // Arrange
-            var title = _dbContext.Movies.First();
+            var title = _dbContext.Titles.First();
             var titleId = title.Id;
 
             // Act
@@ -69,7 +69,7 @@ public class TitleRepositoryTests : IDisposable
         public async Task GetByLegacyIdAsync_ExistingMovie_ShouldReturnMovie()
         {
             // Arrange
-            var title = _dbContext.Movies.First();
+            var title = _dbContext.Titles.First();
             var legacyId = title.LegacyId;
 
             // Act

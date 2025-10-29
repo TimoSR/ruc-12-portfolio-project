@@ -11,7 +11,7 @@ public class Title : AggregateRoot, ITitle
     public string PrimaryTitle { get; private set; }
     public string OriginalTitle { get; private set; }
     public bool IsAdult { get; private set; }
-    public int StartYear { get; private set; }
+    public int? StartYear { get; private set; }
     public int? EndYear { get; private set; }
     public int? RuntimeMinutes { get; private set; }
     public string? PosterUrl { get; private set; }
@@ -25,7 +25,7 @@ public class Title : AggregateRoot, ITitle
         string primaryTitle,
         string originalTitle,
         bool isAdult,
-        int startYear,
+        int? startYear,
         int? endYear,
         int? runtimeMinutes,
         string? posterUrl,

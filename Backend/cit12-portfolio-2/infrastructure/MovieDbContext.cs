@@ -8,7 +8,7 @@ namespace infrastructure;
 public class MovieDbContext (DbContextOptions<MovieDbContext> options) : DbContext(options)
 {
     public DbSet<Account> Accounts => Set<Account>();
-    public DbSet<Title> Movies => Set<Title>();
+    public DbSet<Title> Titles => Set<Title>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

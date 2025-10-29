@@ -50,7 +50,7 @@ builder.Services.AddScoped<ITitleService, TitleService>();
 builder.Services
     .AddControllers()
     .AddApplicationPart(typeof(AccountController).Assembly)
-    .AddApplicationPart(typeof(TitleController).Assembly)
+    .AddApplicationPart(typeof(TitlesController).Assembly)
     .AddControllersAsServices();
 
 // Application addons

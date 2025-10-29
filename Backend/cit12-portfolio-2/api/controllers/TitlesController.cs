@@ -8,15 +8,15 @@ namespace api.controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Produces(MediaTypeNames.Application.Json)]
-public class TitleController(ITitleService titleService) : ControllerBase
+public class TitlesController(ITitleService titleService) : ControllerBase
 {
-    [HttpGet("{id:guid}")]
+    [HttpGet("{titleId:guid}")]
     [ProducesResponseType(typeof(TitleDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetById(Guid titleId, CancellationToken cancellationToken)
     {
-        var result = await titleService.GetTitleByIdAsync(id, cancellationToken);
+        var result = await titleService.GetTitleByIdAsync(titleId, cancellationToken);
 
         if (!result.IsSuccess)
         {
@@ -32,7 +32,7 @@ public class TitleController(ITitleService titleService) : ControllerBase
         return Ok(result.Value);
     }
 
-    [HttpGet("legacy/{legacyId}")]
+    [HttpGet("{legacyId:guid}")]
     [ProducesResponseType(typeof(TitleLegacyDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
@@ -54,13 +54,13 @@ public class TitleController(ITitleService titleService) : ControllerBase
         return Ok(result.Value);
     }
 
-    [HttpGet("search")]
+    [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<TitleDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Search(
-        [FromQuery] string? query = null, 
-        [FromQuery] int page = 1, 
-        [FromQuery] int pageSize = 20, 
+        [FromQuery] string? query = null,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20,
         CancellationToken cancellationToken = default)
     {
         var searchQuery = new SearchTitlesQuery(query, page, pageSize);
