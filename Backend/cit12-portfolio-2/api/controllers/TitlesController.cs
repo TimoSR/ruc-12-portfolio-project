@@ -6,8 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace api.controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/v{version:apiVersion}/[controller]")]
 [Produces(MediaTypeNames.Application.Json)]
+[ApiVersion("1.0")]
 public class TitlesController(ITitleService titleService) : ControllerBase
 {
     [HttpGet("{titleId:guid}")]

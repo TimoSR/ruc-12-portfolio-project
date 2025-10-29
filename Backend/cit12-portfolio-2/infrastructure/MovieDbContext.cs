@@ -6,7 +6,7 @@ using service_patterns;
 
 namespace infrastructure;
 
-public class MovieDbContext (DbContextOptions<MovieDbContext> options) : DbContext(options)
+public class MovieDbContext(DbContextOptions<MovieDbContext> options) : DbContext(options)
 {
     public DbSet<Account> Accounts => Set<Account>();
     public DbSet<Title> Titles => Set<Title>();
@@ -15,7 +15,7 @@ public class MovieDbContext (DbContextOptions<MovieDbContext> options) : DbConte
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Ignore<DomainEvent>();
-        
+
         modelBuilder.Entity<Account>(entity =>
         {
             entity.ToTable("account", "profile");
@@ -44,6 +44,8 @@ public class MovieDbContext (DbContextOptions<MovieDbContext> options) : DbConte
             entity.Property(e => e.RuntimeMinutes).HasColumnName("runtime_minutes");
             entity.Property(e => e.PosterUrl).HasColumnName("poster_url");
             entity.Property(e => e.Plot).HasColumnName("plot");
+
+        });
         
         modelBuilder.Entity<Rating>(entity =>
         {

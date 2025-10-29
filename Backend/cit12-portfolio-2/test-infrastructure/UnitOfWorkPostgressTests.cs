@@ -1,7 +1,7 @@
 ﻿using domain.account;
 using domain.account.interfaces;
 using domain.ratings;
-using FluentAssertions;
+using domain.title.interfaces;
 using infrastructure;
 using infrastructure.repositories;
 using Microsoft.EntityFrameworkCore;
@@ -47,15 +47,15 @@ public sealed class UnitOfWorkPostgresTests : IAsyncLifetime
         await _unitOfWork.CommitTransactionAsync();
 
         // Assert
-        account.Id.Should().NotBe(Guid.Empty, "the database-generated Id should be populated after commit");
+        Assert.NotEqual(Guid.Empty, account.Id); // the database-generated Id should be populated after commit
         _testLog.WriteLine($"Generated DB Account ID: {account.Id}");
 
         var count = await _dbContext.Accounts.CountAsync();
-        count.Should().Be(1);
+        Assert.Equal(1, count);
 
         var persisted = await _dbContext.Accounts.FirstAsync();
-        persisted.Email.Should().Be("commit@example.com");
-        persisted.Username.Should().Be("commit_user");
+        Assert.Equal("commit@example.com", persisted.Email);
+        Assert.Equal("commit_user", persisted.Username);
     }
     
     public async Task InitializeAsync()
@@ -71,7 +71,9 @@ public sealed class UnitOfWorkPostgresTests : IAsyncLifetime
 
         IAccountRepository repo1 = new AccountRepository(_dbContext);
         IRatingRepository repo2 = new RatingRepository(_dbContext);
-        _unitOfWork = new UnitOfWork(_dbContext, repo1, repo2);
+        ITitleRepository repo3 = new TitleRepository(_dbContext);
+        
+        _unitOfWork = new UnitOfWork(_dbContext, repo1, repo2, repo3);
     }
 
     public async Task DisposeAsync()
@@ -98,6 +100,6 @@ public sealed class UnitOfWorkPostgresTests : IAsyncLifetime
 
         // Assert
         var count = await _dbContext.Accounts.CountAsync();
-        count.Should().Be(0);
+        Assert.Equal(0, count);
     }
 }

@@ -44,10 +44,9 @@ builder.Services.AddScoped<IRatingRepository, RatingRepository>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<ITitleRepository, TitleRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<IAccountService, AccountService>();
-builder.Services.AddScoped<ITitleService, TitleService>();
 
 // 4. Register you applications services
+builder.Services.AddScoped<ITitleService, TitleService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IRatingService, RatingService>();
 
@@ -61,7 +60,7 @@ builder.Services.AddApiVersioning(options =>
 // 5. Register your controllers
 builder.Services
     .AddControllers()
-    .AddApplicationPart(typeof(AccountController).Assembly)
+    .AddApplicationPart(typeof(AccountsController).Assembly)
     .AddApplicationPart(typeof(TitlesController).Assembly)
     .AddApplicationPart(typeof(RatingsController).Assembly)
     .AddControllersAsServices();

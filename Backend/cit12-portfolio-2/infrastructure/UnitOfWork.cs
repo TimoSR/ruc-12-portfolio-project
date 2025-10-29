@@ -18,6 +18,7 @@ public class UnitOfWork : IUnitOfWork
     public UnitOfWork(
         MovieDbContext dbContext,
         IAccountRepository accountRepository,
+        IRatingRepository ratingRepository,
         ITitleRepository titleRepository)
     {
         _dbContext = dbContext;
