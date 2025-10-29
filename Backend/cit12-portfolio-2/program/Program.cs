@@ -4,8 +4,11 @@ using application.titleService;
 using Microsoft.EntityFrameworkCore;
 using domain.account.interfaces;
 using domain.title.interfaces;
+using domain.ratings;
+using application.ratingService;
 using infrastructure;
 using infrastructure.repositories;
+using Microsoft.AspNetCore.Mvc;
 using program;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -37,6 +40,7 @@ builder.Services.AddDbContext<MovieDbContext>(options =>
 
 // 3. Register your repositories and Unit of Work as Scoped
 // This means you get one instance per HTTP request.
+builder.Services.AddScoped<IRatingRepository, RatingRepository>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<ITitleRepository, TitleRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -44,18 +48,34 @@ builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<ITitleService, TitleService>();
 
 // 4. Register you applications services
+builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IRatingService, RatingService>();
+
+builder.Services.AddApiVersioning(options =>
+{
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.ReportApiVersions = true;
+});
 
 // 5. Register your controllers
-
 builder.Services
     .AddControllers()
     .AddApplicationPart(typeof(AccountController).Assembly)
     .AddApplicationPart(typeof(TitlesController).Assembly)
+    .AddApplicationPart(typeof(RatingsController).Assembly)
     .AddControllersAsServices();
 
 // Application addons
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddVersionedApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'VVV"; // Format v1, v2, etc.
+    options.SubstituteApiVersionInUrl = true;
+});
+
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddRouting(options =>
