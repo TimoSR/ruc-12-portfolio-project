@@ -19,4 +19,15 @@
         <Using Include="Xunit"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\domain\domain.csproj" />
+        <ProjectReference Include="..\application\application.csproj" />
+        <ProjectReference Include="..\api\api.csproj" />
+        <ProjectReference Include="..\service-patterns\service-patterns.csproj" />
+    </ItemGroup>
+
 </Project>

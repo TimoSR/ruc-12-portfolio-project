@@ -19,4 +19,11 @@
         <Using Include="Xunit"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <ProjectReference Include="..\domain\domain.csproj" />
+        <ProjectReference Include="..\application\application.csproj" />
+        <ProjectReference Include="..\infrastructure\infrastructure.csproj" />
+        <ProjectReference Include="..\service-patterns\service-patterns.csproj" />
+    </ItemGroup>
+
 </Project>

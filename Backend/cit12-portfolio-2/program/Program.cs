@@ -1,9 +1,11 @@
 using api.controllers;
 using application.accountService;
-using application.ratingService;
+using application.titleService;
 using Microsoft.EntityFrameworkCore;
 using domain.account.interfaces;
+using domain.title.interfaces;
 using domain.ratings;
+using application.ratingService;
 using infrastructure;
 using infrastructure.repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -40,7 +42,10 @@ builder.Services.AddDbContext<MovieDbContext>(options =>
 // This means you get one instance per HTTP request.
 builder.Services.AddScoped<IRatingRepository, RatingRepository>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+builder.Services.AddScoped<ITitleRepository, TitleRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<ITitleService, TitleService>();
 
 // 4. Register you applications services
 builder.Services.AddScoped<IAccountService, AccountService>();
@@ -56,7 +61,8 @@ builder.Services.AddApiVersioning(options =>
 // 5. Register your controllers
 builder.Services
     .AddControllers()
-    .AddApplicationPart(typeof(AccountsController).Assembly)
+    .AddApplicationPart(typeof(AccountController).Assembly)
+    .AddApplicationPart(typeof(TitlesController).Assembly)
     .AddApplicationPart(typeof(RatingsController).Assembly)
     .AddControllersAsServices();
 

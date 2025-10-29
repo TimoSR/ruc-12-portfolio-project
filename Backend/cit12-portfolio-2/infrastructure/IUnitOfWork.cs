@@ -1,4 +1,5 @@
-﻿using domain.account.interfaces;
+using domain.account.interfaces;
+using domain.title.interfaces;
 using domain.ratings;
 
 namespace infrastructure;
@@ -6,6 +7,7 @@ namespace infrastructure;
 public interface IUnitOfWork : IDisposable, IAsyncDisposable
 {
     IAccountRepository AccountRepository { get; }
+    ITitleRepository TitleRepository { get; }
     IRatingRepository RatingRepository { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     Task BeginTransactionAsync(CancellationToken cancellationToken = default);

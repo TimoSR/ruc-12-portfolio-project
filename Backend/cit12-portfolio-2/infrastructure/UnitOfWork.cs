@@ -1,4 +1,5 @@
 using domain.account.interfaces;
+using domain.title.interfaces;
 using domain.ratings;
 using Microsoft.EntityFrameworkCore.Storage;
 using service_patterns;
@@ -8,6 +9,7 @@ namespace infrastructure;
 public class UnitOfWork : IUnitOfWork
 {
     public IAccountRepository AccountRepository { get; }
+    public ITitleRepository TitleRepository { get; }
     public IRatingRepository RatingRepository { get; }
 
     private readonly MovieDbContext _dbContext;
@@ -16,10 +18,11 @@ public class UnitOfWork : IUnitOfWork
     public UnitOfWork(
         MovieDbContext dbContext,
         IAccountRepository accountRepository,
-        IRatingRepository ratingRepository)
+        ITitleRepository titleRepository)
     {
         _dbContext = dbContext;
         AccountRepository = accountRepository;
+        TitleRepository = titleRepository;
         RatingRepository =  ratingRepository;
     }
 
