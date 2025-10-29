@@ -25,7 +25,7 @@ public class AccountsController(IAccountService accountService) : ControllerBase
         {
             return CreatedAtAction(
                 nameof(GetById),
-                new { id = result.Value.Id },
+                new { accountId = result.Value.Id },
                 result.Value
             );
         }

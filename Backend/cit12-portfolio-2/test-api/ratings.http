@@ -1,0 +1,22 @@
+﻿@baseUrl = http://localhost:5000
+@accountId = {{accountId}}
+@titleId = {{titleId}}
+@randomRating = {{$randomInt(1,10)}}
+@randomComment = "Comment {{$timestamp}}"
+
+### Create Rating
+POST {{baseUrl}}/api/v1/accounts/{{accountId}}/ratings
+Content-Type: application/json
+Accept: application/json
+
+{
+  "titleId": "{{titleId}}",
+  "score": {{randomRating}},
+  "comment": "{{randomComment}}"
+}
+
+> {% client.global.set("ratingId", response.body.id); %}
+
+### Get Rating by ID
+GET {{baseUrl}}/api/v1/accounts/{{accountId}}/ratings/{{ratingId}}
+Accept: application/json

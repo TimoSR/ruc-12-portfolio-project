@@ -1,0 +1,22 @@
+﻿@baseUrl = localhost:5175
+@randomGuid = {{$guid}}
+@randomEmail = user{{$timestamp}}@example.com
+@randomUsername = user{{$timestamp}}
+@password = Pass{{$timestamp}}
+
+### Create Account
+POST {{baseUrl}}/api/v1/accounts
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "{{randomEmail}}",
+  "username": "{{randomUsername}}",
+  "password": "{{password}}"
+}
+
+> {% client.global.set("id", response.body.id); %}
+
+### Get Account by ID
+GET {{baseUrl}}/api/v1/accounts/{{id}}
+Accept: application/json

@@ -104,7 +104,7 @@ public class TitlesController(ITitleService titleService) : ControllerBase
 
         return CreatedAtAction(
             nameof(GetById),
-            new { id = result.Value!.Id },
+            new { titleId = result.Value.Id },
             result.Value
         );
     }
