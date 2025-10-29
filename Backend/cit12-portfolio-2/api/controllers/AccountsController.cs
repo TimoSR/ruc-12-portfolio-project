@@ -52,12 +52,12 @@ public class AccountsController(IAccountService accountService) : ControllerBase
         };
     }
     
-    [HttpGet("{id:guid}")]
+    [HttpGet("{accountId:guid}")]
     [ProducesResponseType(typeof(AccountDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetById(Guid accountId, CancellationToken cancellationToken)
     {
-        var result = await accountService.GetAccountByIdAsync(id, cancellationToken);
+        var result = await accountService.GetAccountByIdAsync(accountId, cancellationToken);
 
         if (result.IsSuccess)
         {

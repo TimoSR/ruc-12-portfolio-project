@@ -109,13 +109,13 @@ public class TitlesController(ITitleService titleService) : ControllerBase
         );
     }
 
-    [HttpPut("{id:guid}")]
+    [HttpPut("{titleId:guid}")]
     [ProducesResponseType(typeof(TitleDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateTitleCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> Update(Guid titleId, [FromBody] UpdateTitleCommand command, CancellationToken cancellationToken)
     {
-        var result = await titleService.UpdateTitleAsync(id, command, cancellationToken);
+        var result = await titleService.UpdateTitleAsync(titleId, command, cancellationToken);
 
         if (!result.IsSuccess)
         {
@@ -143,13 +143,13 @@ public class TitlesController(ITitleService titleService) : ControllerBase
         return Ok(result.Value);
     }
 
-    [HttpDelete("{id:guid}")]
+    [HttpDelete("{titleId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> Delete(Guid titleId, CancellationToken cancellationToken)
     {
-        var result = await titleService.DeleteTitleAsync(id, cancellationToken);
+        var result = await titleService.DeleteTitleAsync(titleId, cancellationToken);
 
         if (!result.IsSuccess)
         {
