@@ -45,6 +45,10 @@ Accept: application/json
   "plot": "{{plot}} Updated"
 }
 
+### Search Titles
+GET {{baseUrl}}/api/v1/titles?query={{primaryTitle}}&page=1&pageSize=5
+Accept: application/json
+
 ### Delete Title
 DELETE {{baseUrl}}/api/v1/titles/{{id}}
 Accept: application/json
