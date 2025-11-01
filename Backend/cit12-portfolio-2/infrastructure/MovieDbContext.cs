@@ -1,6 +1,7 @@
 using domain.account;
 using domain.ratings;
 using Microsoft.EntityFrameworkCore;
+using domain.person;
 using service_patterns;
 
 namespace infrastructure;
@@ -9,6 +10,7 @@ public class MovieDbContext (DbContextOptions<MovieDbContext> options) : DbConte
 {
     public DbSet<Account> Accounts => Set<Account>();
     public DbSet<Rating> Ratings => Set<Rating>();
+    public DbSet<Person> Persons => Set<Person>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -36,6 +38,17 @@ public class MovieDbContext (DbContextOptions<MovieDbContext> options) : DbConte
             entity.Property(x => x.Score).HasColumnName("rating");
             entity.Property(x => x.Comment).HasColumnName("comment");
             entity.Property(x => x.CreatedAt).HasColumnName("created_at");
+        });
+
+        modelBuilder.Entity<Person>(entity =>
+        {
+            entity.ToTable("person", "movie_db");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.Id).HasColumnName("id");
+            entity.Property(x => x.LegacyId).HasColumnName("legacy_id");
+            entity.Property(x => x.PrimaryName).HasColumnName("primary_name");
+            entity.Property(x => x.BirthYear).HasColumnName("birth_year");
+            entity.Property(x => x.DeathYear).HasColumnName("death_year");
         });
     }
 }
