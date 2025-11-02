@@ -22,7 +22,6 @@ public class PersonTests
         p.ChangePrimaryName("Bob");
         Assert.Equal("Bob", p.PrimaryName);
 
-        // No-op when same
         p.ChangePrimaryName("Bob");
         Assert.Equal("Bob", p.PrimaryName);
     }

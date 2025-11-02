@@ -1,6 +1,5 @@
 namespace domain.person.interfaces;
 
-// Query result shapes for read endpoints
 public sealed record PersonListItem(Guid Id, string PrimaryName);
 public sealed record WordFrequencyItem(string Word, int Frequency);
 public sealed record CoActorItem(Guid PersonId, string PrimaryName, long Frequency);
