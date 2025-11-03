@@ -1,11 +1,13 @@
 using api.controllers;
 using application.accountService;
 using application.titleService;
+using application.ratingService;
+using application.personService;
 using Microsoft.EntityFrameworkCore;
 using domain.account.interfaces;
 using domain.title.interfaces;
 using domain.ratings;
-using application.ratingService;
+using domain.person.interfaces;
 using infrastructure;
 using infrastructure.repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -43,12 +45,15 @@ builder.Services.AddDbContext<MovieDbContext>(options =>
 builder.Services.AddScoped<IRatingRepository, RatingRepository>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<ITitleRepository, TitleRepository>();
+builder.Services.AddScoped<IPersonRepository, PersonRepository>();
+builder.Services.AddScoped<IPersonQueriesRepository, PersonQueriesRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // 4. Register you applications services
 builder.Services.AddScoped<ITitleService, TitleService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IRatingService, RatingService>();
+builder.Services.AddScoped<IPersonService, PersonService>();
 
 builder.Services.AddApiVersioning(options =>
 {
@@ -63,6 +68,7 @@ builder.Services
     .AddApplicationPart(typeof(AccountsController).Assembly)
     .AddApplicationPart(typeof(TitlesController).Assembly)
     .AddApplicationPart(typeof(RatingsController).Assembly)
+    .AddApplicationPart(typeof(PersonsController).Assembly)
     .AddControllersAsServices();
 
 // Application addons
