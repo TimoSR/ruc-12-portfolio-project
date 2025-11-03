@@ -9,7 +9,7 @@ public sealed record ProfessionItem(string Profession);
 
 public interface IPersonQueriesRepository
 {
-    Task<IEnumerable<PersonListItem>> SearchByNameAsync(string query, int page, int pageSize, CancellationToken cancellationToken = default);
+    Task<(IEnumerable<PersonListItem> items, int totalCount)> SearchByNameAsync(string query, int page, int pageSize, CancellationToken cancellationToken = default);
     Task<IEnumerable<WordFrequencyItem>> GetPersonWordsAsync(string personName, int limit, CancellationToken cancellationToken = default);
     Task<IEnumerable<CoActorItem>> GetCoActorsAsync(string personName, CancellationToken cancellationToken = default);
     Task<IEnumerable<PopularCoActorItem>> GetPopularCoActorsAsync(string personName, CancellationToken cancellationToken = default);

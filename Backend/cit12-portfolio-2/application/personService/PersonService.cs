@@ -67,19 +67,19 @@ public sealed class PersonService(IUnitOfWork uow, ILogger<PersonService> logger
         }
     }
 
-    public async Task<Result<IEnumerable<PersonListItemDto>>> SearchPersonsAsync(SearchPersonsQuery query, CancellationToken cancellationToken)
+    public async Task<Result<(IEnumerable<PersonListItemDto> items, int totalCount)>> SearchPersonsAsync(SearchPersonsQuery query, CancellationToken cancellationToken)
     {
         try
         {
             var q = string.IsNullOrWhiteSpace(query.Query) ? string.Empty : query.Query.Trim();
             if (string.IsNullOrEmpty(q))
-                return Result<IEnumerable<PersonListItemDto>>.Success(Enumerable.Empty<PersonListItemDto>());
+                return Result<(IEnumerable<PersonListItemDto> items, int totalCount)>.Success((Enumerable.Empty<PersonListItemDto>(), 0));
 
-            var items = await uow.PersonQueriesRepository
+            var (items, totalCount) = await uow.PersonQueriesRepository
                 .SearchByNameAsync(q, query.Page, query.PageSize, cancellationToken);
 
             var dtos = items.Select(x => new PersonListItemDto(x.Id, x.PrimaryName));
-            return Result<IEnumerable<PersonListItemDto>>.Success(dtos);
+            return Result<(IEnumerable<PersonListItemDto> items, int totalCount)>.Success((dtos, totalCount));
         }
         catch (Exception ex)
         {

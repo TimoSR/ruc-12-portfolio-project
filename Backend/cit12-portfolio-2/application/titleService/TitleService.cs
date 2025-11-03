@@ -70,12 +70,12 @@ public class TitleService(IUnitOfWork unitOfWork, ILogger<TitleService> logger) 
         }
     }
 
-    public async Task<Result<IEnumerable<TitleDto>>> SearchTitlesAsync(SearchTitlesQuery query, CancellationToken cancellationToken)
+    public async Task<Result<(IEnumerable<TitleDto> items, int totalCount)>> SearchTitlesAsync(SearchTitlesQuery query, CancellationToken cancellationToken)
     {
         try
         {
             // Pass the actual query to repository (null-safe)
-            var titles = await unitOfWork.TitleRepository.SearchAsync(query.Query ?? "", query.Page, query.PageSize, cancellationToken);
+            var (titles, totalCount) = await unitOfWork.TitleRepository.SearchAsync(query.Query ?? "", query.Page, query.PageSize, cancellationToken);
 
             var dtos = titles.Select(title => new TitleDto(
                 Id: title.Id,
@@ -90,7 +90,7 @@ public class TitleService(IUnitOfWork unitOfWork, ILogger<TitleService> logger) 
                 Plot: title.Plot
             ));
 
-            return Result<IEnumerable<TitleDto>>.Success(dtos);
+            return Result<(IEnumerable<TitleDto> items, int totalCount)>.Success((dtos, totalCount));
         }
         catch (Exception ex)
         {

@@ -1,3 +1,5 @@
+using api.extensions;
+using api.models;
 using application.personService;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,28 +15,56 @@ public sealed class PersonsController(IPersonService service) : ControllerBase
     {
         var result = await service.CreatePersonAsync(command, cancellationToken);
         if (!result.IsSuccess) return BadRequest(result.Error);
-        return CreatedAtAction(nameof(GetById), new { id = result.Value.Id, version = "1.0" }, result.Value);
+        
+        var dto = result.Value with 
+        { 
+            Url = Url.ActionLink("GetPersonById", values: new { id = result.Value.Id, version = "1.0" })
+        };
+        return CreatedAtAction(nameof(GetById), new { id = dto.Id, version = "1.0" }, dto);
     }
 
-    [HttpGet("{id:guid}")]
+    [HttpGet("{id:guid}", Name = "GetPersonById")]
     public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
     {
         var result = await service.GetPersonByIdAsync(id, cancellationToken);
-        return result.IsSuccess ? Ok(result.Value) : NotFound(result.Error);
+        if (!result.IsSuccess) return NotFound(result.Error);
+        
+        var dto = result.Value with 
+        { 
+            Url = Url.ActionLink("GetPersonById", values: new { id, version = "1.0" })
+        };
+        return Ok(dto);
     }
 
-    [HttpGet("by-legacy/{legacyId}")]
+    [HttpGet("by-legacy/{legacyId}", Name = "GetPersonByLegacyId")]
     public async Task<IActionResult> GetByLegacyId(string legacyId, CancellationToken cancellationToken)
     {
         var result = await service.GetPersonByLegacyIdAsync(legacyId, cancellationToken);
-        return result.IsSuccess ? Ok(result.Value) : NotFound(result.Error);
+        if (!result.IsSuccess) return NotFound(result.Error);
+        
+        var dto = result.Value with 
+        { 
+            Url = Url.ActionLink("GetPersonByLegacyId", values: new { legacyId, version = "1.0" })
+        };
+        return Ok(dto);
     }
 
-    [HttpGet("search")]
+    [HttpGet("search", Name = "SearchPersons")]
     public async Task<IActionResult> Search([FromQuery] string query, [FromQuery] int page = 1, [FromQuery] int pageSize = 20, CancellationToken cancellationToken = default)
     {
         var result = await service.SearchPersonsAsync(new SearchPersonsQuery(query, page, pageSize), cancellationToken);
-        return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
+        if (!result.IsSuccess) return BadRequest(result.Error);
+        
+        var pagedResult = result.Value.items.ToPagedResult(
+            result.Value.totalCount,
+            page,
+            pageSize,
+            HttpContext,
+            "SearchPersons",
+            new { query }
+        );
+        
+        return Ok(pagedResult);
     }
 
     [HttpGet("{name}/words")]

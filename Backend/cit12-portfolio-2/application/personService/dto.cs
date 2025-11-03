@@ -12,7 +12,8 @@ public sealed record PersonDto(
     string LegacyId,
     string PrimaryName,
     int? BirthYear,
-    int? DeathYear
+    int? DeathYear,
+    string? Url = null
 );
 
 

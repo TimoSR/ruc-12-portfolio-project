@@ -2,6 +2,7 @@
 using domain.account.interfaces;
 using domain.ratings;
 using domain.title.interfaces;
+using domain.person.interfaces;
 using infrastructure;
 using infrastructure.repositories;
 using Microsoft.EntityFrameworkCore;
@@ -72,8 +73,10 @@ public sealed class UnitOfWorkPostgresTests : IAsyncLifetime
         IAccountRepository repo1 = new AccountRepository(_dbContext);
         IRatingRepository repo2 = new RatingRepository(_dbContext);
         ITitleRepository repo3 = new TitleRepository(_dbContext);
+        IPersonRepository repo4 = new PersonRepository(_dbContext);
+        IPersonQueriesRepository repo5 = new PersonQueriesRepository(_dbContext);
         
-        _unitOfWork = new UnitOfWork(_dbContext, repo1, repo2, repo3);
+        _unitOfWork = new UnitOfWork(_dbContext, repo1, repo3, repo2, repo4, repo5);
     }
 
     public async Task DisposeAsync()

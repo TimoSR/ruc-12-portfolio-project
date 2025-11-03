@@ -129,7 +129,7 @@ public class TitlesControllerTests
 
             var mockTitleService = new MockTitleService();
             var expectedTitleDtos = new List<TitleDto> { new TitleDto(Guid.NewGuid(), "movie", "Test Title", null, false, 2023, null, 120, null, "Test plot") };
-            mockTitleService.SetupSearchTitlesAsync(Result<IEnumerable<TitleDto>>.Success(expectedTitleDtos));
+            mockTitleService.SetupSearchTitlesAsync(Result<(IEnumerable<TitleDto> items, int totalCount)>.Success((expectedTitleDtos, 1)));
             var controller = new TitlesController(mockTitleService);
             controller.ControllerContext = new ControllerContext
             {
@@ -141,8 +141,9 @@ public class TitlesControllerTests
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var titleDtos = Assert.IsAssignableFrom<IEnumerable<TitleDto>>(okResult.Value);
-            Assert.Single(titleDtos);
+            var pagedResult = Assert.IsType<api.models.PagedResult<TitleDto>>(okResult.Value);
+            Assert.Single(pagedResult.Items);
+            Assert.Equal(1, pagedResult.TotalItems);
         }
 
         [Fact]
@@ -153,7 +154,7 @@ public class TitlesControllerTests
             var emptyTitles = Enumerable.Empty<Title>();
 
             var mockTitleService = new MockTitleService();
-            mockTitleService.SetupSearchTitlesAsync(Result<IEnumerable<TitleDto>>.Success(Enumerable.Empty<TitleDto>()));
+            mockTitleService.SetupSearchTitlesAsync(Result<(IEnumerable<TitleDto> items, int totalCount)>.Success((Enumerable.Empty<TitleDto>(), 0)));
             var controller = new TitlesController(mockTitleService);
             controller.ControllerContext = new ControllerContext
             {
@@ -165,8 +166,9 @@ public class TitlesControllerTests
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var titleDtos = Assert.IsAssignableFrom<IEnumerable<TitleDto>>(okResult.Value);
-            Assert.Empty(titleDtos);
+            var pagedResult = Assert.IsType<api.models.PagedResult<TitleDto>>(okResult.Value);
+            Assert.Empty(pagedResult.Items);
+            Assert.Equal(0, pagedResult.TotalItems);
         }
     }
 
@@ -175,11 +177,11 @@ public class TitlesControllerTests
     {
         private Result<TitleDto> _getByIdResult = Result<TitleDto>.Failure(TitleErrors.NotFound);
         private Result<TitleLegacyDto> _getByLegacyIdResult = Result<TitleLegacyDto>.Failure(TitleErrors.NotFound);
-        private Result<IEnumerable<TitleDto>> _searchResult = Result<IEnumerable<TitleDto>>.Success(Enumerable.Empty<TitleDto>());
+        private Result<(IEnumerable<TitleDto> items, int totalCount)> _searchResult = Result<(IEnumerable<TitleDto> items, int totalCount)>.Success((Enumerable.Empty<TitleDto>(), 0));
 
         public void SetupGetByIdAsync(Result<TitleDto> result) => _getByIdResult = result;
         public void SetupGetByLegacyIdAsync(Result<TitleLegacyDto> result) => _getByLegacyIdResult = result;
-        public void SetupSearchTitlesAsync(Result<IEnumerable<TitleDto>> result) => _searchResult = result;
+        public void SetupSearchTitlesAsync(Result<(IEnumerable<TitleDto> items, int totalCount)> result) => _searchResult = result;
 
         public Task<Result<TitleDto>> GetTitleByIdAsync(Guid id, CancellationToken cancellationToken)
             => Task.FromResult(_getByIdResult);
@@ -187,7 +189,7 @@ public class TitlesControllerTests
         public Task<Result<TitleLegacyDto>> GetTitleByLegacyIdAsync(string legacyId, CancellationToken cancellationToken)
             => Task.FromResult(_getByLegacyIdResult);
 
-        public Task<Result<IEnumerable<TitleDto>>> SearchTitlesAsync(SearchTitlesQuery query, CancellationToken cancellationToken)
+        public Task<Result<(IEnumerable<TitleDto> items, int totalCount)>> SearchTitlesAsync(SearchTitlesQuery query, CancellationToken cancellationToken)
             => Task.FromResult(_searchResult);
 
         public Task<Result<TitleDto>> CreateTitleAsync(CreateTitleCommand command, CancellationToken cancellationToken)

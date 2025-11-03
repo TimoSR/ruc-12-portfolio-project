@@ -1,7 +1,9 @@
-using System.Net.Mime;
+using api.extensions;
+using api.models;
 using application.titleService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Mime;
 
 namespace api.controllers;
 
@@ -11,7 +13,7 @@ namespace api.controllers;
 [ApiVersion("1.0")]
 public class TitlesController(ITitleService titleService) : ControllerBase
 {
-    [HttpGet("{titleId:guid}")]
+    [HttpGet("{titleId:guid}", Name = "GetTitleById")]
     [ProducesResponseType(typeof(TitleDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
@@ -30,10 +32,14 @@ public class TitlesController(ITitleService titleService) : ControllerBase
             });
         }
 
-        return Ok(result.Value);
+        var dto = result.Value with 
+        { 
+            Url = Url.ActionLink("GetTitleById", values: new { titleId, version = "1.0" })
+        };
+        return Ok(dto);
     }
 
-    [HttpGet("{legacyId}")]
+    [HttpGet("{legacyId}", Name = "GetTitleByLegacyId")]
     [ProducesResponseType(typeof(TitleLegacyDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
@@ -52,11 +58,15 @@ public class TitlesController(ITitleService titleService) : ControllerBase
             });
         }
 
-        return Ok(result.Value);
+        var dto = result.Value with 
+        { 
+            Url = Url.ActionLink("GetTitleByLegacyId", values: new { legacyId, version = "1.0" })
+        };
+        return Ok(dto);
     }
 
-    [HttpGet]
-    [ProducesResponseType(typeof(IEnumerable<TitleDto>), StatusCodes.Status200OK)]
+    [HttpGet(Name = "SearchTitles")]
+    [ProducesResponseType(typeof(PagedResult<TitleDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Search(
         [FromQuery] string? query = null,
@@ -79,7 +89,16 @@ public class TitlesController(ITitleService titleService) : ControllerBase
             });
         }
 
-        return Ok(result.Value);
+        var pagedResult = result.Value.items.ToPagedResult(
+            result.Value.totalCount,
+            page,
+            pageSize,
+            HttpContext,
+            "SearchTitles",
+            new { query }
+        );
+
+        return Ok(pagedResult);
     }
 
     [HttpPost]
@@ -102,10 +121,15 @@ public class TitlesController(ITitleService titleService) : ControllerBase
             });
         }
 
+        var dto = result.Value with 
+        { 
+            Url = Url.ActionLink("GetTitleById", values: new { titleId = result.Value.Id, version = "1.0" })
+        };
+
         return CreatedAtAction(
             nameof(GetById),
-            new { titleId = result.Value.Id },
-            result.Value
+            new { titleId = dto.Id },
+            dto
         );
     }
 
@@ -140,7 +164,11 @@ public class TitlesController(ITitleService titleService) : ControllerBase
             });
         }
 
-        return Ok(result.Value);
+        var dto = result.Value with 
+        { 
+            Url = Url.ActionLink("GetTitleById", values: new { titleId, version = "1.0" })
+        };
+        return Ok(dto);
     }
 
     [HttpDelete("{titleId:guid}")]

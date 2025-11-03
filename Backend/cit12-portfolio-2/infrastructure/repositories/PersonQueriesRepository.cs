@@ -14,21 +14,25 @@ public sealed class PersonQueriesRepository : IPersonQueriesRepository
         _db = db;
     }
 
-    public async Task<IEnumerable<PersonListItem>> SearchByNameAsync(string query, int page, int pageSize, CancellationToken cancellationToken = default)
+    public async Task<(IEnumerable<PersonListItem> items, int totalCount)> SearchByNameAsync(string query, int page, int pageSize, CancellationToken cancellationToken = default)
     {
         var skip = (page - 1) * pageSize;
 
         // Simple ILIKE on primary_name with paging
-        var items = await _db.Persons
+        var queryable = _db.Persons
             .AsNoTracking()
-            .Where(p => EF.Functions.ILike(p.PrimaryName, $"%{query}%"))
+            .Where(p => EF.Functions.ILike(p.PrimaryName, $"%{query}%"));
+        
+        var totalCount = await queryable.CountAsync(cancellationToken);
+        
+        var items = await queryable
             .OrderBy(p => p.PrimaryName)
             .Skip(skip)
             .Take(pageSize)
             .Select(p => new PersonListItem(p.Id, p.PrimaryName))
             .ToListAsync(cancellationToken);
 
-        return items;
+        return (items, totalCount);
     }
 
     public async Task<IEnumerable<WordFrequencyItem>> GetPersonWordsAsync(string personName, int limit, CancellationToken cancellationToken = default)
