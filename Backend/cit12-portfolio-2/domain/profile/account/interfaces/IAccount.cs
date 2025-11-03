@@ -1,6 +1,6 @@
 ﻿using service_patterns;
 
-namespace domain.account.interfaces;
+namespace domain.profile.account.interfaces;
 
 public interface IAccount : IAggregateRoot
 {

@@ -1,6 +1,6 @@
 ﻿using service_patterns;
 
-namespace domain.ratings;
+namespace domain.profile.accountRatings;
 
 public record RatingCreatedEvent(
     Guid RatingId,

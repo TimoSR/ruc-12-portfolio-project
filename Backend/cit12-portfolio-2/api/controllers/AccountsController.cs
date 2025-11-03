@@ -1,6 +1,6 @@
 ﻿using System.Net.Mime;
 using application.accountService;
-using domain.account;
+using domain.profile.account;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 

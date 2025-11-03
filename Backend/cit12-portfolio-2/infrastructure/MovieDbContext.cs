@@ -1,6 +1,7 @@
-using domain.account;
+using domain.movie.titleRatings;
+using domain.profile.account;
+using domain.profile.accountRatings;
 using domain.title;
-using domain.ratings;
 using Microsoft.EntityFrameworkCore;
 using service_patterns;
 
@@ -10,7 +11,8 @@ public class MovieDbContext(DbContextOptions<MovieDbContext> options) : DbContex
 {
     public DbSet<Account> Accounts => Set<Account>();
     public DbSet<Title> Titles => Set<Title>();
-    public DbSet<Rating> Ratings => Set<Rating>();
+    public DbSet<AccountRating> AccountRatings => Set<AccountRating>();
+    public DbSet<TitleRating> TitleRatings => Set<TitleRating>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -26,6 +28,18 @@ public class MovieDbContext(DbContextOptions<MovieDbContext> options) : DbContex
             entity.Property(e => e.Username).HasColumnName("username");
             entity.Property(e => e.Password).HasColumnName("password_hash");
             entity.Property(e => e.CreatedAt).HasColumnName("created_at");
+        });
+        
+        modelBuilder.Entity<AccountRating>(entity =>
+        {
+            entity.ToTable("rating_history", "profile");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.Id).HasColumnName("id");
+            entity.Property(x => x.AccountId).HasColumnName("account_id");
+            entity.Property(x => x.TitleId).HasColumnName("title_id");
+            entity.Property(x => x.Score).HasColumnName("rating");
+            entity.Property(x => x.Comment).HasColumnName("comment");
+            entity.Property(x => x.CreatedAt).HasColumnName("created_at");
         });
 
         modelBuilder.Entity<Title>(entity =>
@@ -47,16 +61,15 @@ public class MovieDbContext(DbContextOptions<MovieDbContext> options) : DbContex
 
         });
         
-        modelBuilder.Entity<Rating>(entity =>
+        modelBuilder.Entity<TitleRating>(entity =>
         {
-            entity.ToTable("rating_history", "profile");
-            entity.HasKey(x => x.Id);
-            entity.Property(x => x.Id).HasColumnName("id");
+            entity.ToTable("user_rating", "movie_db");
+
+            entity.HasKey(x => new { x.AccountId, x.TitleId });
+
             entity.Property(x => x.AccountId).HasColumnName("account_id");
             entity.Property(x => x.TitleId).HasColumnName("title_id");
             entity.Property(x => x.Score).HasColumnName("rating");
-            entity.Property(x => x.Comment).HasColumnName("comment");
-            entity.Property(x => x.CreatedAt).HasColumnName("created_at");
         });
     }
 }

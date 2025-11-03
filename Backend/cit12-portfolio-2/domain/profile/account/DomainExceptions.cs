@@ -1,6 +1,6 @@
 ﻿using service_patterns;
 
-namespace domain.account;
+namespace domain.profile.account;
 
 public sealed class InvalidEmailException() : DomainException("Email is required.");
 public sealed class InvalidUserNameException() : DomainException("Username is required.");

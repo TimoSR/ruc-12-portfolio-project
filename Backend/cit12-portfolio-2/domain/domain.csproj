@@ -11,8 +11,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="account\entities\" />
-      <Folder Include="account\ValueObjects\" />
+      <Folder Include="profile\" />
     </ItemGroup>
 
 </Project>

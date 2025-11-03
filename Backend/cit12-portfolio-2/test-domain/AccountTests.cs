@@ -1,7 +1,7 @@
 ﻿
 
-using domain.account;
-using domain.account.interfaces;
+using domain.profile.account;
+using domain.profile.account.interfaces;
 
 namespace test_domain;
 

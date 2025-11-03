@@ -1,6 +1,7 @@
 using domain.title;
 using infrastructure;
 using infrastructure.repositories;
+using infrastructure.repositories.movie;
 using Microsoft.EntityFrameworkCore;
 
 namespace test_infrastructure;

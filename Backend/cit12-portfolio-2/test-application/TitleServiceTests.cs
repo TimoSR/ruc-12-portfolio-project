@@ -1,9 +1,10 @@
 using application.titleService;
+using domain.movie.titleRatings;
 using domain.title;
 using domain.title.interfaces;
-using domain.account;
-using domain.account.interfaces;
-using domain.ratings;
+using domain.profile.account;
+using domain.profile.account.interfaces;
+using domain.profile.accountRatings;
 using infrastructure;
 using Microsoft.Extensions.Logging;
 using service_patterns;
@@ -169,13 +170,15 @@ public class TitleServiceTests
     {
         public MockTitleRepository MockTitleRepository { get; } = new();
         public MockAccountRepository MockAccountRepository { get; } = new();
+        public MockAccountRatingRepository MockAccountRatingRepository { get; } = new();
+        public MockTitleRatingRepository MockTitleRatingRepository { get; } = new();
         
-        public MockRatingRepository MockRatingRepository { get; } = new();
         
         public IAccountRepository AccountRepository => MockAccountRepository;
         public ITitleRepository TitleRepository => MockTitleRepository;
 
-        public IRatingRepository RatingRepository => MockRatingRepository;
+        public IAccountRatingRepository AccountRatingRepository => MockAccountRatingRepository;
+        public ITitleRatingRepository TitleRatingRepository => MockTitleRatingRepository;
 
         public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default) => Task.FromResult(0);
         public Task BeginTransactionAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
@@ -216,33 +219,29 @@ public class TitleServiceTests
             => Task.FromResult(true);
     }
 
-    public class MockAccountRepository : IAccountRepository
+    public class MockTitleRatingRepository : ITitleRatingRepository
     {
-        public Task<Account?> GetByEmailAsync(string email, CancellationToken cancellationToken = default) => Task.FromResult<Account?>(null);
-        public Task<Account?> GetByUserNameAsync(string username, CancellationToken cancellationToken = default) => Task.FromResult<Account?>(null);
-        public Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken = default) => Task.FromResult(false);
-        public Task AddAsync(Account account, CancellationToken cancellationToken = default) => Task.CompletedTask;
-        public Task<Account?> GetByIdAsync(Guid id, CancellationToken cancellationToken) => Task.FromResult<Account?>(null);
-    }
-
-    public class MockRatingRepository : IRatingRepository
-    {
-        public IAsyncEnumerable<Rating> GetByAccountIdAsync(Guid accountId)
+        public IAsyncEnumerable<TitleRating> GetByAccountIdAsync(Guid accountId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<Rating?> GetByIdAsync(Guid ratingId, CancellationToken token)
+        public Task<TitleRating?> GetByAccountIdAndTitleIdAsync(Guid accountId, Guid titleId, CancellationToken token)
         {
             throw new NotImplementedException();
         }
 
-        public Task AddAsync(Rating rating, CancellationToken token)
+        public Task<TitleRating?> GetByRatingIdAsync(Guid ratingId, CancellationToken token)
         {
             throw new NotImplementedException();
         }
 
-        public Task UpdateAsync(Rating rating, CancellationToken token)
+        public Task AddAsync(TitleRating accountRating, CancellationToken token)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task UpdateAsync(TitleRating accountRating, CancellationToken token)
         {
             throw new NotImplementedException();
         }
@@ -252,7 +251,49 @@ public class TitleServiceTests
             throw new NotImplementedException();
         }
 
-        public Task<Rating?> GetByAccountAndTitleAsync(Guid accountId, Guid titleId, CancellationToken token)
+        public Task<TitleRating?> GetByAccountAndTitleAsync(Guid accountId, Guid titleId, CancellationToken token)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class MockAccountRepository : IAccountRepository
+    {
+        public Task<Account?> GetByEmailAsync(string email, CancellationToken cancellationToken = default) => Task.FromResult<Account?>(null);
+        public Task<Account?> GetByUserNameAsync(string username, CancellationToken cancellationToken = default) => Task.FromResult<Account?>(null);
+        public Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken = default) => Task.FromResult(false);
+        public Task AddAsync(Account account, CancellationToken cancellationToken = default) => Task.CompletedTask;
+        public Task<Account?> GetByIdAsync(Guid id, CancellationToken cancellationToken) => Task.FromResult<Account?>(null);
+    }
+
+    public class MockAccountRatingRepository : IAccountRatingRepository
+    {
+        public IAsyncEnumerable<AccountRating> GetByAccountIdAsync(Guid accountId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<AccountRating?> GetByRatingIdAsync(Guid ratingId, CancellationToken token)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task AddAsync(AccountRating accountRating, CancellationToken token)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task UpdateAsync(AccountRating accountRating, CancellationToken token)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteAsync(Guid accountId, Guid ratingId, CancellationToken token)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<AccountRating?> GetByAccountAndTitleAsync(Guid accountId, Guid titleId, CancellationToken token)
         {
             throw new NotImplementedException();
         }
