@@ -1,6 +1,7 @@
-using domain.account.interfaces;
+using domain.movie.titleRatings;
+using domain.profile.account.interfaces;
+using domain.profile.accountRatings;
 using domain.title.interfaces;
-using domain.ratings;
 
 namespace infrastructure;
 
@@ -8,7 +9,9 @@ public interface IUnitOfWork : IDisposable, IAsyncDisposable
 {
     IAccountRepository AccountRepository { get; }
     ITitleRepository TitleRepository { get; }
-    IRatingRepository RatingRepository { get; }
+    IAccountRatingRepository AccountRatingRepository { get; }
+    ITitleRatingRepository  TitleRatingRepository { get; }
+    
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     Task BeginTransactionAsync(CancellationToken cancellationToken = default);
     Task CommitTransactionAsync(CancellationToken cancellationToken = default);

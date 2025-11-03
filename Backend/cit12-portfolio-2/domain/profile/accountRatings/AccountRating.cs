@@ -1,9 +1,9 @@
 ﻿using service_patterns;
 
 // This might be in a different domain context, like 'domain.ratings'
-namespace domain.ratings;
+namespace domain.profile.accountRatings;
 
-public class Rating : AggregateRoot
+public class AccountRating : AggregateRoot
 {
     public Guid Id { get; private set; }
     public Guid AccountId { get; private set; } // The "foreign key"
@@ -12,7 +12,7 @@ public class Rating : AggregateRoot
     public string? Comment { get; private set; }
     public DateTime CreatedAt { get; private set; }
 
-    internal Rating(Guid id, Guid accountId, Guid titleId, int score, string? comment, DateTime createdAt)
+    internal AccountRating(Guid id, Guid accountId, Guid titleId, int score, string? comment, DateTime createdAt)
     {
         Id = id;
         AccountId = accountId;
@@ -22,7 +22,7 @@ public class Rating : AggregateRoot
         Comment = comment;
     }
     
-    private Rating(Guid accountId, Guid titleId, int score, string? comment = null)
+    private AccountRating(Guid accountId, Guid titleId, int score, string? comment = null)
     {
         AccountId = accountId;
         TitleId = titleId;
@@ -41,7 +41,7 @@ public class Rating : AggregateRoot
     }
 
     // Factory method for validation and controlled instantiation
-    public static Rating Create(Guid accountId, Guid titleId, int score, string? comment = null)
+    public static AccountRating Create(Guid accountId, Guid titleId, int score, string? comment = null)
     {
         if (accountId == Guid.Empty)
             throw new ArgumentException("Account ID cannot be empty.", nameof(accountId));
@@ -55,7 +55,7 @@ public class Rating : AggregateRoot
         if (comment is not null && comment.Length > 500)
             throw new ArgumentException("Comment cannot exceed 500 characters.", nameof(comment));
 
-        return new Rating(accountId, titleId, score, comment);
+        return new AccountRating(accountId, titleId, score, comment);
     }
     
     public void UpdateScore(int newScore)

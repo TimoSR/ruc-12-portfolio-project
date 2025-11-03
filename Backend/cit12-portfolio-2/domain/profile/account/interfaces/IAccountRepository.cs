@@ -1,6 +1,6 @@
 ﻿using service_patterns;
 
-namespace domain.account.interfaces;
+namespace domain.profile.account.interfaces;
 
 // Defines a contract for account persistence operations. 
 // This abstraction allows the domain layer to depend only on the interface, 

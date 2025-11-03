@@ -1,5 +1,4 @@
-﻿using domain.account;
-using service_patterns;
+﻿using service_patterns;
 
 namespace application.accountService;
 

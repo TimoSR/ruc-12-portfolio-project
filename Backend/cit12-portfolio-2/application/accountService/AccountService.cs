@@ -1,4 +1,4 @@
-﻿using domain.account;
+﻿using domain.profile.account;
 using infrastructure;
 using Microsoft.Extensions.Logging;
 using service_patterns;

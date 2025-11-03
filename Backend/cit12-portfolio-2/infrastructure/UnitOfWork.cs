@@ -1,6 +1,7 @@
-using domain.account.interfaces;
+using domain.movie.titleRatings;
+using domain.profile.account.interfaces;
+using domain.profile.accountRatings;
 using domain.title.interfaces;
-using domain.ratings;
 using Microsoft.EntityFrameworkCore.Storage;
 using service_patterns;
 
@@ -10,7 +11,8 @@ public class UnitOfWork : IUnitOfWork
 {
     public IAccountRepository AccountRepository { get; }
     public ITitleRepository TitleRepository { get; }
-    public IRatingRepository RatingRepository { get; }
+    public IAccountRatingRepository AccountRatingRepository { get; }
+    public ITitleRatingRepository TitleRatingRepository { get; }
 
     private readonly MovieDbContext _dbContext;
     private IDbContextTransaction? _currentTransaction;
@@ -18,13 +20,15 @@ public class UnitOfWork : IUnitOfWork
     public UnitOfWork(
         MovieDbContext dbContext,
         IAccountRepository accountRepository,
-        IRatingRepository ratingRepository,
-        ITitleRepository titleRepository)
+        IAccountRatingRepository accountRatingRepository,
+        ITitleRepository titleRepository,
+        ITitleRatingRepository titleRatingRepository)
     {
         _dbContext = dbContext;
         AccountRepository = accountRepository;
         TitleRepository = titleRepository;
-        RatingRepository =  ratingRepository;
+        AccountRatingRepository =  accountRatingRepository;
+        TitleRatingRepository = titleRatingRepository;
     }
 
     public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)

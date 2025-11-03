@@ -1,7 +1,7 @@
-﻿using domain.account.interfaces;
+﻿using domain.profile.account.interfaces;
 using service_patterns;
 
-namespace domain.account;
+namespace domain.profile.account;
 
 public class Account : AggregateRoot, IAccount
 {

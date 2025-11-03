@@ -1,63 +1,80 @@
-﻿using application.ratingService;
-using domain.account;
-using domain.ratings;
+﻿using domain.movie.titleRatings;
+using domain.profile.account;
+using domain.profile.accountRatings;
+using domain.title;
 using infrastructure;
 using service_patterns;
 
-public class RatingService : IRatingService
+namespace application.ratingService;
+
+public class RatingService(IUnitOfWork unitOfWork) : IRatingService
 {
-    private readonly IUnitOfWork _unitOfWork;
-
-    public RatingService(IUnitOfWork unitOfWork)
+    public async Task<Result<RatingDto>> AddRatingAsync(
+        Guid accountId,
+        RatingCommandDto commandDto,
+        CancellationToken cancellationToken)
     {
-        _unitOfWork = unitOfWork;
-    }
+        var accountExists = await unitOfWork.AccountRepository
+            .ExistsAsync(accountId, cancellationToken);
 
-    public async Task<Result<RatingDto>> AddRatingAsync(Guid accountId, RatingCommandDto commandDto, CancellationToken cancellationToken)
-    {
-        // 1. You might not even need the account object itself!
-        // You could just check if it exists.
-        var accountExists = await _unitOfWork.AccountRepository.ExistsAsync(accountId, cancellationToken);
-        //var titleExists = await _unitOfWork.TitleRepository.ExistsAsync(commandDto.TitleId, cancellationToken);
-        
+        var titleExists = await unitOfWork.TitleRepository
+            .ExistsAsync(commandDto.TitleId, cancellationToken);
+
         if (!accountExists)
-            throw new AccountNotFoundException(accountId); // Use a domain-specific exception
-        
-        // if (!titleExists)
-        //     throw new TitleNotFoundException(commandDto.TitleId);
+            throw new AccountNotFoundException(accountId);
 
-        await _unitOfWork.BeginTransactionAsync(cancellationToken);
+        if (!titleExists)
+            throw new TitleNotFoundException(commandDto.TitleId);
+        
+        var existingAccountRating = await unitOfWork.AccountRatingRepository
+            .GetByAccountAndTitleAsync(accountId, commandDto.TitleId, cancellationToken);
+        
+        if (existingAccountRating is not null)
+            return Result<RatingDto>.Failure(AccountRatingErrors.DuplicateRating);
+        
+        await unitOfWork.BeginTransactionAsync(cancellationToken);
+
+        try
+        {
+            var accountRating = AccountRating.Create(
+                accountId: accountId,
+                titleId: commandDto.TitleId,
+                score: commandDto.Score,
+                comment: commandDto.Comment);
+
+            await unitOfWork.AccountRatingRepository.AddAsync(accountRating, cancellationToken);
             
-        // 2. Create the new, separate aggregate
-        var rating = Rating.Create(
-            accountId: accountId, 
-            titleId: commandDto.TitleId, 
-            score: commandDto.Score, 
-            comment: commandDto.Comment);
-        
-        // 3. Add it to its own repository
-        await _unitOfWork.RatingRepository.AddAsync(rating, cancellationToken);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
-        
-        // 4. Save changes for the rating
-        await _unitOfWork.CommitTransactionAsync(cancellationToken);
+            var titleRating = TitleRating.Create(
+                accountId: accountRating.AccountId,
+                titleId: accountRating.TitleId,
+                score: accountRating.Score);
 
-        var dto = new RatingDto(
-            Id: rating.Id,
-            AccountId: rating.AccountId,
-            TitleId: rating.TitleId,
-            Score: rating.Score,
-            Comment: rating.Comment);
-        
-        return Result<RatingDto>.Success(dto);
+            await unitOfWork.TitleRatingRepository.AddAsync(titleRating, cancellationToken);
+
+            await unitOfWork.CommitTransactionAsync(cancellationToken);
+            
+            var dto = new RatingDto(
+                Id: accountRating.Id,
+                AccountId: accountRating.AccountId,
+                TitleId: accountRating.TitleId,
+                Score: accountRating.Score,
+                Comment: accountRating.Comment);
+
+            return Result<RatingDto>.Success(dto);
+        }
+        catch
+        {
+            await unitOfWork.RollbackTransactionAsync(cancellationToken);
+            throw;
+        }
     }
     
     public async Task<Result<RatingDto>> GetRatingByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var rating = await _unitOfWork.RatingRepository.GetByIdAsync(id, cancellationToken);
+        var rating = await unitOfWork.AccountRatingRepository.GetByRatingIdAsync(id, cancellationToken);
 
         if (rating is null)
-            return Result<RatingDto>.Failure(RatingErrors.NotFound);
+            return Result<RatingDto>.Failure(AccountRatingErrors.NotFound);
 
         var dto = new RatingDto(
             Id: rating.Id, 
@@ -74,7 +91,7 @@ public class RatingService : IRatingService
     {
         var ratings = new List<RatingDto>();
 
-        await foreach (var rating in _unitOfWork.RatingRepository.GetByAccountIdAsync(accountId).WithCancellation(token))
+        await foreach (var rating in unitOfWork.AccountRatingRepository.GetByAccountIdAsync(accountId).WithCancellation(token))
         {
             var dto = new RatingDto(
                 Id: rating.Id,

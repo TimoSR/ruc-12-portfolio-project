@@ -1,5 +1,4 @@
-﻿using domain.ratings;
-using service_patterns;
+﻿using service_patterns;
 
 namespace application.ratingService;
 

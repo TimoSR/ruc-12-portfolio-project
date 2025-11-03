@@ -1,9 +1,12 @@
-﻿using domain.account;
-using domain.account.interfaces;
-using domain.ratings;
+﻿using domain.movie.titleRatings;
+using domain.profile.account;
+using domain.profile.account.interfaces;
+using domain.profile.accountRatings;
 using domain.title.interfaces;
 using infrastructure;
 using infrastructure.repositories;
+using infrastructure.repositories.movie;
+using infrastructure.repositories.profile;
 using Microsoft.EntityFrameworkCore;
 using Testcontainers.PostgreSql;
 using Xunit.Abstractions;
@@ -70,10 +73,11 @@ public sealed class UnitOfWorkPostgresTests : IAsyncLifetime
         await _dbContext.Database.EnsureCreatedAsync();
 
         IAccountRepository repo1 = new AccountRepository(_dbContext);
-        IRatingRepository repo2 = new RatingRepository(_dbContext);
+        IAccountRatingRepository repo2 = new AccountRatingRepository(_dbContext);
         ITitleRepository repo3 = new TitleRepository(_dbContext);
+        ITitleRatingRepository repo4 = new TitleRatingRepository(_dbContext);
         
-        _unitOfWork = new UnitOfWork(_dbContext, repo1, repo2, repo3);
+        _unitOfWork = new UnitOfWork(_dbContext, repo1, repo2, repo3, repo4);
     }
 
     public async Task DisposeAsync()
