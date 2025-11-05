@@ -106,8 +106,8 @@ public class TitleRepositoryTests : IDisposable
 
             // Assert
             Assert.NotNull(result);
-            Assert.NotEmpty(result);
-            Assert.All(result, title => Assert.Contains("Test", title.PrimaryTitle));
+            Assert.NotEmpty(result.items);
+            Assert.All(result.items, title => Assert.Contains("Test", title.PrimaryTitle));
         }
 
         [Fact]
@@ -121,7 +121,8 @@ public class TitleRepositoryTests : IDisposable
 
             // Assert
             Assert.NotNull(result);
-            Assert.Empty(result);
+            Assert.Empty(result.items);
+            Assert.Equal(0, result.totalCount);
         }
 
         [Fact]
@@ -136,7 +137,7 @@ public class TitleRepositoryTests : IDisposable
 
             // Assert
             Assert.NotNull(result);
-            Assert.True(result.Count() <= pageSize);
+            Assert.True(result.items.Count() <= pageSize);
         }
 
         public void Dispose()

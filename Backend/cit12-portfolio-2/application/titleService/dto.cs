@@ -12,7 +12,8 @@ public record TitleDto(
     int? EndYear,
     int? RuntimeMinutes,
     string? PosterUrl,
-    string? Plot
+    string? Plot,
+    string? Url = null
 ) : IDTO;
 
 public record TitleLegacyDto(
@@ -26,7 +27,8 @@ public record TitleLegacyDto(
     int? EndYear,
     int? RuntimeMinutes,
     string? PosterUrl,
-    string? Plot) : IDTO;
+    string? Plot,
+    string? Url = null) : IDTO;
 
 
 public record SearchTitlesQuery(

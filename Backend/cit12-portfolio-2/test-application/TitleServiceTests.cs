@@ -7,7 +7,6 @@ using domain.profile.account.interfaces;
 using domain.profile.accountRatings;
 using infrastructure;
 using Microsoft.Extensions.Logging;
-using service_patterns;
 
 namespace test_application;
 
@@ -127,7 +126,8 @@ public class TitleServiceTests
             // Assert
             Assert.True(result.IsSuccess);
             Assert.NotNull(result.Value);
-            Assert.Equal(expectedTitles.Count(), result.Value.Count());
+            Assert.Equal(expectedTitles.Count(), result.Value.items.Count());
+            Assert.Equal(expectedTitles.Count(), result.Value.totalCount);
         }
 
         [Fact]
@@ -144,7 +144,8 @@ public class TitleServiceTests
 
             // Assert
             Assert.True(result.IsSuccess);
-            Assert.Empty(result.Value);
+            Assert.Empty(result.Value.items);
+            Assert.Equal(0, result.Value.totalCount);
         }
 
         [Fact]
@@ -161,7 +162,8 @@ public class TitleServiceTests
 
             // Assert
             Assert.True(result.IsSuccess);
-            Assert.Empty(result.Value);
+            Assert.Empty(result.Value.items);
+            Assert.Equal(0, result.Value.totalCount);
         }
     }
 
@@ -203,8 +205,8 @@ public class TitleServiceTests
         public Task<Title?> GetByLegacyIdAsync(string legacyId, CancellationToken cancellationToken = default)
             => Task.FromResult(_titleToReturn);
 
-        public Task<IEnumerable<Title>> SearchAsync(string query, int page, int pageSize, CancellationToken cancellationToken = default)
-            => Task.FromResult(_titlesToReturn);
+        public Task<(IEnumerable<Title> items, int totalCount)> SearchAsync(string query, int page, int pageSize, CancellationToken cancellationToken = default)
+            => Task.FromResult((_titlesToReturn, _titlesToReturn.Count()));
 
         public Task AddAsync(Title title, CancellationToken cancellationToken = default)
             => Task.CompletedTask;
@@ -304,4 +306,40 @@ public class TitleServiceTests
         public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
         public bool IsEnabled(LogLevel logLevel) => false;
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter) { }
+    }
+
+    public class MockPersonRepository : IPersonRepository
+    {
+        public Task<bool> ExistsByLegacyIdAsync(string legacyId, CancellationToken cancellationToken = default)
+            => Task.FromResult(false);
+
+        public Task<Person?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+            => Task.FromResult<Person?>(null);
+
+        public Task<Person?> GetByLegacyIdAsync(string legacyId, CancellationToken cancellationToken = default)
+            => Task.FromResult<Person?>(null);
+
+        public Task AddAsync(Person person, CancellationToken cancellationToken = default)
+            => Task.CompletedTask;
+    }
+
+    public class MockPersonQueriesRepository : IPersonQueriesRepository
+    {
+        public Task<(IEnumerable<PersonListItem> items, int totalCount)> SearchByNameAsync(string query, int page, int pageSize, CancellationToken cancellationToken = default)
+            => Task.FromResult((Enumerable.Empty<PersonListItem>(), 0));
+
+        public Task<IEnumerable<WordFrequencyItem>> GetPersonWordsAsync(string personName, int limit, CancellationToken cancellationToken = default)
+            => Task.FromResult(Enumerable.Empty<WordFrequencyItem>());
+
+        public Task<IEnumerable<CoActorItem>> GetCoActorsAsync(string personName, CancellationToken cancellationToken = default)
+            => Task.FromResult(Enumerable.Empty<CoActorItem>());
+
+        public Task<IEnumerable<PopularCoActorItem>> GetPopularCoActorsAsync(string personName, CancellationToken cancellationToken = default)
+            => Task.FromResult(Enumerable.Empty<PopularCoActorItem>());
+
+        public Task<IEnumerable<KnownForTitleItem>> GetKnownForTitlesAsync(Guid personId, CancellationToken cancellationToken = default)
+            => Task.FromResult(Enumerable.Empty<KnownForTitleItem>());
+
+        public Task<IEnumerable<ProfessionItem>> GetProfessionsAsync(Guid personId, CancellationToken cancellationToken = default)
+            => Task.FromResult(Enumerable.Empty<ProfessionItem>());
     }

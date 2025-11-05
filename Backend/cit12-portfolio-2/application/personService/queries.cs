@@ -1,0 +1,11 @@
+namespace application.personService;
+
+public sealed record SearchPersonsQuery(string Query, int Page, int PageSize);
+public sealed record PersonListItemDto(Guid Id, string PrimaryName, string? Url = null);
+public sealed record WordFrequencyDto(string Word, int Frequency);
+public sealed record CoActorDto(Guid PersonId, string PrimaryName, long Frequency, string? Url = null);
+public sealed record PopularCoActorDto(Guid ActorId, string ActorFullname, decimal? WeightedRating, string? Url = null);
+public sealed record KnownForTitleDto(Guid TitleId, string? Url = null);
+public sealed record ProfessionDto(string Profession);
+
+

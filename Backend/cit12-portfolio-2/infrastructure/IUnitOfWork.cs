@@ -12,6 +12,8 @@ public interface IUnitOfWork : IDisposable, IAsyncDisposable
     IAccountRatingRepository AccountRatingRepository { get; }
     ITitleRatingRepository  TitleRatingRepository { get; }
     
+    IPersonQueriesRepository PersonQueriesRepository { get; }
+    IPersonRepository PersonRepository { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     Task BeginTransactionAsync(CancellationToken cancellationToken = default);
     Task CommitTransactionAsync(CancellationToken cancellationToken = default);
