@@ -1,5 +1,4 @@
 using api.extensions;
-using api.models;
 using application.personService;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,7 +17,7 @@ public sealed class PersonsController(IPersonService service) : ControllerBase
         
         var dto = result.Value with 
         { 
-            Url = Url.ActionLink("GetPersonById", values: new { id = result.Value.Id, version = "1.0" })
+            Url = Url.ActionLink(nameof(GetById), values: new { id = result.Value.Id, version = "1.0" })
         };
         return CreatedAtAction(nameof(GetById), new { id = dto.Id, version = "1.0" }, dto);
     }
@@ -31,12 +30,12 @@ public sealed class PersonsController(IPersonService service) : ControllerBase
         
         var dto = result.Value with 
         { 
-            Url = Url.ActionLink("GetPersonById", values: new { id, version = "1.0" })
+            Url = Url.ActionLink(nameof(GetById), values: new { id, version = "1.0" })
         };
         return Ok(dto);
     }
 
-    [HttpGet("by-legacy/{legacyId}", Name = "GetPersonByLegacyId")]
+    /*[HttpGet("by-legacy/{legacyId}", Name = "GetPersonByLegacyId")]
     public async Task<IActionResult> GetByLegacyId(string legacyId, CancellationToken cancellationToken)
     {
         var result = await service.GetPersonByLegacyIdAsync(legacyId, cancellationToken);
@@ -47,9 +46,9 @@ public sealed class PersonsController(IPersonService service) : ControllerBase
             Url = Url.ActionLink("GetPersonByLegacyId", values: new { legacyId, version = "1.0" })
         };
         return Ok(dto);
-    }
+    }*/
 
-    [HttpGet("search", Name = "SearchPersons")]
+    [HttpGet]
     public async Task<IActionResult> Search([FromQuery] string query, [FromQuery] int page = 1, [FromQuery] int pageSize = 20, CancellationToken cancellationToken = default)
     {
         var result = await service.SearchPersonsAsync(new SearchPersonsQuery(query, page, pageSize), cancellationToken);
