@@ -22,15 +22,15 @@ public sealed class PersonsController(IPersonService service) : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = dto.Id, version = "1.0" }, dto);
     }
 
-    [HttpGet("{id:guid}", Name = "GetPersonById")]
-    public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
+    [HttpGet("{personId:guid}")]
+    public async Task<IActionResult> GetById(Guid personId, CancellationToken cancellationToken)
     {
-        var result = await service.GetPersonByIdAsync(id, cancellationToken);
+        var result = await service.GetPersonByIdAsync(personId, cancellationToken);
         if (!result.IsSuccess) return NotFound(result.Error);
         
         var dto = result.Value with 
         { 
-            Url = Url.ActionLink(nameof(GetById), values: new { id, version = "1.0" })
+            Url = Url.ActionLink(nameof(GetById), values: new { id = personId, version = "1.0" })
         };
         return Ok(dto);
     }
