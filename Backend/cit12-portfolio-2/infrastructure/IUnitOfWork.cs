@@ -1,3 +1,5 @@
+using domain.movie.person.interfaces;
+using domain.movie.title.interfaces;
 using domain.movie.titleRatings;
 using domain.profile.account.interfaces;
 using domain.profile.accountRatings;
@@ -12,6 +14,8 @@ public interface IUnitOfWork : IDisposable, IAsyncDisposable
     IAccountRatingRepository AccountRatingRepository { get; }
     ITitleRatingRepository  TitleRatingRepository { get; }
     
+    IPersonQueriesRepository PersonQueriesRepository { get; }
+    IPersonRepository PersonRepository { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     Task BeginTransactionAsync(CancellationToken cancellationToken = default);
     Task CommitTransactionAsync(CancellationToken cancellationToken = default);

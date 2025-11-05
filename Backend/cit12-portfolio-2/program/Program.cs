@@ -1,9 +1,13 @@
 using api.controllers;
 using application.accountService;
 using application.titleService;
+using application.ratingService;
+using application.personService;
 using Microsoft.EntityFrameworkCore;
 using domain.title.interfaces;
 using application.ratingService;
+using domain.movie.person.interfaces;
+using domain.movie.title.interfaces;
 using domain.movie.titleRatings;
 using domain.profile.account.interfaces;
 using domain.profile.accountRatings;
@@ -47,12 +51,15 @@ builder.Services.AddScoped<IAccountRatingRepository, AccountRatingRepository>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<ITitleRepository, TitleRepository>();
 builder.Services.AddScoped<ITitleRatingRepository, TitleRatingRepository>();
+builder.Services.AddScoped<IPersonRepository, PersonRepository>();
+builder.Services.AddScoped<IPersonQueriesRepository, PersonQueriesRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // 4. Register you applications services
 builder.Services.AddScoped<ITitleService, TitleService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IRatingService, RatingService>();
+builder.Services.AddScoped<IPersonService, PersonService>();
 
 builder.Services.AddApiVersioning(options =>
 {
@@ -67,6 +74,7 @@ builder.Services
     .AddApplicationPart(typeof(AccountsController).Assembly)
     .AddApplicationPart(typeof(TitlesController).Assembly)
     .AddApplicationPart(typeof(RatingsController).Assembly)
+    .AddApplicationPart(typeof(PersonsController).Assembly)
     .AddControllersAsServices();
 
 // Application addons

@@ -1,8 +1,9 @@
-﻿using domain.movie.titleRatings;
+using domain.movie.person.interfaces;
+using domain.movie.title.interfaces;
+using domain.movie.titleRatings;
 using domain.profile.account;
 using domain.profile.account.interfaces;
 using domain.profile.accountRatings;
-using domain.title.interfaces;
 using infrastructure;
 using infrastructure.repositories;
 using infrastructure.repositories.movie;
@@ -76,8 +77,10 @@ public sealed class UnitOfWorkPostgresTests : IAsyncLifetime
         IAccountRatingRepository repo2 = new AccountRatingRepository(_dbContext);
         ITitleRepository repo3 = new TitleRepository(_dbContext);
         ITitleRatingRepository repo4 = new TitleRatingRepository(_dbContext);
+        IPersonRepository repo5 = new PersonRepository(_dbContext);
+        IPersonQueriesRepository repo6 = new PersonQueriesRepository(_dbContext);
         
-        _unitOfWork = new UnitOfWork(_dbContext, repo1, repo2, repo3, repo4);
+        _unitOfWork = new UnitOfWork(_dbContext, repo1, repo2, repo3, repo4, repo5, repo6);
     }
 
     public async Task DisposeAsync()
