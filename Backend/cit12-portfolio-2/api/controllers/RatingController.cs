@@ -1,5 +1,5 @@
 ﻿using application.ratingService;
-using domain.account;
+using domain.profile.account;
 using Microsoft.AspNetCore.Http;
 
 namespace api.controllers;

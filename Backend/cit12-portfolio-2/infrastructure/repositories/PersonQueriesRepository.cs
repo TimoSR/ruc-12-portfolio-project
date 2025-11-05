@@ -1,6 +1,6 @@
 using System;
 using System.Data;
-using domain.person.interfaces;
+using domain.movie.person.interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace infrastructure.repositories;

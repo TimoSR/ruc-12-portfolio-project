@@ -1,5 +1,4 @@
-using domain.person;
-using Xunit;
+using domain.movie.person;
 
 namespace test_domain;
 

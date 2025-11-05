@@ -1,8 +1,8 @@
-﻿using domain.account;
-using domain.account.interfaces;
+﻿using domain.movie.person.interfaces;
+using domain.profile.account;
+using domain.profile.account.interfaces;
 using domain.ratings;
 using domain.title.interfaces;
-using domain.person.interfaces;
 using infrastructure;
 using infrastructure.repositories;
 using Microsoft.EntityFrameworkCore;

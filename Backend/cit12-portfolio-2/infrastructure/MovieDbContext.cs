@@ -1,8 +1,8 @@
-using domain.account;
+using domain.movie.person;
+using domain.profile.account;
 using domain.title;
 using domain.ratings;
 using Microsoft.EntityFrameworkCore;
-using domain.person;
 using service_patterns;
 
 namespace infrastructure;

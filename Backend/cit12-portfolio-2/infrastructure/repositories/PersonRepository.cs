@@ -1,5 +1,5 @@
-using domain.person;
-using domain.person.interfaces;
+using domain.movie.person;
+using domain.movie.person.interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace infrastructure.repositories;

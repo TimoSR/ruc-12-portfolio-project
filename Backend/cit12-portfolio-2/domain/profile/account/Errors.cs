@@ -1,6 +1,6 @@
 ﻿using service_patterns;
 
-namespace domain.account;
+namespace domain.profile.account;
 
 public static class AccountErrors
 {

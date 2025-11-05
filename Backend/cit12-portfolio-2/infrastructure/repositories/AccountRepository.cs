@@ -1,5 +1,5 @@
-using domain.account;
-using domain.account.interfaces;
+using domain.profile.account;
+using domain.profile.account.interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace infrastructure.repositories;

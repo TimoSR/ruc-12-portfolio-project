@@ -1,7 +1,7 @@
-using domain.account.interfaces;
+using domain.movie.person.interfaces;
+using domain.profile.account.interfaces;
 using domain.title.interfaces;
 using domain.ratings;
-using domain.person.interfaces;
 using Microsoft.EntityFrameworkCore.Storage;
 using service_patterns;
 

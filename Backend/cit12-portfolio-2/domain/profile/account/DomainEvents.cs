@@ -1,6 +1,6 @@
 ﻿using service_patterns;
 
-namespace domain.account;
+namespace domain.profile.account;
 
 public record PasswordChangedEvent(Guid AccountId, DateTime ChangedAt) : DomainEvent;
 public record EmailChangedEvent(Guid AccountId, string NewEmail, DateTime ChangedAt) : DomainEvent;

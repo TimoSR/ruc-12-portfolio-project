@@ -1,6 +1,6 @@
 using service_patterns;
 
-namespace domain.person.interfaces;
+namespace domain.movie.person.interfaces;
 
 public interface IPerson : IAggregateRoot
 {
@@ -11,7 +11,7 @@ public interface IPerson : IAggregateRoot
     int? DeathYear { get; }
 
     void ChangePrimaryName(string newName);
-    static abstract domain.person.Person Create(string legacyId, string primaryName, int? birthYear, int? deathYear);
+    static abstract Person Create(string legacyId, string primaryName, int? birthYear, int? deathYear);
 }
 
 

@@ -1,13 +1,13 @@
 using application.titleService;
 using domain.title;
 using domain.title.interfaces;
-using domain.account;
-using domain.account.interfaces;
+using domain.movie.person;
+using domain.movie.person.interfaces;
+using domain.profile.account;
+using domain.profile.account.interfaces;
 using domain.ratings;
-using domain.person.interfaces;
 using infrastructure;
 using Microsoft.Extensions.Logging;
-using service_patterns;
 
 namespace test_application;
 
@@ -276,13 +276,13 @@ public class TitleServiceTests
         public Task<bool> ExistsByLegacyIdAsync(string legacyId, CancellationToken cancellationToken = default)
             => Task.FromResult(false);
 
-        public Task<domain.person.Person?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
-            => Task.FromResult<domain.person.Person?>(null);
+        public Task<Person?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+            => Task.FromResult<Person?>(null);
 
-        public Task<domain.person.Person?> GetByLegacyIdAsync(string legacyId, CancellationToken cancellationToken = default)
-            => Task.FromResult<domain.person.Person?>(null);
+        public Task<Person?> GetByLegacyIdAsync(string legacyId, CancellationToken cancellationToken = default)
+            => Task.FromResult<Person?>(null);
 
-        public Task AddAsync(domain.person.Person person, CancellationToken cancellationToken = default)
+        public Task AddAsync(Person person, CancellationToken cancellationToken = default)
             => Task.CompletedTask;
     }
 

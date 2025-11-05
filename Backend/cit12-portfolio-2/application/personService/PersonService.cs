@@ -1,4 +1,4 @@
-using domain.person;
+using domain.movie.person;
 using infrastructure;
 using Microsoft.Extensions.Logging;
 using service_patterns;

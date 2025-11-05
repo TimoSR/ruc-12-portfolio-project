@@ -1,7 +1,7 @@
+using domain.movie.person.interfaces;
 using service_patterns;
-using domain.person.interfaces;
 
-namespace domain.person;
+namespace domain.movie.person;
 
 public sealed class Person : AggregateRoot, IPerson
 {

@@ -1,6 +1,6 @@
 using service_patterns;
 
-namespace domain.person;
+namespace domain.movie.person;
 
 public static class PersonErrors
 {

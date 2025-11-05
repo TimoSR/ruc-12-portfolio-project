@@ -1,4 +1,4 @@
-namespace domain.person.interfaces;
+namespace domain.movie.person.interfaces;
 
 public sealed record PersonListItem(Guid Id, string PrimaryName);
 public sealed record WordFrequencyItem(string Word, int Frequency);
