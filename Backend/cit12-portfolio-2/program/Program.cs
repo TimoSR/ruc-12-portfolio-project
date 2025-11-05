@@ -6,6 +6,8 @@ using application.personService;
 using Microsoft.EntityFrameworkCore;
 using domain.title.interfaces;
 using application.ratingService;
+using domain.movie.person.interfaces;
+using domain.movie.title.interfaces;
 using domain.movie.titleRatings;
 using domain.profile.account.interfaces;
 using domain.profile.accountRatings;

@@ -1,4 +1,7 @@
 using application.titleService;
+using domain.movie.person;
+using domain.movie.person.interfaces;
+using domain.movie.title.interfaces;
 using domain.movie.titleRatings;
 using domain.title;
 using domain.title.interfaces;
@@ -181,6 +184,8 @@ public class TitleServiceTests
 
         public IAccountRatingRepository AccountRatingRepository => MockAccountRatingRepository;
         public ITitleRatingRepository TitleRatingRepository => MockTitleRatingRepository;
+        public IPersonQueriesRepository PersonQueriesRepository { get; }
+        public IPersonRepository PersonRepository { get; }
 
         public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default) => Task.FromResult(0);
         public Task BeginTransactionAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
@@ -205,8 +210,7 @@ public class TitleServiceTests
         public Task<Title?> GetByLegacyIdAsync(string legacyId, CancellationToken cancellationToken = default)
             => Task.FromResult(_titleToReturn);
 
-        public Task<(IEnumerable<Title> items, int totalCount)> SearchAsync(string query, int page, int pageSize, CancellationToken cancellationToken = default)
-            => Task.FromResult((_titlesToReturn, _titlesToReturn.Count()));
+        public Task<(IEnumerable<Title> items, int totalCount)> SearchAsync(string query, int page, int pageSize, CancellationToken cancellationToken = default) => Task.FromResult((_titlesToReturn, _titlesToReturn.Count()));
 
         public Task AddAsync(Title title, CancellationToken cancellationToken = default)
             => Task.CompletedTask;

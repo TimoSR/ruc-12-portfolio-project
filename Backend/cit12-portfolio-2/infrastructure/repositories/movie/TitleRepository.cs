@@ -1,3 +1,4 @@
+using domain.movie.title.interfaces;
 using domain.title;
 using domain.title.interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -29,8 +30,11 @@ public sealed class TitleRepository(MovieDbContext dbContext) : ITitleRepository
         // If query is empty, return all titles (for debugging)
         if (string.IsNullOrWhiteSpace(query))
         {
-            return await dbContext.Titles
-                .AsNoTracking()
+            baseQuery = dbContext.Titles.AsNoTracking();
+            
+            var count = await baseQuery.CountAsync(cancellationToken);
+            
+            var items = await baseQuery
                 .OrderBy(m => m.PrimaryTitle)
                 .Skip(skip)
                 .Take(pageSize)
@@ -41,7 +45,7 @@ public sealed class TitleRepository(MovieDbContext dbContext) : ITitleRepository
         
         var lowerQuery = query.ToLower();
 
-        var queryable = dbContext.Titles
+        var rankedQuery = dbContext.Titles
             .AsNoTracking()
             .Where(t =>
                 EF.Functions.ILike(t.PrimaryTitle, $"%{query}%") ||

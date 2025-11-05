@@ -1,9 +1,11 @@
+
+
+using domain.movie.person.interfaces;
+using domain.movie.title.interfaces;
 using domain.movie.titleRatings;
 using domain.profile.account.interfaces;
 using domain.profile.accountRatings;
-using domain.title.interfaces;
 using Microsoft.EntityFrameworkCore.Storage;
-using service_patterns;
 
 namespace infrastructure;
 
@@ -24,7 +26,7 @@ public class UnitOfWork : IUnitOfWork
         IAccountRepository accountRepository,
         IAccountRatingRepository accountRatingRepository,
         ITitleRepository titleRepository,
-        ITitleRatingRepository titleRatingRepository)
+        ITitleRatingRepository titleRatingRepository,
         IPersonRepository personRepository,
         IPersonQueriesRepository personQueriesRepository)
     {

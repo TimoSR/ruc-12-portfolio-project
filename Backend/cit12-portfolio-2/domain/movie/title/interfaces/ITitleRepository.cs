@@ -1,6 +1,7 @@
+using domain.title;
 using service_patterns;
 
-namespace domain.title.interfaces;
+namespace domain.movie.title.interfaces;
 
 public interface ITitleRepository : IRepository<Title>
 {

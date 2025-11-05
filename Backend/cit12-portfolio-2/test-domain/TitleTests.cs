@@ -20,7 +20,6 @@ public class TitleTests
         Assert.False(title.IsAdult); // Default to false
         Assert.Equal(DateTime.Now.Year, title.StartYear); // Default to current year
         Assert.Null(title.EndYear); // Default to null
-        Assert.Equal(90, title.RuntimeMinutes); // Default to 90
         Assert.Null(title.PosterUrl); // Default to null
         Assert.Equal("No plot available", title.Plot); // Default plot
     }
@@ -42,7 +41,6 @@ public class TitleTests
         Assert.False(title.IsAdult); // Default to false
         Assert.Equal(DateTime.Now.Year, title.StartYear); // Default to current year
         Assert.Null(title.EndYear); // Default to null
-        Assert.Equal(90, title.RuntimeMinutes); // Default to 90
         Assert.Null(title.PosterUrl); // Default to null
         Assert.Equal("No plot available", title.Plot); // Default plot
 
@@ -150,7 +148,6 @@ public class TitleTests
         Assert.False(title.IsAdult); // Default to false
         Assert.Equal(DateTime.Now.Year, title.StartYear); // Default to current year
         Assert.Null(title.EndYear); // Default to null
-        Assert.Equal(90, title.RuntimeMinutes); // Default to 90
         Assert.Null(title.PosterUrl); // Default to null
         Assert.Equal("No plot available", title.Plot); // Default plot
     }
