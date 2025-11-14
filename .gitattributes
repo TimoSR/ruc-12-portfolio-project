@@ -53,3 +53,9 @@
 *.EXE  filter=lfs diff=lfs merge=lfs -text
 *.dll  filter=lfs diff=lfs merge=lfs -text
 *.DLL  filter=lfs diff=lfs merge=lfs -text
+
+# Ignore all dump-like SQL files
+*.dump
+*.dmp
+*.bak
+*.backup
