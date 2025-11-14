@@ -1,0 +1,62 @@
+# =========================
+# Git LFS Configuration
+# =========================
+
+# ---- IMAGE BINARIES (Large) ----
+*.png  filter=lfs diff=lfs merge=lfs -text
+*.PNG  filter=lfs diff=lfs merge=lfs -text
+*.jpg  filter=lfs diff=lfs merge=lfs -text
+*.JPG  filter=lfs diff=lfs merge=lfs -text
+*.jpeg filter=lfs diff=lfs merge=lfs -text
+*.JPEG filter=lfs diff=lfs merge=lfs -text
+*.webp filter=lfs diff=lfs merge=lfs -text
+*.WEBP filter=lfs diff=lfs merge=lfs -text
+
+# Optional heavy UI assets
+*.gif  filter=lfs diff=lfs merge=lfs -text
+*.GIF  filter=lfs diff=lfs merge=lfs -text
+
+# ---- DESIGN FILES ----
+*.psd  filter=lfs diff=lfs merge=lfs -text
+*.PSD  filter=lfs diff=lfs merge=lfs -text
+*.ai   filter=lfs diff=lfs merge=lfs -text
+*.AI   filter=lfs diff=lfs merge=lfs -text
+*.fig  filter=lfs diff=lfs merge=lfs -text
+*.FIG  filter=lfs diff=lfs merge=lfs -text
+*.xd   filter=lfs diff=lfs merge=lfs -text
+*.XD   filter=lfs diff=lfs merge=lfs -text
+
+# ---- VIDEO / AUDIO ----
+*.mp4  filter=lfs diff=lfs merge=lfs -text
+*.MP4  filter=lfs diff=lfs merge=lfs -text
+*.mov  filter=lfs diff=lfs merge=lfs -text
+*.MOV  filter=lfs diff=lfs merge=lfs -text
+*.wav  filter=lfs diff=lfs merge=lfs -text
+*.WAV  filter=lfs diff=lfs merge=lfs -text
+
+# ---- 3D Assets ----
+*.fbx   filter=lfs diff=lfs merge=lfs -text
+*.FBX   filter=lfs diff=lfs merge=lfs -text
+*.obj   filter=lfs diff=lfs merge=lfs -text
+*.OBJ   filter=lfs diff=lfs merge=lfs -text
+*.glb   filter=lfs diff=lfs merge=lfs -text
+*.GLB   filter=lfs diff=lfs merge=lfs -text
+*.gltf  filter=lfs diff=lfs merge=lfs -text
+*.GLTF  filter=lfs diff=lfs merge=lfs -text
+*.blend filter=lfs diff=lfs merge=lfs -text
+*.BLEND filter=lfs diff=lfs merge=lfs -text
+
+# ---- ARCHIVES / BINARIES ----
+*.zip  filter=lfs diff=lfs merge=lfs -text
+*.ZIP  filter=lfs diff=lfs merge=lfs -text
+*.exe  filter=lfs diff=lfs merge=lfs -text
+*.EXE  filter=lfs diff=lfs merge=lfs -text
+*.dll  filter=lfs diff=lfs merge=lfs -text
+*.DLL  filter=lfs diff=lfs merge=lfs -text
+
+# =========================
+# SVG stays in Git as TEXT
+# (XML diffable)
+# =========================
+*.svg text diff=xml
+*.SVG text diff=xml
