@@ -1,6 +1,7 @@
 using application.titleService;
 using domain.movie.person;
 using domain.movie.person.interfaces;
+using domain.movie.title;
 using domain.movie.title.interfaces;
 using domain.movie.titleRatings;
 using domain.title;

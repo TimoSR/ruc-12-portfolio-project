@@ -1,3 +1,4 @@
+using domain.movie.title;
 using service_patterns;
 
 namespace domain.title.interfaces;

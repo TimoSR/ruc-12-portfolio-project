@@ -1,7 +1,8 @@
+using domain.title;
 using domain.title.interfaces;
 using service_patterns;
 
-namespace domain.title;
+namespace domain.movie.title;
 
 public class Title : AggregateRoot, ITitle
 {

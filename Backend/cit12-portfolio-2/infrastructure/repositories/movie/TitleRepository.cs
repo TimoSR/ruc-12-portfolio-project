@@ -1,3 +1,4 @@
+using domain.movie.title;
 using domain.movie.title.interfaces;
 using domain.title;
 using domain.title.interfaces;

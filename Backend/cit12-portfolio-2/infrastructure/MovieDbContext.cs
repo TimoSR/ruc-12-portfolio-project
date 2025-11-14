@@ -1,4 +1,5 @@
 using domain.movie.person;
+using domain.movie.title;
 using domain.movie.titleRatings;
 using domain.profile.account;
 using domain.profile.accountRatings;
