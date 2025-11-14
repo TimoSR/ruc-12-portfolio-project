@@ -1,10 +1,9 @@
-﻿using domain.account;
-using service_patterns;
+﻿using service_patterns;
 
 namespace application.accountService;
 
 public interface IAccountService
 {
-    Task<Result<Account>> CreateAccountAsync(CreateAccountCommand command, CancellationToken cancellationToken);
-    Task<Result<Account>> GetAccountByIdAsync(Guid id, CancellationToken cancellationToken);
+    Task<Result<AccountDto>> CreateAccountAsync(CreateAccountCommandDto commandDto, CancellationToken cancellationToken);
+    Task<Result<AccountDto>> GetAccountByIdAsync(Guid id, CancellationToken cancellationToken);
 }

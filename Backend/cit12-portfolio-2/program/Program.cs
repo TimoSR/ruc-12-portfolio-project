@@ -1,9 +1,21 @@
 using api.controllers;
 using application.accountService;
+using application.titleService;
+using application.ratingService;
+using application.personService;
 using Microsoft.EntityFrameworkCore;
-using domain.account.interfaces;
+using domain.title.interfaces;
+using application.ratingService;
+using domain.movie.person.interfaces;
+using domain.movie.title.interfaces;
+using domain.movie.titleRatings;
+using domain.profile.account.interfaces;
+using domain.profile.accountRatings;
 using infrastructure;
 using infrastructure.repositories;
+using infrastructure.repositories.movie;
+using infrastructure.repositories.profile;
+using Microsoft.AspNetCore.Mvc;
 using program;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -35,22 +47,46 @@ builder.Services.AddDbContext<MovieDbContext>(options =>
 
 // 3. Register your repositories and Unit of Work as Scoped
 // This means you get one instance per HTTP request.
+builder.Services.AddScoped<IAccountRatingRepository, AccountRatingRepository>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+builder.Services.AddScoped<ITitleRepository, TitleRepository>();
+builder.Services.AddScoped<ITitleRatingRepository, TitleRatingRepository>();
+builder.Services.AddScoped<IPersonRepository, PersonRepository>();
+builder.Services.AddScoped<IPersonQueriesRepository, PersonQueriesRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<IAccountService, AccountService>();
 
 // 4. Register you applications services
+builder.Services.AddScoped<ITitleService, TitleService>();
+builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IRatingService, RatingService>();
+builder.Services.AddScoped<IPersonService, PersonService>();
+
+builder.Services.AddApiVersioning(options =>
+{
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.ReportApiVersions = true;
+});
 
 // 5. Register your controllers
-
 builder.Services
     .AddControllers()
-    .AddApplicationPart(typeof(AccountController).Assembly)
+    .AddApplicationPart(typeof(AccountsController).Assembly)
+    .AddApplicationPart(typeof(TitlesController).Assembly)
+    .AddApplicationPart(typeof(RatingsController).Assembly)
+    .AddApplicationPart(typeof(PersonsController).Assembly)
     .AddControllersAsServices();
 
 // Application addons
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddVersionedApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'VVV"; // Format v1, v2, etc.
+    options.SubstituteApiVersionInUrl = true;
+});
+
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddRouting(options =>

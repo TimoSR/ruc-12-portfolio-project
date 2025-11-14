@@ -1,0 +1,58 @@
+﻿@baseUrl = localhost:5175
+@randomGuid = {{$guid}}
+@primaryTitle = Title{{$timestamp}}
+@originalTitle = Original{{$timestamp}}
+@titleType = Movie
+@genre = Sci-Fi
+@plot = Plot{{$timestamp}}
+@year = 2025
+@runtimeMinutes = 120
+
+### Create Title
+POST {{baseUrl}}/api/v1/titles
+Content-Type: application/json
+Accept: application/json
+
+{
+  "titleType": "{{titleType}}",
+  "primaryTitle": "{{primaryTitle}}",
+  "originalTitle": "{{originalTitle}}",
+  "year": {{year}},
+  "genre": "{{genre}}",
+  "runtimeMinutes": {{runtimeMinutes}},
+  "plot": "{{plot}}"
+}
+
+> {% client.global.set("id", response.body.id); %}
+
+### Get Title by ID
+GET {{baseUrl}}/api/v1/titles/{{id}}
+Accept: application/json
+
+### Update Title
+PUT {{baseUrl}}/api/v1/titles/{{id}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "titleType": "{{titleType}}",
+  "primaryTitle": "{{primaryTitle}}",
+  "titleName": "{{primaryTitle}}_Updated",
+  "originalTitle": "{{originalTitle}}",
+  "year": {{year}},
+  "genre": "{{genre}}",
+  "runtimeMinutes": {{runtimeMinutes}},
+  "plot": "{{plot}} Updated"
+}
+
+### Search Titles
+GET {{baseUrl}}/api/v1/titles?query={{primaryTitle}}&page=1&pageSize=5
+Accept: application/json
+
+### Delete Title
+DELETE {{baseUrl}}/api/v1/titles/{{id}}
+Accept: application/json
+
+### Search Titles
+GET {{baseUrl}}/api/v1/titles?query={{primaryTitle}}&page=1&pageSize=5
+Accept: application/json

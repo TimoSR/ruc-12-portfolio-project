@@ -1,22 +1,42 @@
-using domain.account.interfaces;
+
+
+using domain.movie.person.interfaces;
+using domain.movie.title.interfaces;
+using domain.movie.titleRatings;
+using domain.profile.account.interfaces;
+using domain.profile.accountRatings;
 using Microsoft.EntityFrameworkCore.Storage;
-using service_patterns;
 
 namespace infrastructure;
 
 public class UnitOfWork : IUnitOfWork
 {
     public IAccountRepository AccountRepository { get; }
+    public ITitleRepository TitleRepository { get; }
+    public IAccountRatingRepository AccountRatingRepository { get; }
+    public ITitleRatingRepository TitleRatingRepository { get; }
+    public IPersonRepository PersonRepository { get; }
+    public IPersonQueriesRepository PersonQueriesRepository { get; }
 
     private readonly MovieDbContext _dbContext;
     private IDbContextTransaction? _currentTransaction;
 
     public UnitOfWork(
         MovieDbContext dbContext,
-        IAccountRepository accountRepository)
+        IAccountRepository accountRepository,
+        IAccountRatingRepository accountRatingRepository,
+        ITitleRepository titleRepository,
+        ITitleRatingRepository titleRatingRepository,
+        IPersonRepository personRepository,
+        IPersonQueriesRepository personQueriesRepository)
     {
         _dbContext = dbContext;
         AccountRepository = accountRepository;
+        TitleRepository = titleRepository;
+        AccountRatingRepository =  accountRatingRepository;
+        TitleRatingRepository = titleRatingRepository;
+        PersonRepository = personRepository;
+        PersonQueriesRepository = personQueriesRepository;
     }
 
     public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)

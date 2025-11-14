@@ -1,0 +1,43 @@
+﻿### Step 1: Create Account
+POST http://localhost:5175/api/v1/accounts
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "{{$guid}}@example.com",
+  "username": "user{{$randomInt 1000 9999}}",
+  "password": "Pass{{$randomInt 100000 999999}}!"
+}
+
+> {% client.global.set("accountId", response.body.id); %}
+
+
+### Step 2: Create Title
+POST http://localhost:5175/api/v1/titles
+Content-Type: application/json
+Accept: application/json
+
+{
+  "titleName": "Title {{$timestamp}}",
+  "originalTitle": "Original {{$randomInt 100 999}}",
+  "year": {{$randomInt 1990 2025}},
+  "genre": "Drama",
+  "runtimeMinutes": {{$randomInt 60 180}},
+  "plot": "Generated plot {{$timestamp}}"
+}
+
+> {% client.global.set("titleId", response.body.id); %}
+
+
+### Step 3: Create Rating (uses previous values)
+POST http://localhost:5175/api/v1/accounts/{{accountId}}/ratings
+Content-Type: application/json
+Accept: application/json
+
+{
+  "titleId": "{{titleId}}",
+  "score": {{$randomInt 1 10}},
+  "comment": "Automated test comment {{$timestamp}}"
+}
+
+> {% client.global.set("ratingId", response.body.id); %}
