@@ -53,10 +53,3 @@
 *.EXE  filter=lfs diff=lfs merge=lfs -text
 *.dll  filter=lfs diff=lfs merge=lfs -text
 *.DLL  filter=lfs diff=lfs merge=lfs -text
-
-# =========================
-# SVG stays in Git as TEXT
-# (XML diffable)
-# =========================
-*.svg text diff=xml
-*.SVG text diff=xml
