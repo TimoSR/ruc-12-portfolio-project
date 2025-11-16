@@ -8,3 +8,8 @@ export const indexRoute = createRoute({
   path: "/",
   component: Root,
 });
+
+export const routeTree = rootRoute.addChildren([
+    indexRoute,
+    
+]);
