@@ -95,7 +95,7 @@ builder.Services.AddRouting(options =>
     options.LowercaseQueryStrings = false;
 });
 
-// Add CORS policy
+// Add CORS policy fix
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
