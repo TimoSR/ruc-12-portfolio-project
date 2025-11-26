@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { type ReactNode } from 'react'
 import styled from 'styled-components'
 
 export const FeatureCard = ({ title, description, icon, color, className = '' }: FeatureCardProps) => {

@@ -23,3 +23,5 @@
 
 /* 5. Utility Layer (overrides & helpers) */
 @import url('./utilities/_animations.css') layer(utilities);
+
+@import "tailwindcss";
