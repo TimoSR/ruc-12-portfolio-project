@@ -26,7 +26,7 @@ const Card = styled.div<{ $color: CardColor }>`
         if (props.$color === CardColor.Pink) return 'linear-gradient(to bottom right, rgba(236, 72, 153, 0.4), rgba(236, 72, 153, 0.1))'
         return 'linear-gradient(to bottom right, rgba(192, 38, 211, 0.4), rgba(192, 38, 211, 0.1))'
     }};
-    backdrop-filter: blur(16px);
+    overflow: hidden;
     border-radius: 1.5rem;
     border: 1px solid ${props => {
         if (props.$color === CardColor.Purple) return 'rgba(168, 85, 247, 0.2)'
