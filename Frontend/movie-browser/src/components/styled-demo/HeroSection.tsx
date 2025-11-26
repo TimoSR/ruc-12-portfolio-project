@@ -1,5 +1,26 @@
 import styled, { keyframes } from 'styled-components'
 
+export const HeroSection = () => {
+    return (
+        <Container>
+            <Title>
+                <GradientWrapper>
+                    <GradientText>
+                        Styled Magic
+                    </GradientText>
+                    <ShimmerOverlay />
+                </GradientWrapper>
+                <br />
+                <Subtitle>Perfected 💎</Subtitle>
+            </Title>
+            <Description>
+                Harness the power of CSS-in-JS with dynamic theming, scoped styles,
+                and component-based architecture that makes styling a breeze.
+            </Description>
+        </Container>
+    )
+}
+
 const shimmer = keyframes`
     0% { background-position: -1000px 0; }
     100% { background-position: 1000px 0; }
@@ -66,24 +87,3 @@ const Description = styled.p`
         font-size: 1.5rem;
     }
 `;
-
-export const HeroSection = () => {
-    return (
-        <Container>
-            <Title>
-                <GradientWrapper>
-                    <GradientText>
-                        Styled Magic
-                    </GradientText>
-                    <ShimmerOverlay />
-                </GradientWrapper>
-                <br />
-                <Subtitle>Perfected 💎</Subtitle>
-            </Title>
-            <Description>
-                Harness the power of CSS-in-JS with dynamic theming, scoped styles,
-                and component-based architecture that makes styling a breeze.
-            </Description>
-        </Container>
-    )
-}

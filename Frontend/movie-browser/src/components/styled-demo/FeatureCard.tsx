@@ -1,6 +1,25 @@
 import type { ReactNode } from 'react'
 import styled from 'styled-components'
 
+export const FeatureCard = ({ title, description, icon, color, className = '' }: FeatureCardProps) => {
+    return (
+        <Card $color={color} className={className}>
+            <Glow />
+            <Content>
+                <IconContainer $color={color}>
+                    {icon}
+                </IconContainer>
+                <TextContainer>
+                    <Title>{title}</Title>
+                    <Description>
+                        {description}
+                    </Description>
+                </TextContainer>
+            </Content>
+        </Card>
+    )
+}
+
 export const CardColor = {
     Purple: 'purple',
     Pink: 'pink',
@@ -115,22 +134,3 @@ const Description = styled.p`
     line-height: 1.6;
     color: #e9d5ff;
 `;
-
-export const FeatureCard = ({ title, description, icon, color, className = '' }: FeatureCardProps) => {
-    return (
-        <Card $color={color} className={className}>
-            <Glow />
-            <Content>
-                <IconContainer $color={color}>
-                    {icon}
-                </IconContainer>
-                <TextContainer>
-                    <Title>{title}</Title>
-                    <Description>
-                        {description}
-                    </Description>
-                </TextContainer>
-            </Content>
-        </Card>
-    )
-}

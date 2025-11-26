@@ -5,6 +5,48 @@ import { Link } from '@tanstack/react-router'
 import styled, { keyframes } from 'styled-components'
 import { counterStore } from '../stores/CounterStore'
 
+export const Home = observer(() => {
+    return (
+        <Container>
+            <Hero>
+                <Logos>
+                    <a href="https://vite.dev" target="_blank">
+                        <Logo src={viteLogo} alt="Vite logo" />
+                    </a>
+                    <a href="https://react.dev" target="_blank">
+                        <Logo src={reactLogo} className="react" alt="React logo" />
+                    </a>
+                </Logos>
+                <Title>Vite + React + MobX</Title>
+                <Description>
+                    A premium starting point for your next big idea.
+                    Powered by Class-based MobX logic and Code-based Routing.
+                </Description>
+
+                <Grid>
+                    <DemoCard to="/styled" $hoverColor="rgba(234, 179, 8, 0.2)">
+                        <Glow $color="#eab308" />
+                        <CardTitle>Styled Components 💅</CardTitle>
+                        <CardDescription>Dynamic CSS-in-JS with props and theming.</CardDescription>
+                    </DemoCard>
+                </Grid>
+            </Hero>
+
+            <Card>
+                <Button onClick={counterStore.increment}>
+                    Count is {counterStore.count}
+                </Button>
+                <Text>
+                    Double count: {counterStore.doubleCount}
+                </Text>
+                <Text style={{ marginTop: '1rem' }}>
+                    Edit <CodeText>src/components/Home.tsx</CodeText> to update this page
+                </Text>
+            </Card>
+        </Container>
+    )
+})
+
 const logoSpin = keyframes`
     from {
         transform: rotate(0deg);
@@ -188,45 +230,3 @@ const CodeText = styled.code`
     padding: 0.2rem 0.4rem;
     border-radius: 0.25rem;
 `
-
-export const Home = observer(() => {
-    return (
-        <Container>
-            <Hero>
-                <Logos>
-                    <a href="https://vite.dev" target="_blank">
-                        <Logo src={viteLogo} alt="Vite logo" />
-                    </a>
-                    <a href="https://react.dev" target="_blank">
-                        <Logo src={reactLogo} className="react" alt="React logo" />
-                    </a>
-                </Logos>
-                <Title>Vite + React + MobX</Title>
-                <Description>
-                    A premium starting point for your next big idea.
-                    Powered by Class-based MobX logic and Code-based Routing.
-                </Description>
-
-                <Grid>
-                    <DemoCard to="/styled" $hoverColor="rgba(234, 179, 8, 0.2)">
-                        <Glow $color="#eab308" />
-                        <CardTitle>Styled Components 💅</CardTitle>
-                        <CardDescription>Dynamic CSS-in-JS with props and theming.</CardDescription>
-                    </DemoCard>
-                </Grid>
-            </Hero>
-
-            <Card>
-                <Button onClick={counterStore.increment}>
-                    Count is {counterStore.count}
-                </Button>
-                <Text>
-                    Double count: {counterStore.doubleCount}
-                </Text>
-                <Text style={{ marginTop: '1rem' }}>
-                    Edit <CodeText>src/components/Home.tsx</CodeText> to update this page
-                </Text>
-            </Card>
-        </Container>
-    )
-})
