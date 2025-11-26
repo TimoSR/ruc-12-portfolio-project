@@ -1,0 +1,24 @@
+.hero {
+  text-align: center;
+  margin-block-end: 6rem;
+  animation: fadeIn 0.8s ease-out;
+
+  h1 {
+    font-size: clamp(2.5rem, 8vw, 4rem);
+    margin-block-end: 2rem;
+    text-wrap: balance;
+    
+    background: linear-gradient(to right, #60a5fa, #a855f7);
+    background-clip: text;
+    color: transparent;
+  }
+
+  p {
+    font-size: 1.25rem;
+    color: var(--color-text-muted);
+    max-inline-size: 700px;
+    margin-inline: auto;
+    line-height: 1.8;
+    text-wrap: pretty;
+  }
+}

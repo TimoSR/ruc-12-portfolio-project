@@ -1,0 +1,28 @@
+.logos {
+  display: flex;
+  gap: 3rem;
+  justify-content: center;
+  margin-block-end: 3rem;
+}
+
+.logo {
+  height: 6rem;
+  padding: 1rem;
+  will-change: filter;
+  transition: filter 300ms;
+
+  &:hover {
+    filter: drop-shadow(0 0 2em #646cffaa);
+  }
+
+  /* React specific logo logic */
+  &.react {
+    &:hover {
+      filter: drop-shadow(0 0 2em #61dafbaa);
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      animation: logo-spin infinite 20s linear;
+    }
+  }
+}

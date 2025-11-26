@@ -1,0 +1,20 @@
+/* Modern Reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  min-block-size: 100dvh; /* Dynamic viewport height */
+}
+
+#root {
+  inline-size: 100%;
+  min-block-size: 100dvh;
+}

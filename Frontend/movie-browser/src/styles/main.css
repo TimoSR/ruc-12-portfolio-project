@@ -1,0 +1,25 @@
+/* styles/main.css */
+
+/* 1. Global Imports (Fonts) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+
+/* REMOVED: @layer theme, base, components, utilities; */
+/* The order of imports below now defines the priority (bottom overrides top) */
+
+/* 2. Theme Layer (Variables & Keyframes) */
+@import url('./theme/_variables.css') layer(theme);
+@import url('./theme/_keyframes.css') layer(theme);
+
+/* 3. Base Layer (Resets & Global Defaults) */
+@import url('./base/_reset.css') layer(base);
+@import url('./base/_typography.css') layer(base);
+
+/* 4. Component Layer (Visual Patterns) */
+@import url('./components/_layout.css') layer(components);
+@import url('./components/_hero.css') layer(components);
+@import url('./components/_card.css') layer(components);
+@import url('./components/_button.css') layer(components);
+@import url('./components/_logos.css') layer(components);
+
+/* 5. Utility Layer (overrides & helpers) */
+@import url('./utilities/_animations.css') layer(utilities);
