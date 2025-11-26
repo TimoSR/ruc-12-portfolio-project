@@ -1,0 +1,13 @@
+.container {
+  max-inline-size: 1280px;
+  margin-inline: auto;
+  
+  /* Fluid Spacing: Scales between 6rem and 8rem based on viewport */
+  padding-block: clamp(6rem, 10vh, 8rem);
+  padding-inline: clamp(2rem, 5vw, 3rem);
+
+  display: flex;
+  flex-direction: column;
+  place-items: center;
+  flex: 1;
+}

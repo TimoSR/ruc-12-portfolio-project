@@ -1,6 +1,25 @@
 import type { ReactNode } from 'react'
 import styled from 'styled-components'
 
+export const FeatureCard = ({ title, description, icon, color, className = '' }: FeatureCardProps) => {
+    return (
+        <Card $color={color} className={className}>
+            <Glow />
+            <Content>
+                <IconContainer $color={color}>
+                    {icon}
+                </IconContainer>
+                <TextContainer>
+                    <Title>{title}</Title>
+                    <Description>
+                        {description}
+                    </Description>
+                </TextContainer>
+            </Content>
+        </Card>
+    )
+}
+
 export const CardColor = {
     Purple: 'purple',
     Pink: 'pink',
@@ -26,7 +45,7 @@ const Card = styled.div<{ $color: CardColor }>`
         if (props.$color === CardColor.Pink) return 'linear-gradient(to bottom right, rgba(236, 72, 153, 0.4), rgba(236, 72, 153, 0.1))'
         return 'linear-gradient(to bottom right, rgba(192, 38, 211, 0.4), rgba(192, 38, 211, 0.1))'
     }};
-    backdrop-filter: blur(16px);
+    overflow: hidden;
     border-radius: 1.5rem;
     border: 1px solid ${props => {
         if (props.$color === CardColor.Purple) return 'rgba(168, 85, 247, 0.2)'
@@ -115,22 +134,3 @@ const Description = styled.p`
     line-height: 1.6;
     color: #e9d5ff;
 `;
-
-export const FeatureCard = ({ title, description, icon, color, className = '' }: FeatureCardProps) => {
-    return (
-        <Card $color={color} className={className}>
-            <Glow />
-            <Content>
-                <IconContainer $color={color}>
-                    {icon}
-                </IconContainer>
-                <TextContainer>
-                    <Title>{title}</Title>
-                    <Description>
-                        {description}
-                    </Description>
-                </TextContainer>
-            </Content>
-        </Card>
-    )
-}

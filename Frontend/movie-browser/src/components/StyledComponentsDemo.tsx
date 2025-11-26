@@ -4,6 +4,49 @@ import { BackgroundOrbs } from './styled-demo/BackgroundOrbs'
 import { HeroSection } from './styled-demo/HeroSection'
 import { FeatureCard, CardColor } from './styled-demo/FeatureCard'
 
+export const StyledComponentsDemo = () => {
+  return (
+    <Container>
+      <BackgroundOrbs />
+
+      <Content>
+        <Grid>
+          {/* Left Column - Hero Content */}
+          <LeftColumn>
+            <HeroSection />
+          </LeftColumn>
+
+          {/* Right Column - Feature Cards */}
+          <RightColumn>
+            <FeatureCard
+              title="Component-Based"
+              description="Style your components directly. No more mapping class names to CSS files."
+              icon="🎨"
+              color={CardColor.Purple}
+            />
+            <FeatureCard
+              title="Dynamic Theming"
+              description="Adapt styles based on props. Pass data directly to your styles for powerful dynamic UIs."
+              icon="🎭"
+              color={CardColor.Pink}
+            />
+            <FeatureCard
+              title="Scoped Styles"
+              description="Automatically scoped styles prevent conflicts. Write CSS without worrying about global namespace pollution."
+              icon="🔒"
+              color={CardColor.Fuchsia}
+            />
+          </RightColumn>
+        </Grid>
+
+        <BackLink to="/">
+          ← Back Home
+        </BackLink>
+      </Content>
+    </Container>
+  )
+}
+
 const Container = styled.div`
     min-height: 100vh;
     background: linear-gradient(to bottom right, #591c8773, #0c0313, #581c87);
@@ -77,46 +120,3 @@ const BackLink = styled(Link)`
         text-decoration: underline;
     }
 `
-
-export const StyledComponentsDemo = () => {
-  return (
-    <Container>
-      <BackgroundOrbs />
-
-      <Content>
-        <Grid>
-          {/* Left Column - Hero Content */}
-          <LeftColumn>
-            <HeroSection />
-          </LeftColumn>
-
-          {/* Right Column - Feature Cards */}
-          <RightColumn>
-            <FeatureCard
-              title="Component-Based"
-              description="Style your components directly. No more mapping class names to CSS files."
-              icon="🎨"
-              color={CardColor.Purple}
-            />
-            <FeatureCard
-              title="Dynamic Theming"
-              description="Adapt styles based on props. Pass data directly to your styles for powerful dynamic UIs."
-              icon="🎭"
-              color={CardColor.Pink}
-            />
-            <FeatureCard
-              title="Scoped Styles"
-              description="Automatically scoped styles prevent conflicts. Write CSS without worrying about global namespace pollution."
-              icon="🔒"
-              color={CardColor.Fuchsia}
-            />
-          </RightColumn>
-        </Grid>
-
-        <BackLink to="/">
-          ← Back Home
-        </BackLink>
-      </Content>
-    </Container>
-  )
-}

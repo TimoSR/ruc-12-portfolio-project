@@ -1,5 +1,15 @@
 import styled, { keyframes } from 'styled-components'
 
+export const BackgroundOrbs = () => {
+    return (
+        <>
+            <Orb1 />
+            <Orb2 />
+            <Orb3 />
+        </>
+    )
+}
+
 const blob = keyframes`
     0% { transform: translate(0px, 0px) scale(1); }
     33% { transform: translate(30px, -50px) scale(1.1); }
@@ -50,13 +60,3 @@ const Orb3 = styled.div`
     animation: ${blob} 7s infinite;
     animation-delay: 4s;
 `
-
-export const BackgroundOrbs = () => {
-    return (
-        <>
-            <Orb1 />
-            <Orb2 />
-            <Orb3 />
-        </>
-    )
-}
