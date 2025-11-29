@@ -4,12 +4,13 @@ import viteLogo from '/vite.svg'
 import { Link } from '@tanstack/react-router'
 import styled, { keyframes } from 'styled-components'
 import { counterStore } from '../stores/CounterStore'
+import { SearchSection } from '../features/search/views/SearchSection'
 
 export const Home = observer(() => {
     return (
         <Container>
             <Hero>
-                <Logos>
+                {/* <Logos>
                     <a href="https://vite.dev" target="_blank">
                         <Logo src={viteLogo} alt="Vite logo" />
                     </a>
@@ -21,7 +22,7 @@ export const Home = observer(() => {
                 <Description>
                     A premium starting point for your next big idea.
                     Powered by Class-based MobX logic and Code-based Routing.
-                </Description>
+                </Description> */}
 
                 <Grid>
                     <DemoCard to="/styled" $hoverColor="rgba(234, 179, 8, 0.2)">
@@ -32,7 +33,7 @@ export const Home = observer(() => {
                 </Grid>
             </Hero>
 
-            <Card>
+            {/* <Card>
                 <Button onClick={counterStore.increment}>
                     Count is {counterStore.count}
                 </Button>
@@ -42,7 +43,9 @@ export const Home = observer(() => {
                 <Text style={{ marginTop: '1rem' }}>
                     Edit <CodeText>src/components/Home.tsx</CodeText> to update this page
                 </Text>
-            </Card>
+            </Card> */}
+
+            <SearchSection />
         </Container>
     )
 })
