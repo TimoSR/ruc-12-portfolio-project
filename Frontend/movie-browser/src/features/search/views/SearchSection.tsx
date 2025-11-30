@@ -1,14 +1,24 @@
-import { observer } from 'mobx-react'
+import { observer, useLocalObservable } from 'mobx-react'
 import styled from 'styled-components'
-import { searchStore } from '../store/SearchStore'
+import { SearchStore } from '../store/SearchStore'
 import { SearchInput } from '../components/SearchInput'
 import { SearchResults } from '../components/SearchResults'
 
-export const SearchSection = observer(() => {
-    const store = searchStore
+export interface SearchSectionProps {
+    className?: string
+    /**
+     * Optional: inject a custom store instance.
+     * If not provided, the view creates its own per-component store.
+     */
+    store?: SearchStore
+}
+
+const SearchSectionBase = ({ className = '', store }: SearchSectionProps) => {
+    const localStore = useLocalObservable(() => new SearchStore())
+    const effectiveStore = store ?? localStore
 
     return (
-        <Section>
+        <Section className={className}>
             <Header>
                 <Title>
                     Search
@@ -19,32 +29,38 @@ export const SearchSection = observer(() => {
             </Header>
 
             <SearchInput
-                value={store.query}
+                value={effectiveStore.query}
                 placeholder="Search something..."
                 label="Search"
                 onChange={value => {
-                    store.setQuery(value)
-                    store.searchDebounced(350)
+                    effectiveStore.setQuery(value)
+                    effectiveStore.searchDebounced(350)
                 }}
                 onSearch={() => {
-                    void store.searchNow()
+                    void effectiveStore.searchNow()
                 }}
                 onClear={() => {
-                    store.clear()
+                    effectiveStore.clear()
                 }}
                 autoFocus
-                isLoading={store.isSearching}
+                isLoading={effectiveStore.isSearching}
             />
 
             <SearchResults
-                query={store.query}
-                results={store.results}
-                isSearching={store.isSearching}
-                error={store.error}
+                query={effectiveStore.query}
+                results={effectiveStore.results}
+                isSearching={effectiveStore.isSearching}
+                error={effectiveStore.error}
             />
         </Section>
     )
-})
+}
+
+export const SearchSection = observer(SearchSectionBase)
+
+/* ===========================
+   styled-components
+   =========================== */
 
 const Section = styled.section`
     display: flex;

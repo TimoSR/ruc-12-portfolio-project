@@ -1,8 +1,8 @@
-import { useId, useMemo } from 'react'
+import { useId } from 'react'
 import type { ChangeEvent, KeyboardEvent, ReactNode } from 'react'
 import styled from 'styled-components'
 
-export interface SearchInputProps {
+export type SearchInputProps = {
     value: string
     placeholder?: string
     label?: string
@@ -29,9 +29,7 @@ export const SearchInput = ({
 }: SearchInputProps) => {
     const inputId = useId()
 
-    const hasValue = useMemo(() => {
-        return value.trim().length > 0
-    }, [value])
+    const hasValue = value.trim().length > 0
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         const nextValue = event.target.value
@@ -132,6 +130,8 @@ const Root = styled.div`
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    width: 100%;
+    min-width: 0;
 `
 
 const Label = styled.label`
@@ -146,6 +146,8 @@ const FieldWrapper = styled.div<{ $isLoading: boolean }>`
     background: radial-gradient(circle at top left, rgba(168, 85, 247, 0.15), transparent);
     opacity: ${props => (props.$isLoading ? 0.9 : 1)};
     transition: opacity 0.2s ease;
+    width: 100%;
+    min-width: 0;
 `
 
 const FieldGlow = styled.div`
@@ -178,6 +180,9 @@ const FieldInner = styled.div`
         border-color 0.2s ease,
         box-shadow 0.2s ease,
         transform 0.15s ease;
+    overflow: hidden;          /* <<< key: clip the button inside the pill */
+    width: 100%;
+    min-width: 0;
 
     &:hover {
         border-color: rgba(168, 85, 247, 0.5);
@@ -221,6 +226,7 @@ const InputElement = styled.input`
     color: #e5e7eb;
     font-size: 0.95rem;
     line-height: 1.5;
+    min-width: 0;
 
     &::placeholder {
         color: #6b7280;

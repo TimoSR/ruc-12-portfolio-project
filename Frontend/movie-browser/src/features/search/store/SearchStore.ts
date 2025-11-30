@@ -1,6 +1,6 @@
 import { makeAutoObservable, runInAction } from 'mobx'
 
-export interface SearchResultItem {
+export type SearchResultItem = {
     id: string
     title: string
     description?: string
@@ -92,9 +92,6 @@ export class SearchStore {
         }
     }
 
-    /**
-     * Replace with real API call / domain logic.
-     */
     private async fetchResults(query: string): Promise<SearchResultItem[]> {
         await new Promise(resolve => {
             window.setTimeout(resolve, 400)
@@ -118,5 +115,3 @@ export class SearchStore {
         return items
     }
 }
-
-export const searchStore = new SearchStore()

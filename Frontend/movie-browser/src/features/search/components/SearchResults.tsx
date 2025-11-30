@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 import type { SearchResultItem } from '../store/SearchStore'
 
-interface SearchResultsProps {
+export type SearchResultsProps = {
     query: string
     results: SearchResultItem[]
     isSearching: boolean
