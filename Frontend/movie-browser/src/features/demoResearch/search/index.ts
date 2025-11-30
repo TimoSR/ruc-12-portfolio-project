@@ -1,7 +1,7 @@
 import styled from "styled-components"
 import { SearchSection } from "./views/SearchSection"
 
-// === layout variants of the *view* ===
+// === layout variants of the *view* SearchSection ===
 
 export const RightAlignedSearchSection = styled(SearchSection)`
     margin-left: auto;
@@ -12,3 +12,5 @@ export const RightAlignedSearchSection = styled(SearchSection)`
 export const FullWidthSearchSection = styled(SearchSection)`
     width: 100%;
 `
+
+// === layout variants of the *view* x... ===
