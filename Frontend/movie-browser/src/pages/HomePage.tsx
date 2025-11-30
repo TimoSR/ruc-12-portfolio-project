@@ -1,10 +1,9 @@
 // src/pages/HomePage.tsx
 import styled from 'styled-components'
-import { CardColor, FeatureCard } from './styled-demo/FeatureCard'
-import { RightAlignedSearchSection, FullWidthSearchSection } from '../features/search'
+import { RightAlignedSearchSection, FullWidthSearchSection } from '../features/demoResearch/search'
+import { CardColor, FeatureCard } from '../features/demoResearch/styledComponents/components/FeatureCard'
 
-
-export const Home = () => {
+export const HomePage = () => {
     return (
         <Page>
             <HeroRow>

@@ -1,8 +1,8 @@
 import { Link } from '@tanstack/react-router'
 import styled from 'styled-components'
-import { BackgroundOrbs } from './styled-demo/BackgroundOrbs'
-import { HeroSection } from './styled-demo/HeroSection'
-import { FeatureCard, CardColor } from './styled-demo/FeatureCard'
+import { BackgroundOrbs } from './components/BackgroundOrbs'
+import { HeroSection } from './components/HeroSection'
+import { FeatureCard, CardColor } from './components/FeatureCard'
 
 export const StyledComponentsDemo = () => {
   return (

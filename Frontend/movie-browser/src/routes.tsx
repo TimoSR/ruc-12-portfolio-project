@@ -1,13 +1,13 @@
 import { createRootRoute, createRoute } from "@tanstack/react-router";
-import { Home } from "./components/Home";
-import { StyledComponentsDemo } from "./components/StyledComponentsDemo";
+import { HomePage } from "./pages/HomePage";
+import { StyledComponentsDemo } from "./features/demoResearch/styledComponents/StyledComponentsDemo";
 
 export const rootRoute = createRootRoute();
 
 export const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/",
-  component: Home,
+  component: HomePage,
 });
 
 // Styled Components Route
