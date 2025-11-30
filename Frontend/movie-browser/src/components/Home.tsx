@@ -4,10 +4,12 @@ import viteLogo from '/vite.svg'
 import { Link } from '@tanstack/react-router'
 import styled, { keyframes } from 'styled-components'
 import { counterStore } from '../stores/CounterStore'
+import { SearchPanel } from './search-panel'
 
 export const Home = observer(() => {
     return (
         <Container>
+            <SearchPanel />
             <Hero>
                 <Logos>
                     <a href="https://vite.dev" target="_blank">
