@@ -19,6 +19,7 @@ export interface ISearchStore {
 }
 
 export class SearchStore implements ISearchStore {
+    
     query: string = ''
     results: SearchResultItem[] = []
     isSearching: boolean = false

@@ -6,9 +6,7 @@ type Props = {
     searchStore: ISearchStore
 }
 
-export const SearchResults = observer(({
-    searchStore
-}: Props) => {
+function SearchResultsBase ({ searchStore }: Props) {
 
     const trimmedQuery = searchStore.query.trim()
 
@@ -65,7 +63,13 @@ export const SearchResults = observer(({
             ))}
         </ResultsList>
     )
-})
+}
+
+export const SearchResults = observer(SearchResultsBase)
+
+/* ===========================
+   styled-components
+   =========================== */
 
 const ResultsList = styled.div`
     display: flex;

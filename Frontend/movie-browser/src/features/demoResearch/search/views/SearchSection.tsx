@@ -10,31 +10,26 @@ export type Props = {
     className?: string
 }
 
-const SearchSectionBase = ({ className = '' }: Props) => {
+function SearchSectionBase ({ className = '' }: Props) {
 
     const searchStore = useLocalObservable<ISearchStore>(() => new SearchStore())
 
     return (
         <Section className={className}>
             <Header>
-                <Title>
-                    Search
+                <Title> 
+                    Search 
                 </Title>
-                <Subtitle>
-                    Type a query and we&apos;ll fetch matching items.
+                <Subtitle> 
+                    Type a query and we&apos;ll fetch matching items. 
                 </Subtitle>
             </Header>
-
-            <SearchInput
-                searchStore={searchStore}
-                placeholder="Search something..."
-                autoFocus
+            <SearchInput 
+                searchStore={searchStore} 
             />
-
-            <SearchResults
-                searchStore={searchStore}
+            <SearchResults 
+                searchStore={searchStore} 
             />
-
         </Section>
     )
 }

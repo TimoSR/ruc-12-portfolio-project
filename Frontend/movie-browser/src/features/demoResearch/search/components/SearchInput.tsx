@@ -11,15 +11,16 @@ type Props = {
     className?: string
 }
 
-export const SearchInput = observer(({
-     searchStore,
-     placeholder = 'Search...',
-     icon,
-     autoFocus = false,
-     className = ''
- }: Props) => {
+function SearchInputBase ({
+    searchStore,
+    placeholder = 'Search...',
+    icon,
+    autoFocus = false,
+    className = ''
+ }: Props) {
+
     const inputId = useId();
-    const hasValue = searchStore.query.trim().length > 0;
+    const hasQuery = searchStore.query.trim().length > 0;
 
     const effectiveIcon = icon ?? (
         <DefaultIcon>
@@ -27,12 +28,12 @@ export const SearchInput = observer(({
         </DefaultIcon>
     )
 
-    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    function handleChange (event: ChangeEvent<HTMLInputElement>): void {
         searchStore.setQuery(event.target.value)
         searchStore.searchDebounced(350)
     }
 
-    const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    function handleKeyDown (event: KeyboardEvent<HTMLInputElement>): void {
         if (event.key === 'Enter') {
             event.preventDefault()
             void searchStore.searchNow()
@@ -41,17 +42,17 @@ export const SearchInput = observer(({
 
         if (event.key === 'Escape') {
             event.preventDefault()
-            if (hasValue) {
+            if (hasQuery) {
                 searchStore.clear()
             }
         }
     }
 
-    const handleClear = () => {
+    function handleClear (): void {
         searchStore.clear()
     }
 
-    const handleSearch = () => {
+    function handleSearch (): void {
         void searchStore.searchNow()
     }
 
@@ -75,28 +76,41 @@ export const SearchInput = observer(({
                         autoFocus={autoFocus}
                         autoComplete="off"
                     />
-
-                    {hasValue && (
-                        <ClearButton
-                            type="button"
-                            onClick={handleClear}
-                        >
-                            {'×'}
-                        </ClearButton>
-                    )}
-
-                    <SearchButton
-                        type="button"
-                        onClick={handleSearch}
-                        disabled={searchStore.isSearching}
-                    >
+                    
+                    <ClearButton 
+                        onClick={handleClear} 
+                        isVisible={hasQuery} 
+                    />
+                    
+                    <SearchButton type="button" onClick={handleSearch} disabled={searchStore.isSearching}>
                         {searchStore.isSearching ? 'Searching...' : 'Search'}
                     </SearchButton>
                 </FieldInner>
             </FieldWrapper>
         </Root>
     )
-})
+}
+
+export const SearchInput = observer(SearchInputBase)
+
+/* ===========================
+   Child components
+   =========================== */
+
+type ClearButtonProps = {
+  isVisible: boolean;
+  onClick: () => void;
+};
+
+const ClearButtonBase = ({ isVisible, onClick } : ClearButtonProps) => {
+  if (!isVisible) return null;
+  
+  return (
+    <button type="button" onClick={onClick}>
+      ×
+    </button>
+  );
+};
 
 /* ===========================
    styled-components
@@ -210,7 +224,7 @@ const InputElement = styled.input`
     }
 `
 
-const ClearButton = styled.button`
+const ClearButton = styled(ClearButtonBase)`
     flex-shrink: 0;
     margin-right: 0.25rem;
     border: none;
