@@ -6,7 +6,6 @@ import type { ISearchStore } from '../store/SearchStore'
 type Props = {
     searchStore: ISearchStore
     placeholder?: string
-    label?: string
     icon?: ReactNode
     autoFocus?: boolean
     className?: string
@@ -15,18 +14,15 @@ type Props = {
 export const SearchInput = observer(({
      searchStore,
      placeholder = 'Search...',
-     label,
      icon,
      autoFocus = false,
      className = ''
  }: Props) => {
-
-    const inputId = useId()
-    const hasValue = searchStore.query.trim().length > 0
-    const ariaLabel = label ?? placeholder
+    const inputId = useId();
+    const hasValue = searchStore.query.trim().length > 0;
 
     const effectiveIcon = icon ?? (
-        <DefaultIcon aria-hidden="true">
+        <DefaultIcon>
             🔍
         </DefaultIcon>
     )
@@ -61,12 +57,6 @@ export const SearchInput = observer(({
 
     return (
         <Root className={className}>
-            {label !== undefined && label.trim().length > 0 && (
-                <Label htmlFor={inputId}>
-                    {label}
-                </Label>
-            )}
-
             <FieldWrapper $isLoading={searchStore.isSearching}>
                 <FieldGlow />
 
@@ -83,7 +73,6 @@ export const SearchInput = observer(({
                         onChange={handleChange}
                         onKeyDown={handleKeyDown}
                         autoFocus={autoFocus}
-                        aria-label={ariaLabel}
                         autoComplete="off"
                     />
 
@@ -91,16 +80,14 @@ export const SearchInput = observer(({
                         <ClearButton
                             type="button"
                             onClick={handleClear}
-                            aria-label="Clear search"
                         >
-                            ×
+                            {'×'}
                         </ClearButton>
                     )}
 
                     <SearchButton
                         type="button"
                         onClick={handleSearch}
-                        aria-label="Submit search"
                         disabled={searchStore.isSearching}
                     >
                         {searchStore.isSearching ? 'Searching...' : 'Search'}
@@ -121,12 +108,6 @@ const Root = styled.div`
     gap: 0.5rem;
     width: 100%;
     min-width: 0;
-`
-
-const Label = styled.label`
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: #e5e7eb;
 `
 
 const FieldWrapper = styled.div<{ $isLoading: boolean }>`

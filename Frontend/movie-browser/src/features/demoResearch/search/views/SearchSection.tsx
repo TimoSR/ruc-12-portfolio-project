@@ -28,7 +28,6 @@ const SearchSectionBase = ({ className = '' }: Props) => {
             <SearchInput
                 searchStore={searchStore}
                 placeholder="Search something..."
-                label="Search"
                 autoFocus
             />
 
