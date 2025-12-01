@@ -43,41 +43,41 @@ export class SearchStore implements ISearchStore {
     }
 
     async searchNow(): Promise<void> {
+
         const trimmed = this.query.trim()
 
         if (trimmed.length === 0) {
-            runInAction(() => {
-                this.results = []
-                this.error = null
-            })
+            this.cancelPendingSearch()
+            this.results = []
+            this.error = null
+            this.isSearching = false
             return
         }
 
         this.cancelPendingSearch()
 
-        runInAction(() => {
-            this.isSearching = true
-            this.error = null
-        })
+        this.isSearching = true
+        this.error = null
 
         try {
             const resultItems = await this.fetchResults(trimmed)
 
+            // After await: use runInAction to be safe with enforceActions:'always'
             runInAction(() => {
                 this.results = resultItems
+                this.isSearching = false
             })
-        } 
-        catch (error) {
+        } catch (error) {
             const message = error instanceof Error ? error.message : 'Unknown error'
 
             runInAction(() => {
                 this.error = message
-            })
-        } 
-        finally {
-            runInAction(() => {
+                this.results = []
                 this.isSearching = false
             })
+
+            // Allow UI handlers to see the error if they want to manually handle the promise
+            throw error
         }
     }
 
@@ -85,10 +85,12 @@ export class SearchStore implements ISearchStore {
         this.cancelPendingSearch()
 
         if (this.query.trim().length === 0) {
+            
             runInAction(() => {
                 this.results = []
                 this.error = null
             })
+            
             return
         }
 

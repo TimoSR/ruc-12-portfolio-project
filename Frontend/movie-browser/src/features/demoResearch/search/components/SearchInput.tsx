@@ -40,10 +40,16 @@ function SearchInputBase ({
         searchStore.searchDebounced(debounceMs)
     }
 
-    function handleKeyDown (event: KeyboardEvent<HTMLInputElement>): void {
+    async function handleKeyDown (event: KeyboardEvent<HTMLInputElement>): Promise<void> {
         if (event.key === 'Enter') {
             event.preventDefault()
-            void searchStore.searchNow()
+
+            try {
+                await searchStore.searchNow()
+            } catch (error) {
+                console.error('Search failed from keydown handler:', error)
+            }
+
             return
         }
 
@@ -59,8 +65,14 @@ function SearchInputBase ({
         searchStore.clear()
     }
 
-    function handleSearch (): void {
-        void searchStore.searchNow()
+    async function handleSearch (): Promise<void> {
+        try {
+            await searchStore.searchNow()
+        } 
+        catch (error) {
+            console.error('Search failed from search button:', error)
+            // optional: show toast, etc.
+        }
     }
 
     return (
