@@ -1,11 +1,9 @@
-// src/features/search/components/SearchInput.tsx
-import { useId } from 'react'
-import type { ReactNode } from 'react'
+import { useId, type ChangeEvent, type KeyboardEvent, type ReactNode } from 'react'
 import { observer } from 'mobx-react'
 import styled from 'styled-components'
 import type { ISearchStore } from '../store/SearchStore'
 
-export type SearchInputProps = {
+type Props = {
     searchStore: ISearchStore
     placeholder?: string
     label?: string
@@ -21,9 +19,11 @@ export const SearchInput = observer(({
      icon,
      autoFocus = false,
      className = ''
- }: SearchInputProps) => {
+ }: Props) => {
+
     const inputId = useId()
     const hasValue = searchStore.query.trim().length > 0
+    const ariaLabel = label ?? placeholder
 
     const effectiveIcon = icon ?? (
         <DefaultIcon aria-hidden="true">
@@ -31,7 +31,33 @@ export const SearchInput = observer(({
         </DefaultIcon>
     )
 
-    const ariaLabel = label ?? placeholder
+    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+        searchStore.setQuery(event.target.value)
+        searchStore.searchDebounced(350)
+    }
+
+    const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === 'Enter') {
+            event.preventDefault()
+            void searchStore.searchNow()
+            return
+        }
+
+        if (event.key === 'Escape') {
+            event.preventDefault()
+            if (hasValue) {
+                searchStore.clear()
+            }
+        }
+    }
+
+    const handleClear = () => {
+        searchStore.clear()
+    }
+
+    const handleSearch = () => {
+        void searchStore.searchNow()
+    }
 
     return (
         <Root className={className}>
@@ -54,24 +80,8 @@ export const SearchInput = observer(({
                         type="search"
                         value={searchStore.query}
                         placeholder={placeholder}
-                        onChange={event => {
-                            searchStore.setQuery(event.target.value)
-                            searchStore.searchDebounced(350)
-                        }}
-                        onKeyDown={event => {
-                            if (event.key === 'Enter') {
-                                event.preventDefault()
-                                void searchStore.searchNow()
-                                return
-                            }
-
-                            if (event.key === 'Escape') {
-                                event.preventDefault()
-                                if (hasValue) {
-                                    searchStore.clear()
-                                }
-                            }
-                        }}
+                        onChange={handleChange}
+                        onKeyDown={handleKeyDown}
                         autoFocus={autoFocus}
                         aria-label={ariaLabel}
                         autoComplete="off"
@@ -80,9 +90,7 @@ export const SearchInput = observer(({
                     {hasValue && (
                         <ClearButton
                             type="button"
-                            onClick={() => {
-                                searchStore.clear()
-                            }}
+                            onClick={handleClear}
                             aria-label="Clear search"
                         >
                             ×
@@ -91,9 +99,7 @@ export const SearchInput = observer(({
 
                     <SearchButton
                         type="button"
-                        onClick={() => {
-                            void searchStore.searchNow()
-                        }}
+                        onClick={handleSearch}
                         aria-label="Submit search"
                         disabled={searchStore.isSearching}
                     >

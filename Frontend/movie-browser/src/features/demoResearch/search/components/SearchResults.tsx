@@ -2,11 +2,14 @@ import { observer } from 'mobx-react'
 import styled from 'styled-components'
 import type { ISearchStore } from '../store/SearchStore'
 
-export type SearchResultsProps = {
+type Props = {
     searchStore: ISearchStore
 }
 
-export const SearchResults = observer(({ searchStore }: SearchResultsProps) => {
+export const SearchResults = observer(({
+    searchStore
+}: Props) => {
+
     const trimmedQuery = searchStore.query.trim()
 
     if (searchStore.error !== null) {

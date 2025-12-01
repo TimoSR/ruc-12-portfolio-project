@@ -1,7 +1,6 @@
-// src/features/search/store/SearchStore.ts
 import { makeAutoObservable, runInAction } from 'mobx'
 
-export type SearchResultItem = {
+type SearchResultItem = {
     id: string
     title: string
     description?: string
@@ -13,7 +12,6 @@ export interface ISearchStore {
     results: SearchResultItem[]
     isSearching: boolean
     error: string | null
-
     setQuery(value: string): void
     clear(): void
     searchNow(): Promise<void>

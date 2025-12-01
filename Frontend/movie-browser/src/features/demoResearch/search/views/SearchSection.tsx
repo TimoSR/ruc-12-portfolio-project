@@ -4,11 +4,13 @@ import {type ISearchStore, SearchStore} from '../store/SearchStore'
 import { SearchInput } from '../components/SearchInput'
 import { SearchResults } from '../components/SearchResults'
 
-export type SearchSectionProps = {
+export type Props = {
+    // Because styled-components (and most styling systems) inject styling through className.
+    // So to enable later styling we need to enable it by this
     className?: string
 }
 
-const SearchSectionBase = ({ className = '' }: SearchSectionProps) => {
+const SearchSectionBase = ({ className = '' }: Props) => {
 
     const searchStore = useLocalObservable<ISearchStore>(() => new SearchStore())
 
