@@ -1,74 +1,37 @@
+// src/features/search/components/SearchInput.tsx
 import { useId } from 'react'
-import type { ChangeEvent, KeyboardEvent, ReactNode } from 'react'
+import type { ReactNode } from 'react'
+import { observer } from 'mobx-react'
 import styled from 'styled-components'
+import type { ISearchStore } from '../store/SearchStore'
 
 export type SearchInputProps = {
-    value: string
+    searchStore: ISearchStore
     placeholder?: string
     label?: string
     icon?: ReactNode
-    onChange: (value: string) => void
-    onSearch?: (value: string) => void
-    onClear?: () => void
     autoFocus?: boolean
     className?: string
-    isLoading?: boolean
 }
 
-export const SearchInput = ({
-    value,
-    placeholder = 'Search...',
-    label,
-    icon,
-    onChange,
-    onSearch,
-    onClear,
-    autoFocus = false,
-    className = '',
-    isLoading = false
-}: SearchInputProps) => {
+export const SearchInput = observer(({
+     searchStore,
+     placeholder = 'Search...',
+     label,
+     icon,
+     autoFocus = false,
+     className = ''
+ }: SearchInputProps) => {
     const inputId = useId()
-
-    const hasValue = value.trim().length > 0
-
-    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-        const nextValue = event.target.value
-        onChange(nextValue)
-    }
-
-    const handleSearch = () => {
-        if (onSearch !== undefined) {
-            onSearch(value.trim())
-        }
-    }
-
-    const handleClear = () => {
-        onChange('')
-        if (onClear !== undefined) {
-            onClear()
-        }
-    }
-
-    const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-        if (event.key === 'Enter') {
-            event.preventDefault()
-            handleSearch()
-            return
-        }
-
-        if (event.key === 'Escape') {
-            event.preventDefault()
-            if (hasValue) {
-                handleClear()
-            }
-        }
-    }
+    const hasValue = searchStore.query.trim().length > 0
 
     const effectiveIcon = icon ?? (
         <DefaultIcon aria-hidden="true">
             🔍
         </DefaultIcon>
     )
+
+    const ariaLabel = label ?? placeholder
 
     return (
         <Root className={className}>
@@ -78,7 +41,7 @@ export const SearchInput = ({
                 </Label>
             )}
 
-            <FieldWrapper $isLoading={isLoading}>
+            <FieldWrapper $isLoading={searchStore.isSearching}>
                 <FieldGlow />
 
                 <FieldInner>
@@ -89,19 +52,37 @@ export const SearchInput = ({
                     <InputElement
                         id={inputId}
                         type="search"
-                        value={value}
+                        value={searchStore.query}
                         placeholder={placeholder}
-                        onChange={handleChange}
-                        onKeyDown={handleKeyDown}
+                        onChange={event => {
+                            searchStore.setQuery(event.target.value)
+                            searchStore.searchDebounced(350)
+                        }}
+                        onKeyDown={event => {
+                            if (event.key === 'Enter') {
+                                event.preventDefault()
+                                void searchStore.searchNow()
+                                return
+                            }
+
+                            if (event.key === 'Escape') {
+                                event.preventDefault()
+                                if (hasValue) {
+                                    searchStore.clear()
+                                }
+                            }
+                        }}
                         autoFocus={autoFocus}
-                        aria-label={label ?? placeholder}
+                        aria-label={ariaLabel}
                         autoComplete="off"
                     />
 
                     {hasValue && (
                         <ClearButton
                             type="button"
-                            onClick={handleClear}
+                            onClick={() => {
+                                searchStore.clear()
+                            }}
                             aria-label="Clear search"
                         >
                             ×
@@ -110,17 +91,19 @@ export const SearchInput = ({
 
                     <SearchButton
                         type="button"
-                        onClick={handleSearch}
+                        onClick={() => {
+                            void searchStore.searchNow()
+                        }}
                         aria-label="Submit search"
-                        disabled={isLoading}
+                        disabled={searchStore.isSearching}
                     >
-                        {isLoading ? 'Searching...' : 'Search'}
+                        {searchStore.isSearching ? 'Searching...' : 'Search'}
                     </SearchButton>
                 </FieldInner>
             </FieldWrapper>
         </Root>
     )
-}
+})
 
 /* ===========================
    styled-components
@@ -174,13 +157,13 @@ const FieldInner = styled.div`
     border: 1px solid rgba(148, 163, 184, 0.4);
     background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.92));
     box-shadow:
-        0 10px 40px rgba(15, 23, 42, 0.7),
-        inset 0 0 0 1px rgba(15, 23, 42, 0.9);
+            0 10px 40px rgba(15, 23, 42, 0.7),
+            inset 0 0 0 1px rgba(15, 23, 42, 0.9);
     transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease,
-        transform 0.15s ease;
-    overflow: hidden;          /* <<< key: clip the button inside the pill */
+            border-color 0.2s ease,
+            box-shadow 0.2s ease,
+            transform 0.15s ease;
+    overflow: hidden;
     width: 100%;
     min-width: 0;
 
@@ -191,8 +174,8 @@ const FieldInner = styled.div`
     ${FieldWrapper}:focus-within & {
         border-color: rgba(168, 85, 247, 0.8);
         box-shadow:
-            0 20px 50px rgba(88, 28, 135, 0.55),
-            inset 0 0 0 1px rgba(15, 23, 42, 0.9);
+                0 20px 50px rgba(88, 28, 135, 0.55),
+                inset 0 0 0 1px rgba(15, 23, 42, 0.9);
         transform: translateY(-1px);
     }
 `
@@ -207,8 +190,8 @@ const IconSlot = styled.div`
     border-radius: 9999px;
     background: radial-gradient(circle at top left, rgba(168, 85, 247, 0.3), rgba(88, 28, 135, 0.8));
     box-shadow:
-        0 8px 16px rgba(88, 28, 135, 0.5),
-        0 0 0 1px rgba(15, 23, 42, 0.8);
+            0 8px 16px rgba(88, 28, 135, 0.5),
+            0 0 0 1px rgba(15, 23, 42, 0.8);
 `
 
 const DefaultIcon = styled.span`
@@ -256,9 +239,9 @@ const ClearButton = styled.button`
     font-size: 1.1rem;
     cursor: pointer;
     transition:
-        background 0.15s ease,
-        color 0.15s ease,
-        transform 0.1s ease;
+            background 0.15s ease,
+            color 0.15s ease,
+            transform 0.1s ease;
 
     &:hover {
         background: rgba(31, 41, 55, 1);
@@ -284,33 +267,33 @@ const SearchButton = styled.button`
     cursor: pointer;
 
     background: linear-gradient(
-        to right,
-        rgba(168, 85, 247, 0.95),
-        rgba(236, 72, 153, 0.95)
+            to right,
+            rgba(168, 85, 247, 0.95),
+            rgba(236, 72, 153, 0.95)
     );
     color: white;
     box-shadow:
-        0 10px 20px rgba(168, 85, 247, 0.4),
-        0 0 0 1px rgba(15, 23, 42, 0.9);
+            0 10px 20px rgba(168, 85, 247, 0.4),
+            0 0 0 1px rgba(15, 23, 42, 0.9);
     transition:
-        transform 0.15s ease,
-        box-shadow 0.15s ease,
-        filter 0.15s ease,
-        opacity 0.15s ease;
+            transform 0.15s ease,
+            box-shadow 0.15s ease,
+            filter 0.15s ease,
+            opacity 0.15s ease;
 
     &:hover:enabled {
         filter: brightness(1.05);
         transform: translateY(-0.5px);
         box-shadow:
-            0 16px 30px rgba(168, 85, 247, 0.5),
-            0 0 0 1px rgba(15, 23, 42, 0.9);
+                0 16px 30px rgba(168, 85, 247, 0.5),
+                0 0 0 1px rgba(15, 23, 42, 0.9);
     }
 
     &:active:enabled {
         transform: translateY(0);
         box-shadow:
-            0 8px 16px rgba(88, 28, 135, 0.6),
-            0 0 0 1px rgba(15, 23, 42, 0.9);
+                0 8px 16px rgba(88, 28, 135, 0.6),
+                0 0 0 1px rgba(15, 23, 42, 0.9);
     }
 
     &:disabled {

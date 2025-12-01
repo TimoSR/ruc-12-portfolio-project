@@ -1,3 +1,4 @@
+// src/features/search/store/SearchStore.ts
 import { makeAutoObservable, runInAction } from 'mobx'
 
 export type SearchResultItem = {
@@ -7,7 +8,19 @@ export type SearchResultItem = {
     url?: string
 }
 
-export class SearchStore {
+export interface ISearchStore {
+    query: string
+    results: SearchResultItem[]
+    isSearching: boolean
+    error: string | null
+
+    setQuery(value: string): void
+    clear(): void
+    searchNow(): Promise<void>
+    searchDebounced(delayMs?: number): void
+}
+
+export class SearchStore implements ISearchStore {
     query: string = ''
     results: SearchResultItem[] = []
     isSearching: boolean = false

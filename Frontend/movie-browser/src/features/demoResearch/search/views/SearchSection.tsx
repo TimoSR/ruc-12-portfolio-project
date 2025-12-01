@@ -1,21 +1,16 @@
 import { observer, useLocalObservable } from 'mobx-react'
 import styled from 'styled-components'
-import { SearchStore } from '../store/SearchStore'
+import {type ISearchStore, SearchStore} from '../store/SearchStore'
 import { SearchInput } from '../components/SearchInput'
 import { SearchResults } from '../components/SearchResults'
 
-export interface SearchSectionProps {
+export type SearchSectionProps = {
     className?: string
-    /**
-     * Optional: inject a custom store instance.
-     * If not provided, the view creates its own per-component store.
-     */
-    store?: SearchStore
 }
 
-const SearchSectionBase = ({ className = '', store }: SearchSectionProps) => {
-    const localStore = useLocalObservable(() => new SearchStore())
-    const effectiveStore = store ?? localStore
+const SearchSectionBase = ({ className = '' }: SearchSectionProps) => {
+
+    const searchStore = useLocalObservable<ISearchStore>(() => new SearchStore())
 
     return (
         <Section className={className}>
@@ -29,29 +24,16 @@ const SearchSectionBase = ({ className = '', store }: SearchSectionProps) => {
             </Header>
 
             <SearchInput
-                value={effectiveStore.query}
+                searchStore={searchStore}
                 placeholder="Search something..."
                 label="Search"
-                onChange={value => {
-                    effectiveStore.setQuery(value)
-                    effectiveStore.searchDebounced(350)
-                }}
-                onSearch={() => {
-                    void effectiveStore.searchNow()
-                }}
-                onClear={() => {
-                    effectiveStore.clear()
-                }}
                 autoFocus
-                isLoading={effectiveStore.isSearching}
             />
 
             <SearchResults
-                query={effectiveStore.query}
-                results={effectiveStore.results}
-                isSearching={effectiveStore.isSearching}
-                error={effectiveStore.error}
+                searchStore={searchStore}
             />
+
         </Section>
     )
 }
