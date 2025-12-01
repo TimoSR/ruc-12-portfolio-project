@@ -3,7 +3,7 @@ import { observer } from 'mobx-react'
 import styled from 'styled-components'
 import type { ISearchStore } from '../store/SearchStore'
 
-type Props = {
+type SearchInputProps = {
     searchStore: ISearchStore
     placeholder?: string
     icon?: ReactNode
@@ -17,7 +17,7 @@ function SearchInputBase ({
     icon,
     autoFocus = false,
     className = ''
- }: Props) {
+ }: SearchInputProps) {
 
     const inputId = useId();
     const hasQuery = searchStore.query.trim().length > 0;
@@ -36,7 +36,7 @@ function SearchInputBase ({
     function handleKeyDown (event: KeyboardEvent<HTMLInputElement>): void {
         if (event.key === 'Enter') {
             event.preventDefault()
-            void searchStore.searchNow()
+            searchStore.searchNow()
             return
         }
 
