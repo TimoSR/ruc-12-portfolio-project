@@ -52,11 +52,11 @@ function SearchResultsBase ({ searchStore }: SearchResultsProps) {
                         
                         <ResultTitle> {item.title} </ResultTitle>
 
-                        {hasDescription ? (
+                        { hasDescription ? (
                             <ResultDescription> {item.description} </ResultDescription>
                         ): null }
 
-                        {hasUrl ? (
+                        { hasUrl ? (
                             <ResultLink href={item.url} target="_blank" rel="noreferrer">
                                 Open
                             </ResultLink>

@@ -8,14 +8,19 @@ export const SearchInput = observer(SearchInputBase)
 type SearchInputProps = {
     searchStore: ISearchStore
     placeholder?: string
+    debounceMs?: number
     icon?: ReactNode
     autoFocus?: boolean
     className?: string
 }
 
+const DEFAULT_PLACEHOLDER = 'Search...'
+const DEFAULT_DEBOUNCE_MS = 350
+
 function SearchInputBase ({
     searchStore,
-    placeholder = 'Search...',
+    placeholder = DEFAULT_PLACEHOLDER,
+    debounceMs = DEFAULT_DEBOUNCE_MS,
     icon,
     autoFocus = false,
     className = ''
@@ -32,13 +37,13 @@ function SearchInputBase ({
 
     function handleChange (event: ChangeEvent<HTMLInputElement>): void {
         searchStore.setQuery(event.target.value)
-        searchStore.searchDebounced(350)
+        searchStore.searchDebounced(debounceMs)
     }
 
     function handleKeyDown (event: KeyboardEvent<HTMLInputElement>): void {
         if (event.key === 'Enter') {
             event.preventDefault()
-            searchStore.searchNow()
+            void searchStore.searchNow()
             return
         }
 
