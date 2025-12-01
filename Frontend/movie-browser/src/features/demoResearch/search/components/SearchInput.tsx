@@ -1,4 +1,4 @@
-import { useId, type ChangeEvent, type KeyboardEvent, type ReactNode } from 'react'
+import { type ChangeEvent, type KeyboardEvent, type ReactNode } from 'react'
 import { observer } from 'mobx-react'
 import styled from 'styled-components'
 import type { ISearchStore } from '../store/SearchStore'
@@ -40,12 +40,15 @@ function SearchInputBase ({
     }
 
     async function handleKeyDown (event: KeyboardEvent<HTMLInputElement>): Promise<void> {
+        
         if (event.key === 'Enter') {
+    
             event.preventDefault()
 
             try {
                 await searchStore.searchNow()
-            } catch (error) {
+            } 
+            catch (error) {
                 console.error('Search failed from keydown handler:', error)
             }
 
@@ -53,7 +56,9 @@ function SearchInputBase ({
         }
 
         if (event.key === 'Escape') {
+            
             event.preventDefault()
+            
             if (hasQuery) {
                 searchStore.clear()
             }
