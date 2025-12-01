@@ -4,14 +4,13 @@ import type { ISearchStore } from '../store/SearchStore'
 
 export const SearchResults = observer(SearchResultsBase)
 
-type Props = {
+type SearchResultsProps = {
     searchStore: ISearchStore
 }
 
-function SearchResultsBase ({ searchStore }: Props) {
+function SearchResultsBase ({ searchStore }: SearchResultsProps) {
 
     const trimmedQuery = searchStore.query.trim()
-    
 
     if (searchStore.error !== null) {
         return (
