@@ -3,6 +3,8 @@ import { observer } from 'mobx-react'
 import styled from 'styled-components'
 import type { ISearchStore } from '../store/SearchStore'
 
+export const SearchInput = observer(SearchInputBase)
+
 type SearchInputProps = {
     searchStore: ISearchStore
     placeholder?: string
@@ -90,8 +92,6 @@ function SearchInputBase ({
         </Root>
     )
 }
-
-export const SearchInput = observer(SearchInputBase)
 
 /* ===========================
    styled-components

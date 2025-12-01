@@ -2,6 +2,8 @@ import { observer } from 'mobx-react'
 import styled from 'styled-components'
 import type { ISearchStore } from '../store/SearchStore'
 
+export const SearchResults = observer(SearchResultsBase)
+
 type Props = {
     searchStore: ISearchStore
 }
@@ -67,8 +69,6 @@ function SearchResultsBase ({ searchStore }: Props) {
         </ResultsList>
     )
 }
-
-export const SearchResults = observer(SearchResultsBase)
 
 /* ===========================
    styled-components
