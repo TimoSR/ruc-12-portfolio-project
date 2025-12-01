@@ -66,13 +66,15 @@ export class SearchStore implements ISearchStore {
             runInAction(() => {
                 this.results = resultItems
             })
-        } catch (error) {
+        } 
+        catch (error) {
             const message = error instanceof Error ? error.message : 'Unknown error'
 
             runInAction(() => {
                 this.error = message
             })
-        } finally {
+        } 
+        finally {
             runInAction(() => {
                 this.isSearching = false
             })
