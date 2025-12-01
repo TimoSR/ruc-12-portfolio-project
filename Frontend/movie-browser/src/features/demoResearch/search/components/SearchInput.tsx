@@ -26,7 +26,6 @@ function SearchInputBase ({
     className = ''
  }: SearchInputProps) {
 
-    const inputId = useId();
     const hasQuery = searchStore.query.trim().length > 0;
 
     const effectiveIcon = icon ?? (
@@ -86,7 +85,6 @@ function SearchInputBase ({
                     </IconSlot>
 
                     <InputElement
-                        id={inputId}
                         type="search"
                         value={searchStore.query}
                         placeholder={placeholder}
