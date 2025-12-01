@@ -78,7 +78,7 @@ function SearchInputBase ({
                     />
                     
                     { hasQuery ? (
-                        <ClearButton isVisible={hasQuery} onClick={handleClear}/>
+                        <ClearButton type="button" onClick={handleClear}>×</ClearButton>
                     ) : null}
                     
                     <SearchButton type="button" onClick={handleSearch} disabled={searchStore.isSearching}>
@@ -205,7 +205,7 @@ const InputElement = styled.input`
     }
 `
 
-const ClearButton = styled(ClearButtonBase)`
+const ClearButton = styled.button`
     flex-shrink: 0;
     margin-right: 0.25rem;
     border: none;
