@@ -77,14 +77,14 @@ function SearchInputBase ({
                         autoComplete="off"
                     />
                     
-                    <ClearButton 
-                        onClick={handleClear} 
-                        isVisible={hasQuery} 
-                    />
+                    { hasQuery ? (
+                        <ClearButton isVisible={hasQuery} onClick={handleClear}/>
+                    ) : null}
                     
                     <SearchButton type="button" onClick={handleSearch} disabled={searchStore.isSearching}>
                         {searchStore.isSearching ? 'Searching...' : 'Search'}
                     </SearchButton>
+
                 </FieldInner>
             </FieldWrapper>
         </Root>
@@ -92,25 +92,6 @@ function SearchInputBase ({
 }
 
 export const SearchInput = observer(SearchInputBase)
-
-/* ===========================
-   Child components
-   =========================== */
-
-type ClearButtonProps = {
-  isVisible: boolean;
-  onClick: () => void;
-};
-
-const ClearButtonBase = ({ isVisible, onClick } : ClearButtonProps) => {
-  if (!isVisible) return null;
-  
-  return (
-    <button type="button" onClick={onClick}>
-      ×
-    </button>
-  );
-};
 
 /* ===========================
    styled-components

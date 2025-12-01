@@ -9,6 +9,7 @@ type Props = {
 function SearchResultsBase ({ searchStore }: Props) {
 
     const trimmedQuery = searchStore.query.trim()
+    
 
     if (searchStore.error !== null) {
         return (
@@ -40,27 +41,29 @@ function SearchResultsBase ({ searchStore }: Props) {
 
     return (
         <ResultsList>
-            {searchStore.results.map(item => (
-                <ResultItem key={item.id}>
-                    <ResultTitle>
-                        {item.title}
-                    </ResultTitle>
-                    {item.description !== undefined && item.description.length > 0 && (
-                        <ResultDescription>
-                            {item.description}
-                        </ResultDescription>
-                    )}
-                    {item.url !== undefined && (
-                        <ResultLink
-                            href={item.url}
-                            target="_blank"
-                            rel="noreferrer"
-                        >
-                            Open
-                        </ResultLink>
-                    )}
-                </ResultItem>
-            ))}
+            {searchStore.results.map(item => {
+
+                const hasDescription = (item.description?.length ?? 0) > 0
+                const hasUrl = item.url !== undefined
+
+                return (
+                    <ResultItem key={item.id}>
+                        
+                        <ResultTitle> {item.title} </ResultTitle>
+
+                        {hasDescription ? (
+                            <ResultDescription> {item.description} </ResultDescription>
+                        ): null }
+
+                        {hasUrl ? (
+                            <ResultLink href={item.url} target="_blank" rel="noreferrer">
+                                Open
+                            </ResultLink>
+                        ) : null}
+
+                    </ResultItem>
+                )
+            })}
         </ResultsList>
     )
 }
