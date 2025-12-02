@@ -1,5 +1,9 @@
 import styled from "styled-components"
 import { SearchSection } from "./views/SearchSection"
+import { SearchInput } from "./components/SearchInput"
+
+// === Export individual components ===
+export { SearchInput }
 
 // === layout variants of the *view* SearchSection ===
 
