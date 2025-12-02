@@ -1,16 +1,7 @@
-import { createRootRoute, createRoute, Outlet } from "@tanstack/react-router";
+import { createRootRoute, createRoute } from "@tanstack/react-router";
+import { StyledComponentsDemo } from "./features/Tim/styledComponents/StyledComponentsDemo";
 import { HomePage } from "./pages/HomePage";
-import { StyledComponentsDemo } from "./features/demoResearch/styledComponents/StyledComponentsDemo";
-import { Navigation } from "./features/navigation";
-
-function RootLayout() {
-  return (
-    <>
-      <Navigation />
-      <Outlet />
-    </>
-  )
-}
+import { RootLayout } from "./pages/RootLayout";
 
 export const rootRoute = createRootRoute({
   component: RootLayout,
