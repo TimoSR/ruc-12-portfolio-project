@@ -1,14 +1,23 @@
 // src/pages/HomePage.tsx
-import styled from 'styled-components'
+import styled, { createGlobalStyle } from 'styled-components'
 import { FullWidthSearchSection } from '../features/Tim/search'
 
 export const HomePage = () => {
     return (
+        
         <Page>
+            < GlobalScrollbarFix />
             <FullWidthSearchSection />
         </Page>
     )
 }
+
+const GlobalScrollbarFix = createGlobalStyle`
+  html {
+    /* This reserves space for the scrollbar always, preventing the shift */
+    overflow-y: scroll;
+  }
+`
 
 const Page = styled.main`
     max-width: 960px;

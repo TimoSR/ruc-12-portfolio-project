@@ -14,7 +14,7 @@ export function RootLayout() {
 
 const GlobalScrollbarFix = createGlobalStyle`
   html {
-    /* This reserves space for the scrollbar always, preventing the shift */
-    scrollbar-gutter: stable;
+    /* This forces the scrollbar UI to be visible 100% of the time */
+    overflow-y: auto;
   }
 `
