@@ -3,11 +3,11 @@ import styled, { createGlobalStyle } from 'styled-components'
 import { FullWidthSearchSection } from '../features/Tim/search'
 
 export const HomePage = () => {
+
     return (
-        
         <Page>
             < GlobalScrollbarFix />
-            <FullWidthSearchSection />
+            
         </Page>
     )
 }

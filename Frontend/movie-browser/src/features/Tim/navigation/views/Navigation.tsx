@@ -1,23 +1,28 @@
-import { observer, useLocalObservable } from 'mobx-react'
+import { observer } from 'mobx-react'
 import styled from 'styled-components'
 import { Link } from '@tanstack/react-router'
-import { type INavigationStore, NavigationStore } from '../store/NavigationStore'
+import type { ISearchStore } from '../../search/store/SearchStore'
+import { SearchInput } from '../../search/components/SearchInput'
 
 export const Navigation = observer(NavigationBase)
 
 type NavigationProps = {
     className?: string
+    searchStore: ISearchStore
 }
 
-function NavigationBase({ className = '' }: NavigationProps) {
-    const store = useLocalObservable<INavigationStore>(() => new NavigationStore())
-
+function NavigationBase({ className = '', searchStore }: NavigationProps) {
+    
     return (
         <NavContainer className={className}>
             <ContentWrapper>
                 <Logo to="/">
                     Movie Browser
                 </Logo>
+
+                <SearchContainer>
+                    <SearchInput searchStore={searchStore} />
+                </SearchContainer>
 
                 <DesktopLinks>
                     <StyledLink to="/" activeProps={{ className: 'active' }}>
@@ -35,6 +40,12 @@ function NavigationBase({ className = '' }: NavigationProps) {
 }
 
 // === Styled Components ===
+
+const SearchContainer = styled.div`
+    max-width: 1280px;
+    display: flex;
+    align-items: center;    
+`
 
 const NavContainer = styled.nav`
     position: sticky;
