@@ -1,84 +1,87 @@
-import { useId } from 'react'
-import type { ChangeEvent, KeyboardEvent, ReactNode } from 'react'
+import { type ChangeEvent, type KeyboardEvent, type ReactNode } from 'react'
+import { observer } from 'mobx-react'
 import styled from 'styled-components'
+import type { ISearchStore } from '../store/SearchStore'
 
-export type SearchInputProps = {
-    value: string
+export const SearchInput = observer(SearchInputBase)
+
+type SearchInputProps = {
+    searchStore: ISearchStore
     placeholder?: string
-    label?: string
+    debounceMs?: number
     icon?: ReactNode
-    onChange: (value: string) => void
-    onSearch?: (value: string) => void
-    onClear?: () => void
     autoFocus?: boolean
     className?: string
-    isLoading?: boolean
 }
 
-export const SearchInput = ({
-    value,
-    placeholder = 'Search...',
-    label,
+const DEFAULT_PLACEHOLDER = 'Search...'
+const DEFAULT_DEBOUNCE_MS = 350
+
+function SearchInputBase ({
+    searchStore,
+    placeholder = DEFAULT_PLACEHOLDER,
+    debounceMs = DEFAULT_DEBOUNCE_MS,
     icon,
-    onChange,
-    onSearch,
-    onClear,
     autoFocus = false,
-    className = '',
-    isLoading = false
-}: SearchInputProps) => {
-    const inputId = useId()
+    className = ''
+ }: SearchInputProps) {
 
-    const hasValue = value.trim().length > 0
-
-    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-        const nextValue = event.target.value
-        onChange(nextValue)
-    }
-
-    const handleSearch = () => {
-        if (onSearch !== undefined) {
-            onSearch(value.trim())
-        }
-    }
-
-    const handleClear = () => {
-        onChange('')
-        if (onClear !== undefined) {
-            onClear()
-        }
-    }
-
-    const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-        if (event.key === 'Enter') {
-            event.preventDefault()
-            handleSearch()
-            return
-        }
-
-        if (event.key === 'Escape') {
-            event.preventDefault()
-            if (hasValue) {
-                handleClear()
-            }
-        }
-    }
+    const hasQuery = searchStore.query.trim().length > 0;
 
     const effectiveIcon = icon ?? (
-        <DefaultIcon aria-hidden="true">
+        <DefaultIcon>
             🔍
         </DefaultIcon>
     )
 
+    function handleChange (event: ChangeEvent<HTMLInputElement>): void {
+        searchStore.setQuery(event.target.value)
+        searchStore.searchDebounced(debounceMs)
+    }
+
+    async function handleKeyDown (event: KeyboardEvent<HTMLInputElement>): Promise<void> {
+        
+        if (event.key === 'Enter') {
+    
+            event.preventDefault()
+
+            try {
+                await searchStore.searchNow()
+            } 
+            catch (error) {
+                console.error('Search failed from keydown handler:', error)
+            }
+
+            return
+        }
+
+        if (event.key === 'Escape') {
+            
+            event.preventDefault()
+            
+            if (hasQuery) {
+                searchStore.clear()
+            }
+        }
+    }
+
+    function handleClear (): void {
+        searchStore.clear()
+    }
+
+    async function handleSearch (): Promise<void> {
+        try {
+            await searchStore.searchNow()
+        } 
+        catch (error) {
+            console.error('Search failed from search button:', error)
+            // optional: show toast, etc.
+        }
+    }
+
     return (
         <Root className={className}>
-            {label !== undefined && label.trim().length > 0 && (
-                <Label htmlFor={inputId}>
-                    {label}
-                </Label>
-            )}
-
-            <FieldWrapper $isLoading={isLoading}>
+            <FieldWrapper $isLoading={searchStore.isSearching}>
                 <FieldGlow />
 
                 <FieldInner>
@@ -87,35 +90,23 @@ export const SearchInput = ({
                     </IconSlot>
 
                     <InputElement
-                        id={inputId}
                         type="search"
-                        value={value}
+                        value={searchStore.query}
                         placeholder={placeholder}
                         onChange={handleChange}
                         onKeyDown={handleKeyDown}
                         autoFocus={autoFocus}
-                        aria-label={label ?? placeholder}
                         autoComplete="off"
                     />
-
-                    {hasValue && (
-                        <ClearButton
-                            type="button"
-                            onClick={handleClear}
-                            aria-label="Clear search"
-                        >
-                            ×
-                        </ClearButton>
-                    )}
-
-                    <SearchButton
-                        type="button"
-                        onClick={handleSearch}
-                        aria-label="Submit search"
-                        disabled={isLoading}
-                    >
-                        {isLoading ? 'Searching...' : 'Search'}
+                    
+                    { hasQuery ? (
+                        <ClearButton type="button" onClick={handleClear}>×</ClearButton>
+                    ) : null}
+                    
+                    <SearchButton type="button" onClick={handleSearch} disabled={searchStore.isSearching}>
+                        {searchStore.isSearching ? 'Searching...' : 'Search'}
                     </SearchButton>
+
                 </FieldInner>
             </FieldWrapper>
         </Root>
@@ -132,12 +123,6 @@ const Root = styled.div`
     gap: 0.5rem;
     width: 100%;
     min-width: 0;
-`
-
-const Label = styled.label`
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: #e5e7eb;
 `
 
 const FieldWrapper = styled.div<{ $isLoading: boolean }>`
@@ -174,13 +159,13 @@ const FieldInner = styled.div`
     border: 1px solid rgba(148, 163, 184, 0.4);
     background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.92));
     box-shadow:
-        0 10px 40px rgba(15, 23, 42, 0.7),
-        inset 0 0 0 1px rgba(15, 23, 42, 0.9);
+            0 10px 40px rgba(15, 23, 42, 0.7),
+            inset 0 0 0 1px rgba(15, 23, 42, 0.9);
     transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease,
-        transform 0.15s ease;
-    overflow: hidden;          /* <<< key: clip the button inside the pill */
+            border-color 0.2s ease,
+            box-shadow 0.2s ease,
+            transform 0.15s ease;
+    overflow: hidden;
     width: 100%;
     min-width: 0;
 
@@ -191,8 +176,8 @@ const FieldInner = styled.div`
     ${FieldWrapper}:focus-within & {
         border-color: rgba(168, 85, 247, 0.8);
         box-shadow:
-            0 20px 50px rgba(88, 28, 135, 0.55),
-            inset 0 0 0 1px rgba(15, 23, 42, 0.9);
+                0 20px 50px rgba(88, 28, 135, 0.55),
+                inset 0 0 0 1px rgba(15, 23, 42, 0.9);
         transform: translateY(-1px);
     }
 `
@@ -207,8 +192,8 @@ const IconSlot = styled.div`
     border-radius: 9999px;
     background: radial-gradient(circle at top left, rgba(168, 85, 247, 0.3), rgba(88, 28, 135, 0.8));
     box-shadow:
-        0 8px 16px rgba(88, 28, 135, 0.5),
-        0 0 0 1px rgba(15, 23, 42, 0.8);
+            0 8px 16px rgba(88, 28, 135, 0.5),
+            0 0 0 1px rgba(15, 23, 42, 0.8);
 `
 
 const DefaultIcon = styled.span`
@@ -256,9 +241,9 @@ const ClearButton = styled.button`
     font-size: 1.1rem;
     cursor: pointer;
     transition:
-        background 0.15s ease,
-        color 0.15s ease,
-        transform 0.1s ease;
+            background 0.15s ease,
+            color 0.15s ease,
+            transform 0.1s ease;
 
     &:hover {
         background: rgba(31, 41, 55, 1);
@@ -284,33 +269,33 @@ const SearchButton = styled.button`
     cursor: pointer;
 
     background: linear-gradient(
-        to right,
-        rgba(168, 85, 247, 0.95),
-        rgba(236, 72, 153, 0.95)
+            to right,
+            rgba(168, 85, 247, 0.95),
+            rgba(236, 72, 153, 0.95)
     );
     color: white;
     box-shadow:
-        0 10px 20px rgba(168, 85, 247, 0.4),
-        0 0 0 1px rgba(15, 23, 42, 0.9);
+            0 10px 20px rgba(168, 85, 247, 0.4),
+            0 0 0 1px rgba(15, 23, 42, 0.9);
     transition:
-        transform 0.15s ease,
-        box-shadow 0.15s ease,
-        filter 0.15s ease,
-        opacity 0.15s ease;
+            transform 0.15s ease,
+            box-shadow 0.15s ease,
+            filter 0.15s ease,
+            opacity 0.15s ease;
 
     &:hover:enabled {
         filter: brightness(1.05);
         transform: translateY(-0.5px);
         box-shadow:
-            0 16px 30px rgba(168, 85, 247, 0.5),
-            0 0 0 1px rgba(15, 23, 42, 0.9);
+                0 16px 30px rgba(168, 85, 247, 0.5),
+                0 0 0 1px rgba(15, 23, 42, 0.9);
     }
 
     &:active:enabled {
         transform: translateY(0);
         box-shadow:
-            0 8px 16px rgba(88, 28, 135, 0.6),
-            0 0 0 1px rgba(15, 23, 42, 0.9);
+                0 8px 16px rgba(88, 28, 135, 0.6),
+                0 0 0 1px rgba(15, 23, 42, 0.9);
     }
 
     &:disabled {

@@ -1,15 +1,10 @@
-import { createRootRoute, createRoute, Outlet } from "@tanstack/react-router";
+import { createRootRoute, createRoute } from "@tanstack/react-router";
+import { StyledComponentsDemo } from "./features/Tim/styledComponents/StyledComponentsDemo";
 import { HomePage } from "./pages/HomePage";
-import { StyledComponentsDemo } from "./features/demoResearch/styledComponents/StyledComponentsDemo";
-import { NavbarSection } from './features/demoResearch/navbar';
+import { RootLayout } from "./pages/RootLayout";
 
 export const rootRoute = createRootRoute({
-  component: () => (
-    <>
-      <NavbarSection />
-      <Outlet />
-    </>
-  ),
+  component: RootLayout,
 });
 
 export const indexRoute = createRoute({

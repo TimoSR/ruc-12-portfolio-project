@@ -1,30 +1,26 @@
+import { observer } from 'mobx-react'
 import styled from 'styled-components'
-import type { SearchResultItem } from '../store/SearchStore'
+import type { ISearchStore } from '../store/SearchStore'
 
-export type SearchResultsProps = {
-    query: string
-    results: SearchResultItem[]
-    isSearching: boolean
-    error: string | null
+export const SearchResults = observer(SearchResultsBase)
+
+type SearchResultsProps = {
+    searchStore: ISearchStore
 }
 
-export const SearchResults = ({
-    query,
-    results,
-    isSearching,
-    error
-}: SearchResultsProps) => {
-    const trimmedQuery = query.trim()
+function SearchResultsBase ({ searchStore }: SearchResultsProps) {
 
-    if (error !== null) {
+    const trimmedQuery = searchStore.query.trim()
+
+    if (searchStore.error !== null) {
         return (
             <ErrorMessage>
-                {error}
+                {searchStore.error}
             </ErrorMessage>
         )
     }
 
-    if (isSearching) {
+    if (searchStore.isSearching) {
         return (
             <InfoMessage>
                 Searching for <strong>{trimmedQuery || '...'}</strong>
@@ -36,7 +32,7 @@ export const SearchResults = ({
         return null
     }
 
-    if (results.length === 0) {
+    if (searchStore.results.length === 0) {
         return (
             <InfoMessage>
                 No results for <strong>{trimmedQuery}</strong>
@@ -46,30 +42,36 @@ export const SearchResults = ({
 
     return (
         <ResultsList>
-            {results.map(item => (
-                <ResultItem key={item.id}>
-                    <ResultTitle>
-                        {item.title}
-                    </ResultTitle>
-                    {item.description !== undefined && item.description.length > 0 && (
-                        <ResultDescription>
-                            {item.description}
-                        </ResultDescription>
-                    )}
-                    {item.url !== undefined && (
-                        <ResultLink
-                            href={item.url}
-                            target="_blank"
-                            rel="noreferrer"
-                        >
-                            Open
-                        </ResultLink>
-                    )}
-                </ResultItem>
-            ))}
+            {searchStore.results.map(item => {
+
+                const hasDescription = (item.description?.length ?? 0) > 0
+                const hasUrl = item.url !== undefined
+
+                return (
+                    <ResultItem key={item.id}>
+                        
+                        <ResultTitle> {item.title} </ResultTitle>
+
+                        { hasDescription ? (
+                            <ResultDescription> {item.description} </ResultDescription>
+                        ): null }
+
+                        { hasUrl ? (
+                            <ResultLink href={item.url} target="_blank" rel="noreferrer">
+                                Open
+                            </ResultLink>
+                        ) : null}
+
+                    </ResultItem>
+                )
+            })}
         </ResultsList>
     )
 }
+
+/* ===========================
+   styled-components
+   =========================== */
 
 const ResultsList = styled.div`
     display: flex;
@@ -107,33 +109,33 @@ const ResultLink = styled.a`
     padding: 0.25rem 0.6rem;
     border-radius: 9999px;
     background: linear-gradient(
-        to right,
-        rgba(168, 85, 247, 0.95),
-        rgba(236, 72, 153, 0.95)
+            to right,
+            rgba(168, 85, 247, 0.95),
+            rgba(236, 72, 153, 0.95)
     );
     color: white;
     text-decoration: none;
     box-shadow:
-        0 6px 15px rgba(168, 85, 247, 0.4),
-        0 0 0 1px rgba(15, 23, 42, 0.9);
+            0 6px 15px rgba(168, 85, 247, 0.4),
+            0 0 0 1px rgba(15, 23, 42, 0.9);
     transition:
-        transform 0.12s ease,
-        box-shadow 0.12s ease,
-        filter 0.12s ease;
+            transform 0.12s ease,
+            box-shadow 0.12s ease,
+            filter 0.12s ease;
 
     &:hover {
         filter: brightness(1.05);
         transform: translateY(-0.5px);
         box-shadow:
-            0 10px 20px rgba(168, 85, 247, 0.55),
-            0 0 0 1px rgba(15, 23, 42, 0.9);
+                0 10px 20px rgba(168, 85, 247, 0.55),
+                0 0 0 1px rgba(15, 23, 42, 0.9);
     }
 
     &:active {
         transform: translateY(0);
         box-shadow:
-            0 4px 10px rgba(88, 28, 135, 0.6),
-            0 0 0 1px rgba(15, 23, 42, 0.9);
+                0 4px 10px rgba(88, 28, 135, 0.6),
+                0 0 0 1px rgba(15, 23, 42, 0.9);
     }
 `
 
