@@ -52,6 +52,7 @@ const NavContainer = styled.nav`
     top: 0;
     width: 100%; // Full viewport width fixes alignment issues
     overflow-x: hidden;
+    z-index: 40;
     background: rgba(15, 23, 42, 0.8);
     backdrop-filter: blur(12px);
     border-bottom: 1px solid rgba(55, 65, 81, 0.4);
