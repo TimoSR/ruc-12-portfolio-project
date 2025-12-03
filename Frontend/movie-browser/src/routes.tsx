@@ -1,23 +1,31 @@
-import { createRootRoute, createRoute } from "@tanstack/react-router";
-import { Home } from "./components/Home";
-import { StyledComponentsDemo } from "./components/StyledComponentsDemo";
+import { createRootRoute, createRoute, Outlet } from "@tanstack/react-router";
+import { HomePage } from "./pages/HomePage";
+import { StyledComponentsDemo } from "./features/demoResearch/styledComponents/StyledComponentsDemo";
+import { NavbarSection } from './features/demoResearch/navbar';
 
-export const rootRoute = createRootRoute();
+export const rootRoute = createRootRoute({
+  component: () => (
+    <>
+      <NavbarSection />
+      <Outlet />
+    </>
+  ),
+});
 
 export const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/",
-  component: Home,
+  component: HomePage,
 });
 
 // Styled Components Route
 export const styledRoute = createRoute({
-    getParentRoute: () => rootRoute,
-    path: '/styled',
-    component: StyledComponentsDemo,
+  getParentRoute: () => rootRoute,
+  path: '/styled',
+  component: StyledComponentsDemo,
 })
 
 export const routeTree = rootRoute.addChildren([
-    indexRoute,
-    styledRoute,
+  indexRoute,
+  styledRoute,
 ]);
