@@ -1,25 +1,12 @@
 import styled from 'styled-components'
 import { Link } from '@tanstack/react-router'
-import { SearchInput } from '../../search'
 
 export interface NavbarProps {
     className?: string
-    isMobileMenuOpen: boolean
-    onToggleMobileMenu: () => void
-    onCloseMobileMenu: () => void
-    searchQuery: string
-    onSearchChange: (query: string) => void
-    onSearch?: (query: string) => void
 }
 
 export const Navbar = ({
     className = '',
-    isMobileMenuOpen,
-    onToggleMobileMenu,
-    onCloseMobileMenu,
-    searchQuery,
-    onSearchChange,
-    onSearch
 }: NavbarProps) => {
     return (
         <Nav className={className}>
@@ -29,45 +16,15 @@ export const Navbar = ({
                     <BrandText>MovieBrowser</BrandText>
                 </Brand>
 
-                <SearchBarWrapper>
-                    <SearchInput
-                        value={searchQuery}
-                        onChange={onSearchChange}
-                        onSearch={onSearch}
-                        placeholder="Search movies, people..."
-                    />
-                </SearchBarWrapper>
-
                 <DesktopLinks>
                     <NavLink to="/">Home</NavLink>
-                    <NavLink to="/search">Search</NavLink>
                     <NavLink to="/profile">Profile</NavLink>
                 </DesktopLinks>
-
-                <MobileMenuButton onClick={onToggleMobileMenu}>
-                    {isMobileMenuOpen ? '✕' : '☰'}
-                </MobileMenuButton>
 
                 <UserSection>
                     <LoginButton>Login</LoginButton>
                 </UserSection>
             </Container>
-
-            {isMobileMenuOpen && (
-                <MobileMenu>
-                    <MobileSearchWrapper>
-                        <SearchInput
-                            value={searchQuery}
-                            onChange={onSearchChange}
-                            onSearch={onSearch}
-                            placeholder="Search movies, people..."
-                        />
-                    </MobileSearchWrapper>
-                    <MobileNavLink to="/" onClick={onCloseMobileMenu}>Home</MobileNavLink>
-                    <MobileNavLink to="/search" onClick={onCloseMobileMenu}>Search</MobileNavLink>
-                    <MobileNavLink to="/profile" onClick={onCloseMobileMenu}>Profile</MobileNavLink>
-                </MobileMenu>
-            )}
         </Nav>
     )
 }
@@ -181,55 +138,5 @@ const LoginButton = styled.button`
 
     &:hover {
         opacity: 0.9;
-    }
-`
-
-const MobileMenuButton = styled.button`
-    display: none;
-    background: none;
-    border: none;
-    color: var(--color-text);
-    font-size: 1.5rem;
-    cursor: pointer;
-    flex-shrink: 0;
-
-    @media (max-width: 1024px) {
-        display: block;
-    }
-`
-
-const MobileMenu = styled.div`
-    display: flex;
-    flex-direction: column;
-    padding: 1rem;
-    background: var(--color-surface);
-    border-top: 1px solid var(--color-border);
-    gap: 0.5rem;
-    
-    @media (min-width: 769px) {
-        display: none;
-    }
-`
-
-const MobileSearchWrapper = styled.div`
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid var(--color-border);
-    margin-bottom: 0.5rem;
-`
-
-const MobileNavLink = styled(Link)`
-    padding: 1rem;
-    color: var(--color-text);
-    text-decoration: none;
-    font-weight: 500;
-    border-radius: var(--radius-md);
-
-    &:hover {
-        background: var(--color-surface-hover, rgba(255,255,255,0.05));
-    }
-
-    &.active {
-        color: var(--color-primary);
-        background: var(--color-primary-muted, rgba(59, 130, 246, 0.1));
     }
 `

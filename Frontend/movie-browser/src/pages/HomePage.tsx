@@ -1,38 +1,10 @@
 // src/pages/HomePage.tsx
 import styled from 'styled-components'
-import { RightAlignedSearchSection, FullWidthSearchSection } from '../features/Tim/search'
-import { FeatureCard, CardColor } from '../features/Tim/styledComponents/components/FeatureCard'
-
+import { FullWidthSearchSection } from '../features/Tim/search'
 
 export const HomePage = () => {
     return (
         <Page>
-            <HeroRow>
-                <HeroContent>
-                    <HeroTitle>
-                        Welcome home.
-                    </HeroTitle>
-                    <HeroText>
-                        Use the search on the right to explore your data.
-                    </HeroText>
-                </HeroContent>
-
-                <FeatureCard
-                    title="Instant Search"
-                    description="Debounced queries, MobX state, and a crisp UI."
-                    icon={<span>⚡</span>}
-                    color={CardColor.Purple}
-                />
-            </HeroRow>
-
-            <Toolbar>
-                <ToolbarTitle>
-                    Items
-                </ToolbarTitle>
-
-                <RightAlignedSearchSection />
-            </Toolbar>
-
             <FullWidthSearchSection />
         </Page>
     )

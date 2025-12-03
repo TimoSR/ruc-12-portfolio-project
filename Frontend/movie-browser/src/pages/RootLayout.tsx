@@ -1,6 +1,6 @@
 import { Outlet } from "@tanstack/react-router";
-import { Navigation } from "../features/Tim/navigation";
 import { createGlobalStyle } from "styled-components";
+import { Navigation } from "../features/Tim/navigation";
 
 export function RootLayout() {
   return (
