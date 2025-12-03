@@ -20,25 +20,25 @@ function SearchResultsBase ({ searchStore }: SearchResultsProps) {
         )
     }
 
-    if (searchStore.isSearching) {
-        return (
-            <InfoMessage>
-                Searching for <strong>{trimmedQuery || '...'}</strong>
-            </InfoMessage>
-        )
-    }
+    // if (searchStore.isSearching) {
+    //     return (
+    //         <InfoMessage>
+    //             Searching for <strong>{trimmedQuery || '...'}</strong>
+    //         </InfoMessage>
+    //     )
+    // }
 
     if (trimmedQuery.length === 0) {
         return null
     }
 
-    if (searchStore.results.length === 0) {
-        return (
-            <InfoMessage>
-                No results for <strong>{trimmedQuery}</strong>
-            </InfoMessage>
-        )
-    }
+    // if (searchStore.results.length === 0) {
+    //     return (
+    //         <InfoMessage>
+    //             No results for <strong>{trimmedQuery}</strong>
+    //         </InfoMessage>
+    //     )
+    // }
 
     return (
         <ResultsList>
@@ -76,14 +76,14 @@ function SearchResultsBase ({ searchStore }: SearchResultsProps) {
 const ResultsList = styled.div`
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.3rem;
     margin-top: 1rem;
 `
 
 const ResultItem = styled.div`
     padding: 0.9rem 1.1rem;
     border-radius: 1rem;
-    background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.98));
+    background: radial-gradient(circle at top left, rgba(15, 23, 42, 1), rgba(15, 23, 42, 1));
     border: 1px solid rgba(55, 65, 81, 0.7);
     box-shadow: 0 10px 25px rgba(15, 23, 42, 0.8);
     display: flex;

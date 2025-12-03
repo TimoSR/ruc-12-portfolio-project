@@ -3,9 +3,9 @@ import styled, { createGlobalStyle } from "styled-components";
 import { Navigation } from "../features/Tim/navigation";
 import { SearchStore, type ISearchStore } from "../features/Tim/search/store/SearchStore";
 import { SearchResults } from "../features/Tim/search/components/SearchResults";
-import { useLocalObservable } from "mobx-react";
+import { observer, useLocalObservable } from "mobx-react";
 
-export function RootLayout() {
+export const RootLayout = observer(() => {
 
   const searchStore = useLocalObservable<ISearchStore>(() => new SearchStore())
 
@@ -23,11 +23,11 @@ export function RootLayout() {
         <Outlet />
     </>
   )
-}
+})
 
 const SearchResultsOverlay = styled.div`
   position: fixed;
-  top: 90px;              /* adjust to match your Navigation height */
+  top: 5.2rem;              /* adjust to match your Navigation height */
   left: 0;
   right: 0;
 
@@ -41,7 +41,7 @@ const SearchResultsOverlay = styled.div`
 
 const SearchResultsContainer = styled.div`
   width: 100%;
-  max-width: 1200px;
+  max-width: 600px;
   pointer-events: auto;   /* re-enable clicks on the actual results */
 `;
 
