@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 import { Link } from '@tanstack/react-router'
-import { SearchInput } from '../../search'
+import { SearchInput } from '../../../tim/search'
 
 export interface NavbarProps {
     className?: string

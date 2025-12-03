@@ -1,7 +1,7 @@
 // src/pages/HomePage.tsx
 import styled from 'styled-components'
-import { RightAlignedSearchSection, FullWidthSearchSection } from '../features/demoResearch/search'
-import { CardColor, FeatureCard } from '../features/demoResearch/styledComponents/components/FeatureCard'
+import { CardColor, FeatureCard } from '../features/tim/styledComponents/components/FeatureCard'
+import { RightAlignedSearchSection, FullWidthSearchSection } from '../features/tim/search'
 
 export const HomePage = () => {
     return (

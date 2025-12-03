@@ -1,7 +1,7 @@
 import { createRootRoute, createRoute, Outlet } from "@tanstack/react-router";
 import { HomePage } from "./pages/HomePage";
-import { StyledComponentsDemo } from "./features/demoResearch/styledComponents/StyledComponentsDemo";
-import { NavbarSection } from './features/demoResearch/navbar';
+import { NavbarSection } from "./features/chris/navbar";
+import { StyledComponentsDemo } from "./features/tim/styledComponents/StyledComponentsDemo";
 
 export const rootRoute = createRootRoute({
   component: () => (
