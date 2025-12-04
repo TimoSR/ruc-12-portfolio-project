@@ -12,7 +12,7 @@ type NavigationProps = {
 }
 
 function NavigationBase({ className = '', searchStore }: NavigationProps) {
-    
+
     return (
         <NavContainer className={className}>
             <ContentWrapper>
@@ -27,6 +27,9 @@ function NavigationBase({ className = '', searchStore }: NavigationProps) {
                 <DesktopLinks>
                     <StyledLink to="/" activeProps={{ className: 'active' }}>
                         Home
+                    </StyledLink>
+                    <StyledLink to="/movies" activeProps={{ className: 'active' }}>
+                        Movies
                     </StyledLink>
                     <StyledLink to="/styled" activeProps={{ className: 'active' }}>
                         Styled Demo
