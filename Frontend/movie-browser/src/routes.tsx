@@ -2,6 +2,8 @@ import { createRootRoute, createRoute } from "@tanstack/react-router";
 import { StyledComponentsDemo } from "./features/Tim/styledComponents/StyledComponentsDemo";
 import { HomePage } from "./pages/HomePage";
 import { RootLayout } from "./pages/RootLayout";
+import { ActorListPage } from "./pages/ActorListPage";
+import { ActorDetailsPage } from "./pages/ActorDetailsPage";
 import { RegisterPage } from "./pages/RegisterPage";
 
 export const rootRoute = createRootRoute({
@@ -21,6 +23,19 @@ export const styledRoute = createRoute({
   component: StyledComponentsDemo,
 })
 
+// Actor Routes
+export const actorListRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/actors',
+  component: ActorListPage,
+})
+
+export const actorDetailsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/actors/$actorId',
+  component: ActorDetailsPage,
+})
+
 // Styled Components Route
 export const registerRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -31,5 +46,7 @@ export const registerRoute = createRoute({
 export const routeTree = rootRoute.addChildren([
   indexRoute,
   styledRoute,
+  actorListRoute,
+  actorDetailsRoute,
   registerRoute
 ]);
