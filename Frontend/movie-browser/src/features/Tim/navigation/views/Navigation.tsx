@@ -31,6 +31,9 @@ function NavigationBase({ className = '', searchStore }: NavigationProps) {
                     <StyledLink to="/styled" activeProps={{ className: 'active' }}>
                         Styled Demo
                     </StyledLink>
+                    <StyledLink to="/register" activeProps={{ className: 'active' }}>
+                        Register
+                    </StyledLink>
                 </DesktopLinks>
 
                 {/* Mobile menu toggle could go here using store.toggleMobileMenu */}
