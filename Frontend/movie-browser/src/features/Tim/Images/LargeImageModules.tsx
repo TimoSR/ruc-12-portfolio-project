@@ -53,7 +53,7 @@ export const LargeImageModule = styled.img<LargeImageProps>`
 
   object-fit: ${({ $cover }) => ($cover ? "cover" : "contain")};
 
-  border-radius: ${({ $rounded }) => ($rounded ? "16px" : "0px")};
+  border-radius: ${({ $rounded }) => ($rounded ? "12px" : "0px")};
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 
   /* Optional: prevent image selection and drag-ghosts in UI-heavy apps */

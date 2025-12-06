@@ -23,7 +23,7 @@ const Section = styled.section`
 
 
   padding: 1.25rem 1.25rem;
-  border-radius: 16px;
+  border-radius: 12px;
 
   border: 1px solid rgba(148, 163, 184, 0.6);
   background: rgba(15, 23, 42, 0.96);
@@ -101,7 +101,7 @@ const Image = styled.img`
   flex-shrink: 0;
   width: 80px;
   height: 120px;
-  border-radius: 10px;
+  border-radius: 12px;
   object-fit: cover;
   background-color: #020617;
 `;
@@ -143,14 +143,6 @@ const Meta = styled.div`
   display: flex;
   align-items: center;
   gap: 0.35rem;
-`;
-
-const Dot = styled.span`
-  display: inline-block;
-  width: 4px;
-  height: 4px;
-  border-radius: 999px;
-  background-color: #22c55e;
 `;
 
 /**
