@@ -3,6 +3,7 @@ import { StyledComponentsDemo } from "./features/Tim/styledComponents/StyledComp
 import { HomePage } from "./pages/HomePage";
 import { RootLayout } from "./pages/RootLayout";
 import { RegisterPage } from "./pages/RegisterPage";
+import { BookmarksPage } from "./pages/BookmarksPage";
 
 export const rootRoute = createRootRoute({
   component: RootLayout,
@@ -28,8 +29,16 @@ export const registerRoute = createRoute({
   component: RegisterPage,
 })
 
+// Bookmarks Route
+export const bookmarksRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/bookmarks',
+  component: BookmarksPage,
+})
+
 export const routeTree = rootRoute.addChildren([
   indexRoute,
   styledRoute,
-  registerRoute
+  registerRoute,
+  bookmarksRoute,
 ]);
