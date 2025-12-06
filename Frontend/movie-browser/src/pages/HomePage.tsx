@@ -6,7 +6,6 @@ export const HomePage = () => {
 
     return (
         <Page>
-            < GlobalScrollbarFix />
             <FullWidthSearchSection />
         </Page>
     )

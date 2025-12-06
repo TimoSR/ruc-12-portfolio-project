@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import styled from 'styled-components'
+import styled, { createGlobalStyle } from 'styled-components'
 
 export const RegisterPage = () => {
     const [email, setEmail] = useState('')
@@ -36,7 +36,7 @@ export const RegisterPage = () => {
         }
     }
 
-    return (
+    return (   
         <Page>
             <Card>
                 <Title>Create your account</Title>
@@ -58,8 +58,8 @@ export const RegisterPage = () => {
                 />
 
                 {/* error is invoked if error occur */}
-                {error && <ErrorText>{error}</ErrorText>}
-                {success && <SuccessText>{success}</SuccessText>}
+                {error ? <ErrorText>{error}</ErrorText> : null}
+                {success ? <SuccessText>{success}</SuccessText> : null}
 
                 <Button disabled={loading} onClick={handleSignup}>
                     {loading ? 'Signing up...' : 'Sign Up'}
@@ -68,6 +68,13 @@ export const RegisterPage = () => {
         </Page>
     )
 }
+
+const GlobalScrollbarFix = createGlobalStyle`
+  html {
+    /* This forces the scrollbar UI to be visible 100% of the time */
+    overflow-y: auto;
+  }
+`
 
 const Page = styled.main`
     max-width: 480px;

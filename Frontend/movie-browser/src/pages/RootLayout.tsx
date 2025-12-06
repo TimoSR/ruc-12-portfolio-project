@@ -16,6 +16,6 @@ export const RootLayout = () => {
 const GlobalScrollbarFix = createGlobalStyle`
   html {
     /* This forces the scrollbar UI to be visible 100% of the time */
-    overflow-y: auto;
+    overflow-y: scroll;
   }
 `
