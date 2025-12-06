@@ -17,7 +17,7 @@ interface UpNextModuleProps {
 /**
  * Outer box – this is the "wrapped box around it"
  */
-const UpNextSection = styled.section`
+const Section = styled.section`
   width: 100%;
   height: 100%;
 
@@ -34,7 +34,7 @@ const UpNextSection = styled.section`
   gap: 0.9rem;
 `;
 
-const UpNextHeader = styled.header`
+const Header = styled.header`
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -52,7 +52,7 @@ const UpNextTitle = styled.h2`
 /**
  * Vertical stack of cards
  */
-const UpNextList = styled.div`
+const List = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -61,7 +61,7 @@ const UpNextList = styled.div`
 /**
  * Clickable row card
  */
-const UpNextCard = styled.a`
+const Card = styled.a`
   position: relative;
   display: flex;
   flex-direction: row;
@@ -97,23 +97,23 @@ const UpNextCard = styled.a`
   }
 `;
 
-const UpNextImage = styled.img`
+const Image = styled.img`
   flex-shrink: 0;
-  width: 72px;
-  height: 72px;
+  width: 80px;
+  height: 120px;
   border-radius: 10px;
   object-fit: cover;
   background-color: #020617;
 `;
 
-const UpNextContent = styled.div`
+const Content = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   min-width: 0;
 `;
 
-const UpNextMovieTitle = styled.h3`
+const Title = styled.h3`
   margin: 0 0 0.2rem 0;
   font-size: 0.9rem;
   font-weight: 600;
@@ -123,11 +123,12 @@ const UpNextMovieTitle = styled.h3`
   text-overflow: ellipsis;
 `;
 
-const UpNextMovieDescription = styled.p`
+const Description = styled.p`
   margin: 0;
   font-size: 0.78rem;
   line-height: 1.35;
   color: #9ca3af;
+  height: 5.3rem;
 
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -135,7 +136,7 @@ const UpNextMovieDescription = styled.p`
   overflow: hidden;
 `;
 
-const UpNextMeta = styled.div`
+const Meta = styled.div`
   margin-top: 0.3rem;
   font-size: 0.75rem;
   color: #c4b5fd;
@@ -160,35 +161,31 @@ export const UpNextModule: React.FC<UpNextModuleProps> = ({ items }) => {
 
   return (
     <>
-      <UpNextSection aria-label="Up next">
-        <UpNextHeader>
+      <Section aria-label="Up next">
+        <Header>
           <UpNextTitle>Up Next</UpNextTitle>
-        </UpNextHeader>
+        </Header>
 
-        <UpNextList>
+        <List>
           {visibleItems.map((item) => (
-            <UpNextCard key={item.id} href={item.href}>
-              <UpNextImage
+            <Card key={item.id} href={item.href}>
+              <Image
                 src={item.imageSrc}
                 alt={item.imageAlt}
                 loading="lazy"
               />
-              <UpNextContent>
+              <Content>
                 <div>
-                  <UpNextMovieTitle>{item.title}</UpNextMovieTitle>
-                  <UpNextMovieDescription>
+                  <Title>{item.title}</Title>
+                  <Description>
                     {item.description}
-                  </UpNextMovieDescription>
+                  </Description>
                 </div>
-                <UpNextMeta>
-                  <Dot />
-                  <span>Play now</span>
-                </UpNextMeta>
-              </UpNextContent>
-            </UpNextCard>
+              </Content>
+            </Card>
           ))}
-        </UpNextList>
-      </UpNextSection>
+        </List>
+      </Section>
     </>
   );
 };

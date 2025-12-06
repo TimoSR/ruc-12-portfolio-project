@@ -61,7 +61,7 @@ export const LargeImageModule = styled.img<LargeImageProps>`
   -webkit-user-drag: none;
 
   /* Responsive tweak example */
-  @media (max-width: 3000px) {
+  @media (max-width: 2000px) {
     max-width: 100%;
     border-radius: ${({ $rounded }) => ($rounded ? "12px" : "0px")};
   }
