@@ -2,6 +2,7 @@
 import styled from "styled-components";
 import { LargeImage } from "../features/Tim/Images/LargeImageModules";
 import { UpNextModule, type UpNextItem } from "../features/Tim/Movies/UpNextModule";
+import { SearchSection } from "../features/Tim/search";
 
 export const HomePage = () => {
   return (
@@ -22,6 +23,7 @@ export const HomePage = () => {
           <UpNextModule items={upNextItems} />
         </UpNextWrapper>
       </MainModule>
+      <SearchSection />
     </Page>
   );
 };

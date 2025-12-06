@@ -1,8 +1,9 @@
+// Navigation.tsx
 import { observer } from 'mobx-react'
 import styled from 'styled-components'
 import { Link } from '@tanstack/react-router'
 import type { ISearchStore } from '../../search/store/SearchStore'
-import { SearchInput } from '../../search/components/SearchInput'
+import { WideSearchInput } from '../../search'
 
 export const Navigation = observer(NavigationBase)
 
@@ -12,7 +13,6 @@ type NavigationProps = {
 }
 
 function NavigationBase({ className = '', searchStore }: NavigationProps) {
-    
     return (
         <NavContainer className={className}>
             <ContentWrapper>
@@ -21,7 +21,7 @@ function NavigationBase({ className = '', searchStore }: NavigationProps) {
                 </Logo>
 
                 <SearchContainer>
-                    <SearchInput searchStore={searchStore} />
+                    <WideSearchInput searchStore={searchStore} />
                 </SearchContainer>
 
                 <DesktopLinks>
@@ -35,8 +35,6 @@ function NavigationBase({ className = '', searchStore }: NavigationProps) {
                         Register
                     </StyledLink>
                 </DesktopLinks>
-
-                {/* Mobile menu toggle could go here using store.toggleMobileMenu */}
             </ContentWrapper>
         </NavContainer>
     )
@@ -44,16 +42,10 @@ function NavigationBase({ className = '', searchStore }: NavigationProps) {
 
 // === Styled Components ===
 
-const SearchContainer = styled.div`
-    max-width: 1280px;
-    display: flex;
-    align-items: center;    
-`
-
 const NavContainer = styled.nav`
     position: sticky;
     top: 0;
-    width: 100%; // Full viewport width fixes alignment issues
+    width: 100%;
     overflow-x: hidden;
     z-index: 40;
     background: rgba(15, 23, 42, 0.8);
@@ -64,13 +56,17 @@ const NavContainer = styled.nav`
 const ContentWrapper = styled.div`
     max-width: 1280px;
     margin: 0 auto;
-    padding: 1rem 2rem;
+    padding: 2.3rem 2rem;
+
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
+
+    position: relative;  /* anchor for absolute search */
 `
 
 const Logo = styled(Link)`
+    flex-shrink: 0;
     font-size: 1.5rem;
     font-weight: 800;
     text-decoration: none;
@@ -84,7 +80,31 @@ const Logo = styled(Link)`
     }
 `
 
+/**
+ * This is the magic:
+ *  - absolutely centered in the wrapper
+ *  - has a fixed/max width so it can grow
+ *  - does NOT care about how wide logo/links are
+ */
+const SearchContainer = styled.div`
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+
+    width: min(600px, 100% - 4rem);  /* bigger input + some side padding */
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    & > * {
+        width: 100%;  /* WideSearchInput fills this area */
+    }
+`
+
 const DesktopLinks = styled.div`
+    flex-shrink: 0;
     display: flex;
     gap: 2rem;
     align-items: center;

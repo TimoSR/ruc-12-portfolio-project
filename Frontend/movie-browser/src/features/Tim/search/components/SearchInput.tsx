@@ -127,7 +127,7 @@ const Root = styled.div`
 
 const FieldWrapper = styled.div<{ $isLoading: boolean }>`
     position: relative;
-    border-radius: 9999px;
+    border-radius: 100px;
     background: radial-gradient(circle at top left, rgba(168, 85, 247, 0.15), transparent);
     opacity: ${props => (props.$isLoading ? 0.9 : 1)};
     transition: opacity 0.2s ease;
@@ -261,6 +261,9 @@ const SearchButton = styled.button`
     border: none;
     outline: none;
     border-radius: 9999px;
+
+    min-width: 7.5rem;          /* tweak to fit your longest label */
+    
     padding: 0.4rem 0.9rem;
     font-size: 0.875rem;
     font-weight: 600;
