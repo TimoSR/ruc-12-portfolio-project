@@ -5,6 +5,7 @@ import { RootLayout } from "./pages/RootLayout";
 import { ActorListPage } from "./pages/ActorListPage";
 import { ActorDetailsPage } from "./pages/ActorDetailsPage";
 import { RegisterPage } from "./pages/RegisterPage";
+import { LoginPage } from "./pages/LoginPage";
 
 export const rootRoute = createRootRoute({
   component: RootLayout,
@@ -36,6 +37,12 @@ export const actorDetailsRoute = createRoute({
   component: ActorDetailsPage,
 })
 
+export const loginRoute = createRoute({
+  getParentRoute: () => rootRoute,  
+  path: '/login',
+  component: LoginPage,
+})
+
 // Styled Components Route
 export const registerRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -48,5 +55,6 @@ export const routeTree = rootRoute.addChildren([
   styledRoute,
   actorListRoute,
   actorDetailsRoute,
-  registerRoute
+  registerRoute,
+  loginRoute,
 ]);
