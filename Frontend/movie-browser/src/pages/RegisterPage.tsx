@@ -39,7 +39,6 @@ export const RegisterPage = () => {
     return (   
         <Page>
             <Card>
-                <Title>Create your account</Title>
                 <Label>Email</Label>
                 <Input
                     type="email"

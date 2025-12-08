@@ -51,7 +51,7 @@ export const LoginPage = () => {
                     type="text"
                     value={identifier}
                     onChange={(e) => setIdentifier(e.target.value)}
-                    placeholder="you@example.com "
+                    placeholder="your@email.com "
                 />
 
                 <Label>Password</Label>
