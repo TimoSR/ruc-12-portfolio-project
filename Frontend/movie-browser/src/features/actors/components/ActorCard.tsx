@@ -1,36 +1,36 @@
 import { observer } from 'mobx-react'
 import styled from 'styled-components'
-import type { ActorItem } from '../types'
+import type { ActorItem } from '../index'
 
 export const ActorCard = observer(ActorCardBase)
 
 type ActorCardProps = {
-    actor: ActorItem
-    onClick: () => void
-    className?: string
+  actor: ActorItem
+  onClick: () => void
+  className?: string
 }
 
 function ActorCardBase({ actor, onClick, className = '' }: ActorCardProps) {
-    return (
-        <Card className={className} onClick={onClick}>
-            <ImagePlaceholder>
-                <PlaceholderIcon>👤</PlaceholderIcon>
-            </ImagePlaceholder>
-            <Content>
-                <Name>{actor.primaryName}</Name>
-                {actor.primaryProfession && actor.primaryProfession.length > 0 && (
-                    <Profession>{actor.primaryProfession.join(', ')}</Profession>
-                )}
-                <Meta>
-                    {actor.birthYear && <span>{actor.birthYear}</span>}
-                    {actor.deathYear && <span> - {actor.deathYear}</span>}
-                    {actor.averageRating && (
-                        <Rating>★ {actor.averageRating.toFixed(1)}</Rating>
-                    )}
-                </Meta>
-            </Content>
-        </Card>
-    )
+  return (
+    <Card className={className} onClick={onClick}>
+      <ImagePlaceholder>
+        <PlaceholderIcon>👤</PlaceholderIcon>
+      </ImagePlaceholder>
+      <Content>
+        <Name>{actor.primaryName}</Name>
+        {actor.primaryProfession && actor.primaryProfession.length > 0 && (
+          <Profession>{actor.primaryProfession.join(', ')}</Profession>
+        )}
+        <Meta>
+          {actor.birthYear && <span>{actor.birthYear}</span>}
+          {actor.deathYear && <span> - {actor.deathYear}</span>}
+          {actor.averageRating && (
+            <Rating>★ {actor.averageRating.toFixed(1)}</Rating>
+          )}
+        </Meta>
+      </Content>
+    </Card>
+  )
 }
 
 // === Styled Components ===

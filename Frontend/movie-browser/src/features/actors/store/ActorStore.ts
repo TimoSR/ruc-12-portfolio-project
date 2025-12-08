@@ -1,5 +1,5 @@
 import { makeAutoObservable, runInAction } from 'mobx'
-import type { ActorItem, PagedResult } from '../types'
+import type { ActorItem, PagedResult } from '../index'
 
 export interface IActorStore {
     actors: ActorItem[]
