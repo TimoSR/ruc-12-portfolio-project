@@ -79,7 +79,7 @@ const GlobalScrollbarFix = createGlobalStyle`
 const Page = styled.main`
     max-width: 480px;
     margin: 0 auto;
-    padding: 3rem 1.5rem;
+    padding: 16rem 1.5rem;
     display: flex;
     justify-content: center;
     align-items: center;

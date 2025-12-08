@@ -22,10 +22,6 @@ function ActorListViewBase({ onActorClick, className = '' }: ActorListViewProps)
 
     return (
         <Container className={className}>
-            <Header>
-                <Title>Actors</Title>
-                <Subtitle>Browse actors and personalities</Subtitle>
-            </Header>
 
             {store.error && <ErrorMessage>{store.error}</ErrorMessage>}
 
@@ -67,7 +63,7 @@ function ActorListViewBase({ onActorClick, className = '' }: ActorListViewProps)
 const Container = styled.section`
     max-width: 1280px;
     margin: 0 auto;
-    padding: 3rem 1.5rem;
+    padding: 1rem 1.5rem 4rem;
 `
 
 const Header = styled.div`
