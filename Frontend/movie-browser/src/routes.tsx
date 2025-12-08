@@ -1,4 +1,4 @@
-import { createRootRoute, createRoute, Outlet } from "@tanstack/react-router";
+import { createRootRoute, createRoute, Outlet, ScrollRestoration } from "@tanstack/react-router";
 import { StyledComponentsDemo } from "./features/Tim/styledComponents/StyledComponentsDemo";
 import { HomePage } from "./pages/HomePage";
 import { RootLayout } from "./pages/RootLayout";
@@ -10,7 +10,13 @@ import { LoginPage } from "./pages/LoginPage";
 // 1. THE INVISIBLE ROOT
 // This is now just an empty shell that renders whatever comes next.
 export const rootRoute = createRootRoute({
-  component: () => <Outlet />,
+  component: () => (
+    <>
+      {/* 2. Add it here. It's invisible but manages scroll behavior. */}
+      <ScrollRestoration /> 
+      <Outlet />
+    </>
+  ),
 });
 
 // 2. THE APP LAYOUT (Pathless Route)
