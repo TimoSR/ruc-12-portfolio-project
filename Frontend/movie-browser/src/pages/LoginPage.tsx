@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import styled from 'styled-components'
+import { Link } from '@tanstack/react-router'
 export const LoginPage = () => {
     const [identifier, setIdentifier] = useState('') // email
     const [password, setPassword] = useState('')
@@ -67,6 +68,10 @@ export const LoginPage = () => {
                 <Button disabled={loading} onClick={handleLogin}>
                     {loading ? 'Logging in...' : 'Log In'}
                 </Button>
+
+                <FooterText>
+                    Don't have an account? <StyledLink to="/register">Register</StyledLink>
+                </FooterText>
             </Card>
         </Page>
     )
@@ -135,4 +140,23 @@ const Button = styled.button`
 const ErrorText = styled.p`
     color: #f87171;
     font-size: 0.9rem;
+`;
+
+const FooterText = styled.p`
+    margin-top: 1.5rem;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #9ca3af;
+`;
+
+const StyledLink = styled(Link)`
+    color: #3b82f6;
+    text-decoration: none;
+    font-weight: 500;
+    margin-left: 0.25rem;
+
+    &:hover {
+        text-decoration: underline;
+        color: #2563eb;
+    }
 `;
