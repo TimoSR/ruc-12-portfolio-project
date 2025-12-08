@@ -22,7 +22,6 @@ export const HomePage = () => {
           <UpNextModule items={upNextItems} />
         </UpNextWrapper>
       </MainModule>
-      <SearchSection />
     </Page>
   );
 };
