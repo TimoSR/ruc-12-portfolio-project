@@ -46,8 +46,6 @@ export const LoginPage = () => {
     return (
         <Page>
             <Card>
-                <Title>Log in to your account</Title>
-
                 <Label>Email</Label>
                 <Input
                     type="text"
