@@ -14,8 +14,7 @@ export const HomePage = () => {
             alt="Space mining ship"
             rounded
             cover
-            maxWidth="800px"
-            aspectRatio={16 / 9}
+            maxWidth="100%"
           />
         </MainImageWrapper>
 
@@ -59,7 +58,7 @@ const upNextItems: UpNextItem[] = [
 ];
 
 const Page = styled.main`
-  max-width: 90%;
+  max-width: 55%;
   margin: 0 auto;
   padding: 1rem 1.5rem 4rem;
   display: flex;
@@ -89,6 +88,7 @@ const MainModule = styled.section`
 const MainImageWrapper = styled.div`
   flex: 2;
   min-width: 0;
+  max-width: 66.6%;
   display: flex;
   align-items: stretch;
 `;
@@ -103,7 +103,5 @@ const UpNextWrapper = styled.div`
   display: flex;
   align-items: stretch;
 
-  @media (min-width: 900px) {
-    max-width: 360px;
-  }
+
 `;
