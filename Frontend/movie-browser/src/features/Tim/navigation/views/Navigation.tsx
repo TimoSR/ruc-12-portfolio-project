@@ -31,9 +31,6 @@ function NavigationBase({ className = '', searchStore }: NavigationProps) {
                     <StyledLink to="/actors" activeProps={{ className: 'active' }}>
                         Actors
                     </StyledLink>
-                    <StyledLink to="/styled" activeProps={{ className: 'active' }}>
-                        Styled Demo
-                    </StyledLink>
                     <StyledLink to="/register" activeProps={{ className: 'active' }}>
                         Register
                     </StyledLink>
