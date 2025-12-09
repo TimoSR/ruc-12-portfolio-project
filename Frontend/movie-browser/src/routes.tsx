@@ -7,18 +7,17 @@ import { ActorDetailsPage } from "./pages/ActorDetailsPage";
 import { RegisterPage } from "./pages/RegisterPage";
 import { LoginPage } from "./pages/LoginPage";
 
-// 1. THE INVISIBLE ROOT
+// THE INVISIBLE ROOT
 // This is now just an empty shell that renders whatever comes next.
 export const rootRoute = createRootRoute({
   component: () => (
     <>
-      {/* 2. Add it here. It's invisible but manages scroll behavior. */}
       <Outlet />
     </>
   ),
 });
 
-// 2. THE APP LAYOUT (Pathless Route)
+// THE APP LAYOUT (Pathless Route)
 // This holds your Navbar/Sidebar.
 // We use 'id' instead of 'path' so it doesn't change the URL.
 const appLayoutRoute = createRoute({
@@ -30,25 +29,25 @@ const appLayoutRoute = createRoute({
 // --- MAIN APP ROUTES (Children of appLayoutRoute) ---
 
 export const indexRoute = createRoute({
-  getParentRoute: () => appLayoutRoute, // Changed parent
+  getParentRoute: () => appLayoutRoute,
   path: "/",
   component: HomePage,
 });
 
 export const styledRoute = createRoute({
-  getParentRoute: () => appLayoutRoute, // Changed parent
+  getParentRoute: () => appLayoutRoute,
   path: '/styled',
   component: StyledComponentsDemo,
 });
 
 export const actorListRoute = createRoute({
-  getParentRoute: () => appLayoutRoute, // Changed parent
+  getParentRoute: () => appLayoutRoute,
   path: '/actors',
   component: ActorListPage,
 });
 
 export const actorDetailsRoute = createRoute({
-  getParentRoute: () => appLayoutRoute, // Changed parent
+  getParentRoute: () => appLayoutRoute,
   path: '/actors/$actorId',
   component: ActorDetailsPage,
 });
@@ -57,13 +56,13 @@ export const actorDetailsRoute = createRoute({
 // These bypass the AppLayout, so no Navbar.
 
 export const loginRoute = createRoute({
-  getParentRoute: () => rootRoute, // Stays Root
+  getParentRoute: () => rootRoute,
   path: '/login',
   component: LoginPage,
 });
 
 export const registerRoute = createRoute({
-  getParentRoute: () => rootRoute, // Stays Root
+  getParentRoute: () => rootRoute,
   path: '/register',
   component: RegisterPage,
 });
