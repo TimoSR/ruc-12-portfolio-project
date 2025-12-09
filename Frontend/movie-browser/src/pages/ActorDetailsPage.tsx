@@ -1,9 +1,10 @@
-import { useNavigate, useParams } from '@tanstack/react-router'
+import { useNavigate } from '@tanstack/react-router'
 import { ActorDetailsView } from '../features/actors'
+import { actorDetailsRoute } from '../routes';
 
 export function ActorDetailsPage() {
   const navigate = useNavigate()
-  const { actorId } = useParams({ from: '/actors/$actorId' })
+  const { actorId } = actorDetailsRoute.useParams();
 
   const handleBack = () => {
     navigate({ to: '/actors' })
