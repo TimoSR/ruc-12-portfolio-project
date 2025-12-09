@@ -1,4 +1,4 @@
-import { createRootRoute, createRoute, createRouter, Outlet, ScrollRestoration } from "@tanstack/react-router";
+import { createRootRoute, createRoute, createRouter, Outlet } from "@tanstack/react-router";
 import { StyledComponentsDemo } from "./features/Tim/styledComponents/StyledComponentsDemo";
 import { HomePage } from "./pages/HomePage";
 import { RootLayout } from "./pages/RootLayout";
