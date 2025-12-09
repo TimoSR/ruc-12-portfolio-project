@@ -1,4 +1,4 @@
-import { createRootRoute, createRoute, Outlet, ScrollRestoration } from "@tanstack/react-router";
+import { createRootRoute, createRoute, createRouter, Outlet, ScrollRestoration } from "@tanstack/react-router";
 import { StyledComponentsDemo } from "./features/Tim/styledComponents/StyledComponentsDemo";
 import { HomePage } from "./pages/HomePage";
 import { RootLayout } from "./pages/RootLayout";
@@ -83,3 +83,15 @@ export const routeTree = rootRoute.addChildren([
   loginRoute,
   registerRoute,
 ]);
+
+const router = createRouter({
+  routeTree,
+  defaultPreload: 'intent',
+  scrollRestoration: true,
+})
+
+declare module '@tanstack/react-router' {
+  interface Register {
+    router: typeof router
+  }
+}
