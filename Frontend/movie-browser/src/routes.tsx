@@ -13,7 +13,6 @@ export const rootRoute = createRootRoute({
   component: () => (
     <>
       {/* 2. Add it here. It's invisible but manages scroll behavior. */}
-      <ScrollRestoration /> 
       <Outlet />
     </>
   ),
