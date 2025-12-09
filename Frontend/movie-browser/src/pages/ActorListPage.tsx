@@ -1,5 +1,5 @@
 import { useNavigate } from '@tanstack/react-router'
-import { ActorListView } from '../features/actors'
+import { ActorListView } from '../features/Chris/actors'
 
 export function ActorListPage() {
   const navigate = useNavigate()

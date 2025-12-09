@@ -1,7 +1,7 @@
 // ActorDetailsPage.tsx
 import { useNavigate } from '@tanstack/react-router';
-import { ActorDetailsView } from '../features/actors';
 import { actorDetailsRoute, actorListRoute } from '../routes';
+import { ActorDetailsView } from '../features/Chris/actors';
 
 export function ActorDetailsPage() {
   const { actorId } = actorDetailsRoute.useParams();
