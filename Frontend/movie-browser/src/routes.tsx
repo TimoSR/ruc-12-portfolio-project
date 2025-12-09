@@ -69,7 +69,7 @@ export const registerRoute = createRoute({
 });
 
 // 3. THE TREE
-export const routeTree = rootRoute.addChildren([
+const routeTree = rootRoute.addChildren([
   // Branch A: Pages with Navbar
   appLayoutRoute.addChildren([
     indexRoute,
@@ -83,9 +83,8 @@ export const routeTree = rootRoute.addChildren([
   registerRoute,
 ]);
 
-const router = createRouter({
+export const router = createRouter({
   routeTree,
-  defaultPreload: 'intent',
   scrollRestoration: true,
 })
 

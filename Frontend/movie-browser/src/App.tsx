@@ -1,16 +1,5 @@
-import { createRouter, RouterProvider } from "@tanstack/react-router";
-import { routeTree } from "./routes";
-
-export const router = createRouter({
-  routeTree,
-});
-
-// This MUST exist only once in the entire project:
-declare module "@tanstack/react-router" {
-  interface Register {
-    router: typeof router;
-  }
-}
+import { RouterProvider } from "@tanstack/react-router";
+import { router } from "./routes";
 
 function App() {
   return <RouterProvider router={router} />;
