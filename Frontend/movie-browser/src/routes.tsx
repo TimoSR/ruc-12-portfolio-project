@@ -6,6 +6,7 @@ import { ActorListPage } from "./pages/ActorListPage";
 import { ActorDetailsPage } from "./pages/ActorDetailsPage";
 import { RegisterPage } from "./pages/RegisterPage";
 import { LoginPage } from "./pages/LoginPage";
+import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 
 // THE INVISIBLE ROOT
 // This is now just an empty shell that renders whatever comes next.
@@ -13,6 +14,7 @@ export const rootRoute = createRootRoute({
   component: () => (
     <>
       <Outlet />
+      <TanStackRouterDevtools />
     </>
   ),
 });
