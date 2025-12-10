@@ -57,7 +57,7 @@ const upNextItems: UpNextItem[] = [
 ];
 
 const Page = styled.main`
-  max-width: 55%;
+  max-width: 1300px;
   margin: 0 auto;
   padding: 1rem 1.5rem 4rem;
   display: flex;
