@@ -12,14 +12,19 @@ export interface ISearchStore {
     results: SearchResultItem[]
     isSearching: boolean
     error: string | null
+    searchHistory: string[]
     setQuery(value: string): void
     clear(): void
     searchNow(): Promise<void>
     searchDebounced(delayMs?: number): void
+    addToHistory(query: string): void
+    removeFromHistory(query: string): void
+    clearHistory(): void
+    loadHistory(): void
 }
 
 export class SearchStore implements ISearchStore {
-    
+
     query: string = ''
     results: SearchResultItem[] = []
     isSearching: boolean = false
@@ -29,6 +34,7 @@ export class SearchStore implements ISearchStore {
 
     constructor() {
         makeAutoObservable(this, {}, { autoBind: true })
+        this.loadHistory()
     }
 
     setQuery(value: string): void {
@@ -85,12 +91,12 @@ export class SearchStore implements ISearchStore {
         this.cancelPendingSearch()
 
         if (this.query.trim().length === 0) {
-            
+
             runInAction(() => {
                 this.results = []
                 this.error = null
             })
-            
+
             return
         }
 
@@ -113,6 +119,8 @@ export class SearchStore implements ISearchStore {
             window.setTimeout(resolve, 400)
         })
 
+        this.addToHistory(query)
+
         const items: SearchResultItem[] = [
             {
                 id: '1',
@@ -129,5 +137,64 @@ export class SearchStore implements ISearchStore {
         ]
 
         return items
+    }
+
+    /* ===========================
+       History Management
+       =========================== */
+
+    searchHistory: string[] = []
+
+    addToHistory(query: string): void {
+        const trimmed = query.trim()
+        if (!trimmed) return
+
+        // Remove if already exists to move it to top
+        const existingIndex = this.searchHistory.indexOf(trimmed)
+        if (existingIndex !== -1) {
+            this.searchHistory.splice(existingIndex, 1)
+        }
+
+        // Add to front
+        this.searchHistory.unshift(trimmed)
+
+        // Limit to 10
+        if (this.searchHistory.length > 10) {
+            this.searchHistory.pop()
+        }
+
+        this.saveHistory()
+    }
+
+    removeFromHistory(query: string): void {
+        this.searchHistory = this.searchHistory.filter(q => q !== query)
+        this.saveHistory()
+    }
+
+    clearHistory(): void {
+        this.searchHistory = []
+        this.saveHistory()
+    }
+
+    private saveHistory(): void {
+        try {
+            localStorage.setItem('search_history', JSON.stringify(this.searchHistory))
+        } catch (e) {
+            console.warn('Failed to save search history', e)
+        }
+    }
+
+    loadHistory(): void {
+        try {
+            const json = localStorage.getItem('search_history')
+            if (json) {
+                const parsed = JSON.parse(json)
+                if (Array.isArray(parsed)) {
+                    this.searchHistory = parsed
+                }
+            }
+        } catch (e) {
+            console.warn('Failed to load search history', e)
+        }
     }
 }

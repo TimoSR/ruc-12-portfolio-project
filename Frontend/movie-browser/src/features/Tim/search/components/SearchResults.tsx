@@ -8,7 +8,7 @@ type SearchResultsProps = {
     searchStore: ISearchStore
 }
 
-function SearchResultsBase ({ searchStore }: SearchResultsProps) {
+function SearchResultsBase({ searchStore }: SearchResultsProps) {
 
     const trimmedQuery = searchStore.query.trim()
 
@@ -29,6 +29,35 @@ function SearchResultsBase ({ searchStore }: SearchResultsProps) {
     // }
 
     if (trimmedQuery.length === 0) {
+        if (searchStore.searchHistory.length > 0) {
+            return (
+                <ResultsList>
+                    <InfoMessage><strong>Recent Searches</strong></InfoMessage>
+                    {searchStore.searchHistory.map(term => (
+                        <HistoryItem key={term} onClick={() => {
+                            searchStore.setQuery(term)
+                            void searchStore.searchNow()
+                        }}>
+                            <HistoryContent>
+                                <span>🕒</span> {term}
+                            </HistoryContent>
+                            <RemoveButton
+                                onClick={(e) => {
+                                    e.stopPropagation()
+                                    searchStore.removeFromHistory(term)
+                                }}
+                                title="Remove from history"
+                            >
+                                ×
+                            </RemoveButton>
+                        </HistoryItem>
+                    ))}
+                    <ClearButton onClick={() => searchStore.clearHistory()}>
+                        Clear History
+                    </ClearButton>
+                </ResultsList>
+            )
+        }
         return null
     }
 
@@ -49,14 +78,14 @@ function SearchResultsBase ({ searchStore }: SearchResultsProps) {
 
                 return (
                     <ResultItem key={item.id}>
-                        
+
                         <ResultTitle> {item.title} </ResultTitle>
 
-                        { hasDescription ? (
+                        {hasDescription ? (
                             <ResultDescription> {item.description} </ResultDescription>
-                        ): null }
+                        ) : null}
 
-                        { hasUrl ? (
+                        {hasUrl ? (
                             <ResultLink href={item.url} target="_blank" rel="noreferrer">
                                 Open
                             </ResultLink>
