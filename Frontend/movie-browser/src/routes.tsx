@@ -7,6 +7,7 @@ import { ActorDetailsPage } from "./pages/ActorDetailsPage";
 import { RegisterPage } from "./pages/RegisterPage";
 import { LoginPage } from "./pages/LoginPage";
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
+import { SearchResultPage } from "./pages/SearchResultPage";
 
 // THE INVISIBLE ROOT
 // This is now just an empty shell that renders whatever comes next.
@@ -24,7 +25,7 @@ export const rootRoute = createRootRoute({
 // We use 'id' instead of 'path' so it doesn't change the URL.
 const appLayoutRoute = createRoute({
   getParentRoute: () => rootRoute,
-  id: '_layout', 
+  id: '_layout',
   component: RootLayout,
 });
 
@@ -54,6 +55,12 @@ export const actorDetailsRoute = createRoute({
   component: ActorDetailsPage,
 });
 
+export const searchRoute = createRoute({
+  getParentRoute: () => appLayoutRoute,
+  path: '/search',
+  component: SearchResultPage,
+});
+
 // --- AUTH ROUTES (Children of rootRoute) ---
 // These bypass the AppLayout, so no Navbar.
 
@@ -77,8 +84,9 @@ const routeTree = rootRoute.addChildren([
     styledRoute,
     actorListRoute,
     actorDetailsRoute,
+    searchRoute,
   ]),
-  
+
   // Branch B: Pages without Navbar
   loginRoute,
   registerRoute,
