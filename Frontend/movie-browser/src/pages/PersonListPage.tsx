@@ -1,11 +1,11 @@
 import { useNavigate } from '@tanstack/react-router'
 import { ActorListView } from '../features/Chris/actors'
 
-export function ActorListPage() {
+export function PersonListPage() {
   const navigate = useNavigate()
 
   const handleActorClick = (nconst: string) => {
-    navigate({ to: '/actors/$actorId', params: { actorId: nconst } })
+    navigate({ to: '/persons/$personId', params: { personId: nconst } })
   }
 
   return (

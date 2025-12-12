@@ -1,7 +1,7 @@
 import { rootRoute } from "./routes/__root";
 import { appLayoutRoute } from "./routes/_layout";
 import { loginRoute, registerRoute } from "./routes/auth";
-import { actorListRoute, actorDetailsRoute } from "./routes/actors";
+import { personListRoute, personDetailsRoute } from "./routes/persons";
 import { homeRoute } from "./routes/home";
 import { styledRoute } from "./routes/styled";
 
@@ -10,8 +10,8 @@ export const routeTree = rootRoute.addChildren([
   appLayoutRoute.addChildren([
     homeRoute,
     styledRoute,
-    actorListRoute,
-    actorDetailsRoute,
+    personListRoute,
+    personDetailsRoute,
   ]),
   
   // Branch B: Pages without Navbar (Auth)

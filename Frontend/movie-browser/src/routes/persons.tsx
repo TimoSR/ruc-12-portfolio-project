@@ -1,21 +1,21 @@
 import { createRoute } from "@tanstack/react-router";
 import { appLayoutRoute } from "./_layout"; // Import Parent
-import { ActorListPage } from "../pages/ActorListPage";
-import { ActorDetailsPage } from "../pages/ActorDetailsPage";
+import { PersonListPage } from "../pages/PersonListPage";
+import { PersonDetailsPage } from "../pages/PersonDetailsPage";
 import { actorListQueryOptions } from "../api/queries/actorQueries";
 
 // Export this type so it can be used in your components if needed
-export type ActorSearch = {
+export type personSearch = {
   query: string;
   page: number;
   pageSize: number;
 };
 
-export const actorListRoute = createRoute({
+export const personListRoute = createRoute({
   getParentRoute: () => appLayoutRoute,
-  path: '/actors',
+  path: '/persons',
   
-  validateSearch: (search: Record<string, unknown>): ActorSearch => {
+  validateSearch: (search: Record<string, unknown>): personSearch => {
     return {
       query: (search.query as string) || '',
       page: Number(search.page) || 1,
@@ -29,11 +29,11 @@ export const actorListRoute = createRoute({
     return queryClient.ensureQueryData(actorListQueryOptions(searchParams));
   },
 
-  component: ActorListPage,
+  component: PersonListPage,
 });
 
-export const actorDetailsRoute = createRoute({
+export const personDetailsRoute = createRoute({
   getParentRoute: () => appLayoutRoute,
-  path: '/actors/$actorId',
-  component: ActorDetailsPage,
+  path: '/persons/$personId',
+  component: PersonDetailsPage,
 });
