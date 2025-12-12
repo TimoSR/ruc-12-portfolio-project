@@ -5,27 +5,27 @@ using service_patterns;
 
 namespace application.personService;
 
-public sealed class PersonService(IUnitOfWork uow, ILogger<PersonService> logger) : IPersonService
+public sealed class PersonService(IUnitOfWork unitOfWork, ILogger<PersonService> logger) : IPersonService
 {
     public async Task<Result<PersonDto>> CreatePersonAsync(CreatePersonCommandDto command, CancellationToken cancellationToken)
     {
-        var exists = await uow.PersonRepository.ExistsByLegacyIdAsync(command.LegacyId, cancellationToken);
+        var exists = await unitOfWork.PersonRepository.ExistsByLegacyIdAsync(command.LegacyId, cancellationToken);
         if (exists)
             return Result<PersonDto>.Failure(PersonErrors.DuplicateLegacyId);
 
-        await uow.BeginTransactionAsync(cancellationToken);
+        await unitOfWork.BeginTransactionAsync(cancellationToken);
         try
         {
             var person = Person.Create(command.LegacyId, command.PrimaryName, command.BirthYear, command.DeathYear);
-            await uow.PersonRepository.AddAsync(person, cancellationToken);
-            await uow.CommitTransactionAsync(cancellationToken);
+            await unitOfWork.PersonRepository.AddAsync(person, cancellationToken);
+            await unitOfWork.CommitTransactionAsync(cancellationToken);
 
             var dto = new PersonDto(person.Id, person.LegacyId, person.PrimaryName, person.BirthYear, person.DeathYear);
             return Result<PersonDto>.Success(dto);
         }
         catch (Exception ex)
         {
-            await uow.RollbackTransactionAsync(cancellationToken);
+            await unitOfWork.RollbackTransactionAsync(cancellationToken);
             logger.LogError(ex, "Failed to create person {LegacyId}", command.LegacyId);
             throw;
         }
@@ -35,7 +35,7 @@ public sealed class PersonService(IUnitOfWork uow, ILogger<PersonService> logger
     {
         try
         {
-            var person = await uow.PersonRepository.GetByIdAsync(id, cancellationToken);
+            var person = await unitOfWork.PersonRepository.GetByIdAsync(id, cancellationToken);
             if (person is null)
                 return Result<PersonDto>.Failure(PersonErrors.NotFound);
 
@@ -53,7 +53,7 @@ public sealed class PersonService(IUnitOfWork uow, ILogger<PersonService> logger
     {
         try
         {
-            var person = await uow.PersonRepository.GetByLegacyIdAsync(legacyId, cancellationToken);
+            var person = await unitOfWork.PersonRepository.GetByLegacyIdAsync(legacyId, cancellationToken);
             if (person is null)
                 return Result<PersonDto>.Failure(PersonErrors.NotFound);
 
@@ -71,14 +71,11 @@ public sealed class PersonService(IUnitOfWork uow, ILogger<PersonService> logger
     {
         try
         {
-            var q = string.IsNullOrWhiteSpace(query.Query) ? string.Empty : query.Query.Trim();
-            if (string.IsNullOrEmpty(q))
-                return Result<(IEnumerable<PersonListItemDto> items, int totalCount)>.Success((Enumerable.Empty<PersonListItemDto>(), 0));
-
-            var (items, totalCount) = await uow.PersonQueriesRepository
-                .SearchByNameAsync(q, query.Page, query.PageSize, cancellationToken);
+            var (items, totalCount) = await unitOfWork.PersonQueriesRepository
+                .SearchByNameAsync(query.Query ?? "", query.Page, query.PageSize, cancellationToken);
 
             var dtos = items.Select(x => new PersonListItemDto(x.Id, x.PrimaryName));
+            
             return Result<(IEnumerable<PersonListItemDto> items, int totalCount)>.Success((dtos, totalCount));
         }
         catch (Exception ex)
@@ -92,7 +89,7 @@ public sealed class PersonService(IUnitOfWork uow, ILogger<PersonService> logger
     {
         try
         {
-            var items = await uow.PersonQueriesRepository.GetPersonWordsAsync(personName, limit, cancellationToken);
+            var items = await unitOfWork.PersonQueriesRepository.GetPersonWordsAsync(personName, limit, cancellationToken);
             var dtos = items.Select(x => new WordFrequencyDto(x.Word, x.Frequency));
             return Result<IEnumerable<WordFrequencyDto>>.Success(dtos);
         }
@@ -107,7 +104,7 @@ public sealed class PersonService(IUnitOfWork uow, ILogger<PersonService> logger
     {
         try
         {
-            var items = await uow.PersonQueriesRepository.GetCoActorsAsync(personName, cancellationToken);
+            var items = await unitOfWork.PersonQueriesRepository.GetCoActorsAsync(personName, cancellationToken);
             var dtos = items.Select(x => new CoActorDto(x.PersonId, x.PrimaryName, x.Frequency));
             return Result<IEnumerable<CoActorDto>>.Success(dtos);
         }
@@ -122,7 +119,7 @@ public sealed class PersonService(IUnitOfWork uow, ILogger<PersonService> logger
     {
         try
         {
-            var items = await uow.PersonQueriesRepository.GetPopularCoActorsAsync(personName, cancellationToken);
+            var items = await unitOfWork.PersonQueriesRepository.GetPopularCoActorsAsync(personName, cancellationToken);
             var dtos = items.Select(x => new PopularCoActorDto(x.ActorId, x.ActorFullname, x.WeightedRating));
             return Result<IEnumerable<PopularCoActorDto>>.Success(dtos);
         }
@@ -137,7 +134,7 @@ public sealed class PersonService(IUnitOfWork uow, ILogger<PersonService> logger
     {
         try
         {
-            var items = await uow.PersonQueriesRepository.GetKnownForTitlesAsync(personId, cancellationToken);
+            var items = await unitOfWork.PersonQueriesRepository.GetKnownForTitlesAsync(personId, cancellationToken);
             var dtos = items.Select(x => new KnownForTitleDto(x.TitleId));
             return Result<IEnumerable<KnownForTitleDto>>.Success(dtos);
         }
@@ -152,7 +149,7 @@ public sealed class PersonService(IUnitOfWork uow, ILogger<PersonService> logger
     {
         try
         {
-            var items = await uow.PersonQueriesRepository.GetProfessionsAsync(personId, cancellationToken);
+            var items = await unitOfWork.PersonQueriesRepository.GetProfessionsAsync(personId, cancellationToken);
             var dtos = items.Select(x => new ProfessionDto(x.Profession));
             return Result<IEnumerable<ProfessionDto>>.Success(dtos);
         }
