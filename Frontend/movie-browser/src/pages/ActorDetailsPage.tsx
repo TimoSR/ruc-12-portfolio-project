@@ -1,7 +1,7 @@
 // ActorDetailsPage.tsx
 import { useNavigate } from '@tanstack/react-router';
-import { actorDetailsRoute, actorListRoute } from '../routes';
 import { ActorDetailsView } from '../features/Chris/actors';
+import { actorDetailsRoute } from '../routes';
 
 export function ActorDetailsPage() {
   const { actorId } = actorDetailsRoute.useParams();
@@ -10,8 +10,15 @@ export function ActorDetailsPage() {
   const navigate = useNavigate({ from: actorDetailsRoute.fullPath });
 
   const handleBack = (): void => {
-    // Navigate to the actor list route in a type-safe way
-    void navigate({ to: actorListRoute.fullPath });
+    // ✅ FIX 2: Use string path + Provide REQUIRED search params
+    navigate({ 
+      to: '/actors',
+      search: { 
+        page: 1, 
+        pageSize: 20, 
+        query: '' 
+      } 
+    });
   };
 
   return (
