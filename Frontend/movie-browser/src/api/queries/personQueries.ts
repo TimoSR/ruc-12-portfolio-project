@@ -3,14 +3,14 @@ import { queryOptions } from '@tanstack/react-query';
 import { apiClient } from '../client';
 
 // Define the shape of your parameters
-type ActorSearchParams = {
+type PersonSearchParams = {
   query: string;
   page: number;
   pageSize: number;
 };
 
 // This is now a FUNCTION that returns the options
-export const actorListQueryOptions = (params: ActorSearchParams) => {
+export const personListQueryOptions = (params: PersonSearchParams) => {
   return queryOptions({
     // 1) Unique key: include params so the cache knows page 1 != page 2
     queryKey: ['actors', params],

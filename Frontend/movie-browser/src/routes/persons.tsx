@@ -2,7 +2,7 @@ import { createRoute } from "@tanstack/react-router";
 import { appLayoutRoute } from "./_layout"; // Import Parent
 import { PersonListPage } from "../pages/PersonListPage";
 import { PersonDetailsPage } from "../pages/PersonDetailsPage";
-import { actorListQueryOptions } from "../api/queries/actorQueries";
+import { personListQueryOptions } from "../api/queries/personQueries";
 
 // Export this type so it can be used in your components if needed
 export type personSearch = {
@@ -26,7 +26,7 @@ export const personListRoute = createRoute({
   loaderDeps: ({ search }) => search,
 
   loader: ({ context: { queryClient }, deps: searchParams }) => {
-    return queryClient.ensureQueryData(actorListQueryOptions(searchParams));
+    return queryClient.ensureQueryData(personListQueryOptions(searchParams));
   },
 
   component: PersonListPage,
