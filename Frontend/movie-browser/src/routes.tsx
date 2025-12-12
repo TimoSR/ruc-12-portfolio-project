@@ -70,7 +70,7 @@ export const registerRoute = createRoute({
 });
 
 // 3. THE TREE
-const routeTree = rootRoute.addChildren([
+export const routeTree = rootRoute.addChildren([
   // Branch A: Pages with Navbar
   appLayoutRoute.addChildren([
     indexRoute,
@@ -83,14 +83,3 @@ const routeTree = rootRoute.addChildren([
   loginRoute,
   registerRoute,
 ]);
-
-export const router = createRouter({
-  routeTree,
-  scrollRestoration: true,
-})
-
-declare module '@tanstack/react-router' {
-  interface Register {
-    router: typeof router
-  }
-}
