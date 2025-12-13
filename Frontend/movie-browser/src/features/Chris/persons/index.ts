@@ -1,5 +1,5 @@
 // Stores
-export { ActorStore, type IActorStore } from './store/ActorStore'
+export { PersonStore as ActorStore, type IPersonStore as IActorStore } from './store/PersonStore'
 export { PersonDetailsStore, type IPersonDetailsStore } from './store/PersonDetailsStore'
 
 // Components

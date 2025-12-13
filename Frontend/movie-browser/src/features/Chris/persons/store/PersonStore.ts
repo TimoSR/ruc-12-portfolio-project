@@ -1,20 +1,20 @@
 import { makeAutoObservable, runInAction } from 'mobx'
-import type { ActorItem, PagedResult } from '../index'
+import type { PersonItem, PagedResult } from '../index'
 
-export interface IActorStore {
-    actors: ActorItem[]
+export interface IPersonStore {
+    actors: PersonItem[]
     currentPage: number
     totalPages: number
     pageSize: number
     isLoading: boolean
     error: string | null
-    loadActors(page?: number): Promise<void>
+    loadPersons(page?: number): Promise<void>
     nextPage(): Promise<void>
     previousPage(): Promise<void>
 }
 
-export class ActorStore implements IActorStore {
-    actors: ActorItem[] = []
+export class PersonStore implements IPersonStore {
+    actors: PersonItem[] = []
     currentPage: number = 1
     totalPages: number = 1
     pageSize: number = 20
@@ -25,7 +25,7 @@ export class ActorStore implements IActorStore {
         makeAutoObservable(this, {}, { autoBind: true })
     }
 
-    async loadActors(page: number = 1): Promise<void> {
+    async loadPersons(page: number = 1): Promise<void> {
         this.isLoading = true
         this.error = null
 
@@ -50,21 +50,21 @@ export class ActorStore implements IActorStore {
 
     async nextPage(): Promise<void> {
         if (this.currentPage < this.totalPages) {
-            await this.loadActors(this.currentPage + 1)
+            await this.loadPersons(this.currentPage + 1)
         }
     }
 
     async previousPage(): Promise<void> {
         if (this.currentPage > 1) {
-            await this.loadActors(this.currentPage - 1)
+            await this.loadPersons(this.currentPage - 1)
         }
     }
 
-    private async fetchActors(page: number, pageSize: number): Promise<PagedResult<ActorItem>> {
+    private async fetchActors(page: number, pageSize: number): Promise<PagedResult<PersonItem>> {
         // Mock data - replace with API call later
         await new Promise(resolve => setTimeout(resolve, 300))
 
-        const mockActors: ActorItem[] = Array.from({ length: 100 }, (_, i) => ({
+        const mockActors: PersonItem[] = Array.from({ length: 100 }, (_, i) => ({
             nconst: `nm${String(i + 1).padStart(7, '0')}`,
             primaryName: `Actor ${i + 1}`,
             birthYear: 1950 + (i % 50),

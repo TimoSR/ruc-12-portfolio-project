@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { observer, useLocalObservable } from 'mobx-react'
 import styled from 'styled-components'
-import { ActorStore, type IActorStore } from '../store/ActorStore'
+import { PersonStore, type IPersonStore } from '../store/PersonStore'
 import { PersonCard } from '../components/PersonCard'
 import { Pagination } from '../components/Pagination'
 
@@ -13,10 +13,10 @@ type PersonListViewProps = {
 }
 
 function PersonListViewBase({ onActorClick, className = '' }: PersonListViewProps) {
-    const store = useLocalObservable<IActorStore>(() => new ActorStore())
+    const store = useLocalObservable<IPersonStore>(() => new PersonStore())
 
     useEffect(() => {
-        void store.loadActors(1)
+        void store.loadPersons(1)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
