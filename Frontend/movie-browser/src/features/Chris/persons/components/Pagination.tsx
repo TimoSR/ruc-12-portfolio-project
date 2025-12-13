@@ -8,6 +8,7 @@ type PaginationProps = {
     totalPages: number
     onPrevious: () => void
     onNext: () => void
+    onNextHover?: () => void; // Add this optional prop
     isLoading?: boolean
     className?: string
 }
@@ -17,6 +18,7 @@ function PaginationBase({
     totalPages,
     onPrevious,
     onNext,
+    onNextHover,
     isLoading = false,
     className = ''
 }: PaginationProps) {
@@ -34,6 +36,8 @@ function PaginationBase({
             <Button
                 onClick={onNext}
                 disabled={currentPage >= totalPages || isLoading}
+                onMouseEnter={onNextHover} // ✅ This triggers the prefetch!
+                onFocus={onNextHover}      // ✅ Good for accessibility (Tab key)
             >
                 Next →
             </Button>

@@ -1,6 +1,5 @@
-// src/features/Chris/persons/views/PersonListView.tsx
-import { useState } from 'react'
-import { useQuery, keepPreviousData } from '@tanstack/react-query'
+import { useState, useEffect } from 'react'
+import { useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query'
 import styled from 'styled-components'
 import { PersonCard } from '../components/PersonCard'
 import { Pagination } from '../components/Pagination'
@@ -12,12 +11,14 @@ type PersonListViewProps = {
 }
 
 export function PersonListView({ onActorClick, className = '' }: PersonListViewProps) {
-    // 1. Manage View State (Pagination)
+    const queryClient = useQueryClient()
+    
+    // 1. State
     const [page, setPage] = useState(1)
+    const [searchQuery] = useState('')
     const pageSize = 20
-    const searchQuery = '' // You can lift this to props if you add a search bar later
 
-    // 2. TanStack Query Hook
+    // 2. Main Query (Current Page)
     const { 
         data, 
         isLoading, 
@@ -26,16 +27,33 @@ export function PersonListView({ onActorClick, className = '' }: PersonListViewP
         isPlaceholderData 
     } = useQuery({
         ...personListQueryOptions({ query: searchQuery, page, pageSize }),
-        // "keepPreviousData" is awesome for pagination - it keeps the old list 
-        // on screen while the new page loads, preventing layout shift.
-        placeholderData: keepPreviousData, 
+        placeholderData: keepPreviousData,
+        staleTime: 1000 * 60 * 5, // 5 minutes cache
     })
 
-    // 3. Derived State
-    // Adjust these accessors based on your actual API return shape (e.g., data.items vs data)
-    const actors = data?.items || [] 
-    const totalItems = data?.totalItems || 0 
+    const actors = data?.items ?? []
+    const totalItems = data?.totalItems ?? 0
     const totalPages = Math.ceil(totalItems / pageSize)
+
+    // 3. Automatic Prefetching (Next Page)
+    useEffect(() => {
+        // Only prefetch if not currently loading and there is a next page
+        if (!isPlaceholderData && page < totalPages) {
+            const nextPage = page + 1
+            
+            queryClient.prefetchQuery({
+                ...personListQueryOptions({ 
+                    query: searchQuery, 
+                    page: nextPage, 
+                    pageSize 
+                }),
+                // ✅ CRITICAL: This checks the cache first!
+                // If Page 2 is already in memory (and < 5 mins old), 
+                // this line effectively cancels the network request.
+                staleTime: 1000 * 60 * 5, 
+            })
+        }
+    }, [page, searchQuery, pageSize, totalPages, queryClient, isPlaceholderData])
 
     // 4. Handlers
     const handleNext = () => {
@@ -50,22 +68,18 @@ export function PersonListView({ onActorClick, className = '' }: PersonListViewP
 
     return (
         <Container className={className}>
-            {/* Error State */}
             {isError && (
                 <ErrorMessage>
                     Error: {error instanceof Error ? error.message : 'Unknown error'}
                 </ErrorMessage>
             )}
 
-            {/* Loading State (Initial load only) */}
             {isLoading && <LoadingMessage>Loading actors...</LoadingMessage>}
 
-            {/* Empty State */}
             {!isLoading && !isError && actors.length === 0 && (
                 <EmptyMessage>No actors found</EmptyMessage>
             )}
 
-            {/* Success State */}
             {!isLoading && !isError && actors.length > 0 && (
                 <>
                     <ActorGrid>
@@ -83,7 +97,8 @@ export function PersonListView({ onActorClick, className = '' }: PersonListViewP
                         totalPages={totalPages || 1}
                         onPrevious={handlePrevious}
                         onNext={handleNext}
-                        isLoading={isPlaceholderData} // Shows loading spinner on pagination buttons
+                        isLoading={isPlaceholderData}
+                        // Note: We removed 'onNextHover' because prefetching is now automatic
                     />
                 </>
             )}
@@ -94,7 +109,6 @@ export function PersonListView({ onActorClick, className = '' }: PersonListViewP
 /* ===========================
    styled-components
    =========================== */
-
 const Container = styled.section`
     max-width: 1280px;
     margin: 0 auto;
@@ -106,15 +120,10 @@ const ActorGrid = styled.div`
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: 1.5rem;
     margin-bottom: 2rem;
-
-    @media (max-width: 640px) {
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    }
 `
 
 const ErrorMessage = styled.div`
     background: rgba(239, 68, 68, 0.1);
-    border: 1px solid rgba(239, 68, 68, 0.3);
     color: #fca5a5;
     padding: 1rem;
     border-radius: 0.5rem;
@@ -125,12 +134,10 @@ const LoadingMessage = styled.div`
     text-align: center;
     color: #9ca3af;
     padding: 3rem;
-    font-size: 1.125rem;
 `
 
 const EmptyMessage = styled.div`
     text-align: center;
     color: #9ca3af;
     padding: 3rem;
-    font-size: 1.125rem;
 `
