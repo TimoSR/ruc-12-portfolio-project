@@ -1,9 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { observer } from 'mobx-react'
 import { useNavigate } from '@tanstack/react-router'
-import { useQuery, keepPreviousData } from '@tanstack/react-query'
 import styled from 'styled-components'
-import { movieListQueryOptions } from '../../../../api/queries/movieQueries'
+import { MovieStore } from '../store/MovieStore'
 import { MovieCard } from '../components/MovieCard'
 import { Pagination } from '../components/Pagination'
 
@@ -11,33 +10,18 @@ export const MovieListView = observer(MovieListViewBase)
 
 function MovieListViewBase() {
   const navigate = useNavigate()
-  const [page, setPage] = useState(1)
-  const pageSize = 20
-  const searchQuery = ''
+  const [movieStore] = useState(() => new MovieStore())
 
-  const {
-    data,
-    isLoading,
-    isError,
-    error,
-    isPlaceholderData
-  } = useQuery({
-    ...movieListQueryOptions({ query: searchQuery, page, pageSize }),
-    placeholderData: keepPreviousData,
-  })
-
-  const movies = data?.items || []
-  const totalItems = data?.totalItems || 0
-  const totalPages = Math.ceil(totalItems / pageSize)
+  useEffect(() => {
+    movieStore.loadMovies()
+  }, [movieStore])
 
   const handleNext = () => {
-    if (!isPlaceholderData && page < totalPages) {
-      setPage(old => old + 1)
-    }
+    movieStore.nextPage()
   }
 
   const handlePrevious = () => {
-    setPage(old => Math.max(old - 1, 1))
+    movieStore.previousPage()
   }
 
   const handleMovieClick = (movieId: string) => {
@@ -51,22 +35,22 @@ function MovieListViewBase() {
         <Subtitle>Browse our collection of movies</Subtitle>
       </Header>
 
-      {isError && (
+      {movieStore.error && (
         <ErrorMessage>
-          Error: {error instanceof Error ? error.message : 'Unknown error'}
+          Error: {movieStore.error}
         </ErrorMessage>
       )}
 
-      {isLoading && <LoadingMessage>Loading movies...</LoadingMessage>}
+      {movieStore.isLoading && <LoadingMessage>Loading movies...</LoadingMessage>}
 
-      {!isLoading && !isError && movies.length === 0 && (
+      {!movieStore.isLoading && !movieStore.error && movieStore.movies.length === 0 && (
         <EmptyMessage>No movies found</EmptyMessage>
       )}
 
-      {!isLoading && !isError && movies.length > 0 && (
+      {!movieStore.isLoading && !movieStore.error && movieStore.movies.length > 0 && (
         <>
           <MovieGrid>
-            {movies.map((movie: any) => (
+            {movieStore.movies.map((movie) => (
               <MovieCard
                 key={movie.id}
                 movie={movie}
@@ -76,11 +60,11 @@ function MovieListViewBase() {
           </MovieGrid>
 
           <Pagination
-            currentPage={page}
-            totalPages={totalPages || 1}
+            currentPage={movieStore.currentPage}
+            totalPages={movieStore.totalPages}
             onPrevious={handlePrevious}
             onNext={handleNext}
-            isLoading={isPlaceholderData}
+            isLoading={movieStore.isLoading}
           />
         </>
       )}
