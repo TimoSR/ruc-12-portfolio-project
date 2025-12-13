@@ -1,18 +1,19 @@
 import { useEffect } from 'react'
 import { observer, useLocalObservable } from 'mobx-react'
 import styled from 'styled-components'
-import { ActorDetailsStore, type IActorDetailsStore } from '../store/ActorDetailsStore'
+import { PersonDetailsStore, type IPersonDetailsStore } from '../store/PersonDetailsStore'
 
-export const ActorDetailsView = observer(ActorDetailsViewBase)
 
-type ActorDetailsViewProps = {
+export const PersonDetailsView = observer(PersonDetailsViewBase)
+
+type PersonDetailsViewProps = {
     actorId: string
     onBack?: () => void
     className?: string
 }
 
-function ActorDetailsViewBase({ actorId, onBack, className = '' }: ActorDetailsViewProps) {
-    const store = useLocalObservable<IActorDetailsStore>(() => new ActorDetailsStore())
+function PersonDetailsViewBase({ actorId, onBack, className = '' }: PersonDetailsViewProps) {
+    const store = useLocalObservable<IPersonDetailsStore>(() => new PersonDetailsStore())
 
     useEffect(() => {
         void store.loadActor(actorId)

@@ -2,17 +2,17 @@ import { useEffect } from 'react'
 import { observer, useLocalObservable } from 'mobx-react'
 import styled from 'styled-components'
 import { ActorStore, type IActorStore } from '../store/ActorStore'
-import { ActorCard } from '../components/ActorCard'
+import { PersonCard } from '../components/PersonCard'
 import { Pagination } from '../components/Pagination'
 
-export const ActorListView = observer(ActorListViewBase)
+export const PersonListView = observer(PersonListViewBase)
 
-type ActorListViewProps = {
+type PersonListViewProps = {
     onActorClick?: (nconst: string) => void
     className?: string
 }
 
-function ActorListViewBase({ onActorClick, className = '' }: ActorListViewProps) {
+function PersonListViewBase({ onActorClick, className = '' }: PersonListViewProps) {
     const store = useLocalObservable<IActorStore>(() => new ActorStore())
 
     useEffect(() => {
@@ -35,7 +35,7 @@ function ActorListViewBase({ onActorClick, className = '' }: ActorListViewProps)
                 <>
                     <ActorGrid>
                         {store.actors.map(actor => (
-                            <ActorCard
+                            <PersonCard
                                 key={actor.nconst}
                                 actor={actor}
                                 onClick={() => onActorClick?.(actor.nconst)}

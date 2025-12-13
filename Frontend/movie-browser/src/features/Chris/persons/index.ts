@@ -1,17 +1,17 @@
 // Stores
 export { ActorStore, type IActorStore } from './store/ActorStore'
-export { ActorDetailsStore, type IActorDetailsStore } from './store/ActorDetailsStore'
+export { PersonDetailsStore, type IPersonDetailsStore } from './store/PersonDetailsStore'
 
 // Components
-export { ActorCard } from './components/ActorCard'
+export { PersonCard as ActorCard } from './components/PersonCard'
 export { Pagination } from './components/Pagination'
 
 // Views
-export { ActorDetailsView } from './views/ActorDetailsView'
-export { ActorListView } from './views/ActorListView'
+export { PersonDetailsView } from './views/PersonDetailsView'
+export { PersonListView } from './views/PersonListView'
 
 // Types
-export interface ActorItem {
+export interface PersonItem {
     nconst: string
     primaryName: string
     birthYear?: number

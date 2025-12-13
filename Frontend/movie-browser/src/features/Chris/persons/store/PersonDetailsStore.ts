@@ -1,15 +1,15 @@
 import { makeAutoObservable, runInAction } from 'mobx'
-import type { ActorItem } from '../index'
+import type { PersonItem } from '../index'
 
-export interface IActorDetailsStore {
-    actor: ActorItem | null
+export interface IPersonDetailsStore {
+    actor: PersonItem | null
     isLoading: boolean
     error: string | null
     loadActor(nconst: string): Promise<void>
 }
 
-export class ActorDetailsStore implements IActorDetailsStore {
-    actor: ActorItem | null = null
+export class PersonDetailsStore implements IPersonDetailsStore {
+    actor: PersonItem | null = null
     isLoading: boolean = false
     error: string | null = null
 
@@ -38,7 +38,7 @@ export class ActorDetailsStore implements IActorDetailsStore {
         }
     }
 
-    private async fetchActor(nconst: string): Promise<ActorItem> {
+    private async fetchActor(nconst: string): Promise<PersonItem> {
         // Mock data - replace with API call later
         await new Promise(resolve => setTimeout(resolve, 300))
 

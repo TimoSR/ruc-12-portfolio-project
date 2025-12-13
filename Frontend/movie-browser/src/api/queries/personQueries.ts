@@ -13,7 +13,7 @@ type PersonSearchParams = {
 export const personListQueryOptions = (params: PersonSearchParams) => {
   return queryOptions({
     // 1) Unique key: include params so the cache knows page 1 != page 2
-    queryKey: ['actors', params],
+    queryKey: ['persons', params],
 
     // 2) Fetcher: builds the dynamic URL safely
     queryFn: () => {
@@ -24,7 +24,7 @@ export const personListQueryOptions = (params: PersonSearchParams) => {
         pageSize: params.pageSize.toString(),
       });
 
-      return apiClient(`/titles?${searchParams.toString()}`);
+      return apiClient(`/persons?${searchParams.toString()}`);
     },
   });
 };

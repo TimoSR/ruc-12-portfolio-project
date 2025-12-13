@@ -1,7 +1,7 @@
 // ActorDetailsPage.tsx
 import { useNavigate } from '@tanstack/react-router';
-import { ActorDetailsView } from '../features/Chris/actors';
 import { personDetailsRoute, personListRoute, type personSearch } from '../routes/persons';
+import { PersonDetailsView } from '../features/Chris/persons/views/PersonDetailsView';
 
 export function PersonDetailsPage() {
   const { personId } = personDetailsRoute.useParams();
@@ -22,7 +22,7 @@ export function PersonDetailsPage() {
   };
 
   return (
-    <ActorDetailsView
+    <PersonDetailsView
       actorId={personId}
       onBack={handleBack}
     />

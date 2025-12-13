@@ -1,5 +1,5 @@
 import { useNavigate } from '@tanstack/react-router'
-import { ActorListView } from '../features/Chris/actors'
+import { PersonListView } from '../features/Chris/persons/views/PersonListView'
 
 export function PersonListPage() {
   const navigate = useNavigate()
@@ -9,7 +9,7 @@ export function PersonListPage() {
   }
 
   return (
-    <ActorListView
+    <PersonListView
       onActorClick={handleActorClick}
     />
   )

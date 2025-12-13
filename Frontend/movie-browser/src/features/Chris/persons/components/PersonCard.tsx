@@ -1,16 +1,16 @@
 import { observer } from 'mobx-react'
 import styled from 'styled-components'
-import type { ActorItem } from '../index'
+import type { PersonItem } from '../index'
 
-export const ActorCard = observer(ActorCardBase)
+export const PersonCard = observer(PersonCardBase)
 
-type ActorCardProps = {
-  actor: ActorItem
+type PersonCardProps = {
+  actor: PersonItem
   onClick: () => void
   className?: string
 }
 
-function ActorCardBase({ actor, onClick, className = '' }: ActorCardProps) {
+function PersonCardBase({ actor, onClick, className = '' }: PersonCardProps) {
   return (
     <Card className={className} onClick={onClick}>
       <ImagePlaceholder>
