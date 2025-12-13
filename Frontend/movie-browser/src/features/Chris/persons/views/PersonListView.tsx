@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react'
 import { useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query'
+import { useNavigate } from '@tanstack/react-router' // 1. Import router hooks
 import styled from 'styled-components'
 import { PersonCard } from '../components/PersonCard'
 import { Pagination } from '../components/Pagination'
 import { personListQueryOptions } from '../../../../api/queries/personQueries'
+import { personListRoute } from '../../../../routes/persons'
 
 type PersonListViewProps = {
     onActorClick?: (nconst: string) => void
@@ -12,13 +13,14 @@ type PersonListViewProps = {
 
 export function PersonListView({ onActorClick, className = '' }: PersonListViewProps) {
     const queryClient = useQueryClient()
-    
-    // 1. State
-    const [page, setPage] = useState(1)
-    const [searchQuery] = useState('')
-    const pageSize = 20
+    const navigate = useNavigate({ from: personListRoute.fullPath }) // 3. Set context for navigation
 
-    // 2. Main Query (Current Page)
+    // 4. Source of Truth: The URL (via Router)
+    // Instead of useState, we "subscribe" to the URL parameters.
+    const { page, query, pageSize } = personListRoute.useSearch()
+
+    // 5. Main Query
+    // Just pass the URL params directly to your options
     const { 
         data, 
         isLoading, 
@@ -26,44 +28,41 @@ export function PersonListView({ onActorClick, className = '' }: PersonListViewP
         error, 
         isPlaceholderData 
     } = useQuery({
-        ...personListQueryOptions({ query: searchQuery, page, pageSize }),
+        ...personListQueryOptions({ query, page, pageSize }),
         placeholderData: keepPreviousData,
-        staleTime: 1000 * 60 * 5, // 5 minutes cache
+        staleTime: 1000 * 60 * 5, // 5 minutes
     })
 
     const actors = data?.items ?? []
     const totalItems = data?.totalItems ?? 0
     const totalPages = Math.ceil(totalItems / pageSize)
 
-    // 3. Automatic Prefetching (Next Page)
-    useEffect(() => {
-        // Only prefetch if not currently loading and there is a next page
-        if (!isPlaceholderData && page < totalPages) {
-            const nextPage = page + 1
-            
-            queryClient.prefetchQuery({
-                ...personListQueryOptions({ 
-                    query: searchQuery, 
-                    page: nextPage, 
-                    pageSize 
-                }),
-                // ✅ CRITICAL: This checks the cache first!
-                // If Page 2 is already in memory (and < 5 mins old), 
-                // this line effectively cancels the network request.
-                staleTime: 1000 * 60 * 5, 
-            })
-        }
-    }, [page, searchQuery, pageSize, totalPages, queryClient, isPlaceholderData])
+    // 6. Automatic Prefetching (Now powered by URL state)
+    // This effect runs whenever the URL changes
+    if (!isPlaceholderData && page < totalPages) {
+        queryClient.prefetchQuery({
+            ...personListQueryOptions({ 
+                query, 
+                page: page + 1, 
+                pageSize 
+            }),
+            staleTime: 1000 * 60 * 5, // 5 minutes
+        })
+    }
 
-    // 4. Handlers
+    // 7. Handlers update the URL, not local state
     const handleNext = () => {
         if (!isPlaceholderData && page < totalPages) {
-            setPage(old => old + 1)
+            navigate({
+                search: (old) => ({ ...old, page: old.page + 1 }),
+            })
         }
     }
 
     const handlePrevious = () => {
-        setPage(old => Math.max(old - 1, 1))
+        navigate({
+            search: (old) => ({ ...old, page: Math.max(old.page - 1, 1) }),
+        })
     }
 
     return (
@@ -98,7 +97,6 @@ export function PersonListView({ onActorClick, className = '' }: PersonListViewP
                         onPrevious={handlePrevious}
                         onNext={handleNext}
                         isLoading={isPlaceholderData}
-                        // Note: We removed 'onNextHover' because prefetching is now automatic
                     />
                 </>
             )}
@@ -107,21 +105,19 @@ export function PersonListView({ onActorClick, className = '' }: PersonListViewP
 }
 
 /* ===========================
-   styled-components
+   styled-components (Unchanged)
    =========================== */
 const Container = styled.section`
     max-width: 1280px;
     margin: 0 auto;
     padding: 1rem 1.5rem 4rem;
 `
-
 const ActorGrid = styled.div`
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: 1.5rem;
     margin-bottom: 2rem;
 `
-
 const ErrorMessage = styled.div`
     background: rgba(239, 68, 68, 0.1);
     color: #fca5a5;
@@ -129,13 +125,11 @@ const ErrorMessage = styled.div`
     border-radius: 0.5rem;
     margin-bottom: 1rem;
 `
-
 const LoadingMessage = styled.div`
     text-align: center;
     color: #9ca3af;
     padding: 3rem;
 `
-
 const EmptyMessage = styled.div`
     text-align: center;
     color: #9ca3af;

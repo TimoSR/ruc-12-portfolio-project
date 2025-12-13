@@ -4,8 +4,14 @@ import { PersonListPage } from "../pages/PersonListPage";
 import { PersonDetailsPage } from "../pages/PersonDetailsPage";
 import { personListQueryOptions } from "../api/queries/personQueries";
 
-// Export this type so it can be used in your components if needed
-export type personSearch = {
+// 1. Define Defaults ONCE
+export const PERSON_DEFAULTS = {
+  page: 1,
+  pageSize: 24,
+  query: '',
+} as const; // 'as const' makes these read-only values
+
+export type PersonSearch = {
   query: string;
   page: number;
   pageSize: number;
@@ -15,18 +21,19 @@ export const personListRoute = createRoute({
   getParentRoute: () => appLayoutRoute,
   path: '/persons',
   
-  validateSearch: (search: Record<string, unknown>): personSearch => {
+  validateSearch: (search: Record<string, unknown>): PersonSearch => {
     return {
-      query: (search.query as string) || '',
-      page: Number(search.page) || 1,
-      pageSize: Number(search.pageSize) || 20,
+      query: (search.query as string) || PERSON_DEFAULTS.query,
+      page: Number(search.page) || PERSON_DEFAULTS.page,
+      // Now this is the ONLY place that decides "24" is the fallback
+      pageSize: Number(search.pageSize) || PERSON_DEFAULTS.pageSize,
     };
   },
 
   loaderDeps: ({ search }) => search,
 
-  loader: ({ context: { queryClient }, deps: searchParams }) => {
-    return queryClient.ensureQueryData(personListQueryOptions(searchParams));
+  loader: ({ context: { queryClient }, deps }) => {
+    return queryClient.ensureQueryData(personListQueryOptions(deps));
   },
 
   component: PersonListPage,
