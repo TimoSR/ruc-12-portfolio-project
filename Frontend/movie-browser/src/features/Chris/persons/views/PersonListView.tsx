@@ -1,40 +1,75 @@
-import { useEffect } from 'react'
-import { observer, useLocalObservable } from 'mobx-react'
+// src/features/Chris/persons/views/PersonListView.tsx
+import { useState } from 'react'
+import { useQuery, keepPreviousData } from '@tanstack/react-query'
 import styled from 'styled-components'
-import { PersonStore, type IPersonStore } from '../store/PersonStore'
 import { PersonCard } from '../components/PersonCard'
 import { Pagination } from '../components/Pagination'
-
-export const PersonListView = observer(PersonListViewBase)
+import { personListQueryOptions } from '../../../../api/queries/personQueries'
 
 type PersonListViewProps = {
     onActorClick?: (nconst: string) => void
     className?: string
 }
 
-function PersonListViewBase({ onActorClick, className = '' }: PersonListViewProps) {
-    const store = useLocalObservable<IPersonStore>(() => new PersonStore())
+export function PersonListView({ onActorClick, className = '' }: PersonListViewProps) {
+    // 1. Manage View State (Pagination)
+    const [page, setPage] = useState(1)
+    const pageSize = 20
+    const searchQuery = '' // You can lift this to props if you add a search bar later
 
-    useEffect(() => {
-        void store.loadPersons(1)
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    // 2. TanStack Query Hook
+    const { 
+        data, 
+        isLoading, 
+        isError, 
+        error, 
+        isPlaceholderData 
+    } = useQuery({
+        ...personListQueryOptions({ query: searchQuery, page, pageSize }),
+        // "keepPreviousData" is awesome for pagination - it keeps the old list 
+        // on screen while the new page loads, preventing layout shift.
+        placeholderData: keepPreviousData, 
+    })
+
+    // 3. Derived State
+    // Adjust these accessors based on your actual API return shape (e.g., data.items vs data)
+    const actors = data?.items || [] 
+    const totalItems = data?.totalItems || 0 
+    const totalPages = Math.ceil(totalItems / pageSize)
+
+    // 4. Handlers
+    const handleNext = () => {
+        if (!isPlaceholderData && page < totalPages) {
+            setPage(old => old + 1)
+        }
+    }
+
+    const handlePrevious = () => {
+        setPage(old => Math.max(old - 1, 1))
+    }
 
     return (
         <Container className={className}>
+            {/* Error State */}
+            {isError && (
+                <ErrorMessage>
+                    Error: {error instanceof Error ? error.message : 'Unknown error'}
+                </ErrorMessage>
+            )}
 
-            {store.error && <ErrorMessage>{store.error}</ErrorMessage>}
+            {/* Loading State (Initial load only) */}
+            {isLoading && <LoadingMessage>Loading actors...</LoadingMessage>}
 
-            {store.isLoading && <LoadingMessage>Loading actors...</LoadingMessage>}
-
-            {!store.isLoading && store.actors.length === 0 && (
+            {/* Empty State */}
+            {!isLoading && !isError && actors.length === 0 && (
                 <EmptyMessage>No actors found</EmptyMessage>
             )}
 
-            {!store.isLoading && store.actors.length > 0 && (
+            {/* Success State */}
+            {!isLoading && !isError && actors.length > 0 && (
                 <>
                     <ActorGrid>
-                        {store.actors.map(actor => (
+                        {actors.map((actor: any) => (
                             <PersonCard
                                 key={actor.nconst}
                                 actor={actor}
@@ -44,11 +79,11 @@ function PersonListViewBase({ onActorClick, className = '' }: PersonListViewProp
                     </ActorGrid>
 
                     <Pagination
-                        currentPage={store.currentPage}
-                        totalPages={store.totalPages}
-                        onPrevious={() => void store.previousPage()}
-                        onNext={() => void store.nextPage()}
-                        isLoading={store.isLoading}
+                        currentPage={page}
+                        totalPages={totalPages || 1}
+                        onPrevious={handlePrevious}
+                        onNext={handleNext}
+                        isLoading={isPlaceholderData} // Shows loading spinner on pagination buttons
                     />
                 </>
             )}
@@ -64,23 +99,6 @@ const Container = styled.section`
     max-width: 1280px;
     margin: 0 auto;
     padding: 1rem 1.5rem 4rem;
-`
-
-const Header = styled.div`
-    margin-bottom: 2rem;
-`
-
-const Title = styled.h1`
-    font-size: 2.5rem;
-    font-weight: 800;
-    color: #f9fafb;
-    margin: 0 0 0.5rem 0;
-`
-
-const Subtitle = styled.p`
-    font-size: 1.125rem;
-    color: #9ca3af;
-    margin: 0;
 `
 
 const ActorGrid = styled.div`
