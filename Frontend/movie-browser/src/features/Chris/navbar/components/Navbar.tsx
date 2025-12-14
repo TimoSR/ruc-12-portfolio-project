@@ -18,6 +18,7 @@ export const Navbar = ({
 
                 <DesktopLinks>
                     <NavLink to="/">Home</NavLink>
+                    <NavLink to="/movies">Movies</NavLink>
                     <NavLink to="/profile">Profile</NavLink>
                 </DesktopLinks>
 

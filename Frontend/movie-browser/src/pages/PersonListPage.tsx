@@ -4,8 +4,8 @@ import { PersonListView } from '../features/Chris/persons/views/PersonListView'
 export function PersonListPage() {
   const navigate = useNavigate()
 
-  const handleActorClick = (nconst: string) => {
-    navigate({ to: '/persons/$personId', params: { personId: nconst } })
+  const handleActorClick = (personId: string) => {
+    navigate({ to: '/persons/$personId', params: { personId } })
   }
 
   return (

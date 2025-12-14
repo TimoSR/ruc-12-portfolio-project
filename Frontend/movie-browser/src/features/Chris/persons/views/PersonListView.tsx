@@ -7,7 +7,7 @@ import { personListQueryOptions } from '../../../../api/queries/personQueries'
 import { personListRoute } from '../../../../routes/persons'
 
 type PersonListViewProps = {
-    onActorClick?: (nconst: string) => void
+    onActorClick?: (personId: string) => void
     className?: string
 }
 
@@ -84,9 +84,9 @@ export function PersonListView({ onActorClick, className = '' }: PersonListViewP
                     <ActorGrid>
                         {actors.map((actor: any) => (
                             <PersonCard
-                                key={actor.nconst}
+                                key={actor.id}
                                 actor={actor}
-                                onClick={() => onActorClick?.(actor.nconst)}
+                                onClick={() => onActorClick?.(actor.id)}
                             />
                         ))}
                     </ActorGrid>

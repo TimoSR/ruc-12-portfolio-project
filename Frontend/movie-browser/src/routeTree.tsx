@@ -4,6 +4,7 @@ import { loginRoute, registerRoute } from "./routes/auth";
 import { personListRoute, personDetailsRoute } from "./routes/persons";
 import { homeRoute } from "./routes/home";
 import { styledRoute } from "./routes/styled";
+import { movieListRoute, movieDetailsRoute } from "./routes/movies";
 
 export const routeTree = rootRoute.addChildren([
   // Branch A: Pages with Navbar
@@ -12,8 +13,10 @@ export const routeTree = rootRoute.addChildren([
     styledRoute,
     personListRoute,
     personDetailsRoute,
+    movieListRoute,
+    movieDetailsRoute,
   ]),
-  
+
   // Branch B: Pages without Navbar (Auth)
   loginRoute,
   registerRoute,
