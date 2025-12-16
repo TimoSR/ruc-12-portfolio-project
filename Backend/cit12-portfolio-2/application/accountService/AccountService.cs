@@ -1,11 +1,13 @@
 ﻿using domain.profile.account;
 using infrastructure;
 using Microsoft.Extensions.Logging;
+
 using service_patterns;
+using application.services;
 
 namespace application.accountService;
 
-public class AccountService(IUnitOfWork unitOfWork, ILogger<AccountService> logger) : IAccountService
+public class AccountService(IUnitOfWork unitOfWork, ILogger<AccountService> logger, ITokenService tokenService) : IAccountService
 {
     public async Task<Result<AccountDto>> CreateAccountAsync(CreateAccountCommandDto commandDto, CancellationToken cancellationToken)
     {
@@ -75,5 +77,26 @@ public class AccountService(IUnitOfWork unitOfWork, ILogger<AccountService> logg
             logger.LogError(ex, "Unexpected error while retrieving account with id {AccountId}", id);
             throw;
         }
+    }
+
+
+    public async Task<Result<AccountDto>> LoginAsync(LoginCommandDto commandDto, CancellationToken cancellationToken)
+    {
+        var account = await unitOfWork.AccountRepository.GetByUserNameAsync(commandDto.Username, cancellationToken);
+
+        if (account == null)
+        {
+            return Result<AccountDto>.Failure(AccountErrors.NotFound);
+        }
+
+        // WARNING: Plain text password comparison for "last fix" scenario. NOT SECURE.
+        if (account.Password != commandDto.Password)
+        {
+            return Result<AccountDto>.Failure(AccountErrors.InvalidCredentials);
+        }
+
+        var token = tokenService.CreateToken(account);
+
+        return Result<AccountDto>.Success(new AccountDto(account.Id, account.Username, token));
     }
 }

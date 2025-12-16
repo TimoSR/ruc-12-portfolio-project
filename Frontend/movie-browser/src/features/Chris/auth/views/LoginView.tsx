@@ -11,12 +11,12 @@ function LoginViewBase() {
         <Page>
             <Card>
                 <Title>Login</Title>
-                <Label>Email</Label>
+                <Label>Username</Label>
                 <Input
                     type="text"
-                    value={store.email}
-                    onChange={(e) => store.setEmail(e.target.value)}
-                    placeholder="your@email.com"
+                    value={store.username}
+                    onChange={(e) => store.setUsername(e.target.value)}
+                    placeholder="your_username"
                 />
 
                 <Label>Password</Label>
