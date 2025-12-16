@@ -95,6 +95,18 @@ builder.Services.AddRouting(options =>
     options.LowercaseQueryStrings = false;
 });
 
+// Add CORS policy fix
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        // Where we allow the calls from
+        policy.WithOrigins("http://localhost:5173", "http://localhost:5174")
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
 var app = builder.Build();
 
 // 3. Test database connection at startup
@@ -120,6 +132,7 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
+app.UseCors();
 app.UseRouting();
 
 
@@ -136,6 +149,4 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.MapControllers();
 app.UseSwagger();
-app.UseCors();
 app.Run();
-

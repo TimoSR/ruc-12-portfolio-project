@@ -49,9 +49,13 @@ public sealed class PersonsController(IPersonService service) : ControllerBase
     }*/
 
     [HttpGet]
-    public async Task<IActionResult> Search([FromQuery] string query, [FromQuery] int page = 1, [FromQuery] int pageSize = 20, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> Search([FromQuery] string? query = null, [FromQuery] int page = 1, [FromQuery] int pageSize = 20, CancellationToken cancellationToken = default)
     {
-        var result = await service.SearchPersonsAsync(new SearchPersonsQuery(query, page, pageSize), cancellationToken);
+
+        var searchQuery = new SearchPersonsQuery(query, page, pageSize);
+
+        var result = await service.SearchPersonsAsync(searchQuery, cancellationToken);
+
         if (!result.IsSuccess) return BadRequest(result.Error);
         
         var pagedResult = result.Value.items.ToPagedResult(

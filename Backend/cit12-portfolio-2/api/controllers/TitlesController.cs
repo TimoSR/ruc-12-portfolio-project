@@ -75,6 +75,7 @@ public class TitlesController(ITitleService titleService) : ControllerBase
         CancellationToken cancellationToken = default)
     {
         var searchQuery = new SearchTitlesQuery(query, page, pageSize);
+        
         var result = await titleService.SearchTitlesAsync(searchQuery, cancellationToken);
 
         if (!result.IsSuccess)

@@ -17,9 +17,15 @@ importers:
       '@tanstack/react-query':
         specifier: ^5.90.10
         version: 5.90.10(react@19.2.0)
+      '@tanstack/react-query-devtools':
+        specifier: ^5.91.1
+        version: 5.91.1(@tanstack/react-query@5.90.10(react@19.2.0))(react@19.2.0)
       '@tanstack/react-router':
         specifier: ^1.136.6
         version: 1.136.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      '@tanstack/react-router-ssr-query':
+        specifier: ^1.141.1
+        version: 1.141.1(@tanstack/query-core@5.90.10)(@tanstack/react-query@5.90.10(react@19.2.0))(@tanstack/react-router@1.136.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@tanstack/router-core@1.136.6)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@types/styled-components':
         specifier: ^5.1.36
         version: 5.1.36
@@ -29,6 +35,9 @@ importers:
       mobx-react:
         specifier: ^9.2.1
         version: 9.2.1(mobx@6.15.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      mobx-react-observer:
+        specifier: ^1.1.0
+        version: 1.1.0(mobx@6.15.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       react:
         specifier: ^19.2.0
         version: 19.2.0
@@ -247,6 +256,14 @@ packages:
   '@humanwhocodes/retry@0.4.3':
     resolution: {integrity: sha512-bV0Tgo9K4hfPCek+aMAn81RppFKv2ySDQeMoSZuvTASywNTnVJCArCZE2FWqpvIatKu7VMRLWlR1EazvVhDyhQ==}
     engines: {node: '>=18.18'}
+
+  '@isaacs/balanced-match@4.0.1':
+    resolution: {integrity: sha512-yzMTt9lEb8Gv7zRioUilSglI0c0smZ9k5D65677DLWLtWJaXIS3CqcGyUFByYKlnUj6TkjLVs54fBl6+TiGQDQ==}
+    engines: {node: 20 || >=22}
+
+  '@isaacs/brace-expansion@5.0.0':
+    resolution: {integrity: sha512-ZT55BDLV0yv0RBm2czMiZ+SqCGO7AvmOM3G/w2xhVPH+te0aKgFjmBvGlL1dH+ql2tgGO3MVrbb3jCKyvpgnxA==}
+    engines: {node: 20 || >=22}
 
   '@jridgewell/gen-mapping@0.3.13':
     resolution: {integrity: sha512-2kkt/7niJ6MgEPxF0bYdQ6etZaA+fQvDcLKckhy1yIQOzaoKjBBjSj63/aLVjYE3qhRt5dvM+uUyfCg6UKCBbA==}
@@ -479,6 +496,15 @@ packages:
   '@tanstack/query-core@5.90.10':
     resolution: {integrity: sha512-EhZVFu9rl7GfRNuJLJ3Y7wtbTnENsvzp+YpcAV7kCYiXni1v8qZh++lpw4ch4rrwC0u/EZRnBHIehzCGzwXDSQ==}
 
+  '@tanstack/query-devtools@5.91.1':
+    resolution: {integrity: sha512-l8bxjk6BMsCaVQH6NzQEE/bEgFy1hAs5qbgXl0xhzezlaQbPk6Mgz9BqEg2vTLPOHD8N4k+w/gdgCbEzecGyNg==}
+
+  '@tanstack/react-query-devtools@5.91.1':
+    resolution: {integrity: sha512-tRnJYwEbH0kAOuToy8Ew7bJw1lX3AjkkgSlf/vzb+NpnqmHPdWM+lA2DSdGQSLi1SU0PDRrrCI1vnZnci96CsQ==}
+    peerDependencies:
+      '@tanstack/react-query': ^5.90.10
+      react: ^18 || ^19
+
   '@tanstack/react-query@5.90.10':
     resolution: {integrity: sha512-BKLss9Y8PQ9IUjPYQiv3/Zmlx92uxffUOX8ZZNoQlCIZBJPT5M+GOMQj7xislvVQ6l1BstBjcX0XB/aHfFYVNw==}
     peerDependencies:
@@ -495,6 +521,16 @@ packages:
     peerDependenciesMeta:
       '@tanstack/router-core':
         optional: true
+
+  '@tanstack/react-router-ssr-query@1.141.1':
+    resolution: {integrity: sha512-80KEKpHx9OZwXcdCOZDyftqxWMP8QHGU6LQgyIsuunPrf76Wf1riyBnZrPOAOJPcjM3PDhTHLNIfmRBnAtItUw==}
+    engines: {node: '>=12'}
+    peerDependencies:
+      '@tanstack/query-core': '>=5.90.0'
+      '@tanstack/react-query': '>=5.90.0'
+      '@tanstack/react-router': '>=1.127.0'
+      react: '>=18.0.0 || >=19.0.0'
+      react-dom: '>=18.0.0 || >=19.0.0'
 
   '@tanstack/react-router@1.136.6':
     resolution: {integrity: sha512-w0ZCHoVbztG1IoJnj+xXl0ngR3qqZhhp4S3fQTI0xJDrkTkn8qtngylYkBlFZT88BWTBSUtRDM3iJPljv39d9g==}
@@ -523,6 +559,13 @@ packages:
     peerDependenciesMeta:
       csstype:
         optional: true
+
+  '@tanstack/router-ssr-query-core@1.141.1':
+    resolution: {integrity: sha512-bkRXUhktifxBewnnphH59E0sGcsUI1NmNqxzCAmXIb93xYgafhjUGGYwfK6FqFBOmCB5isr32exGO3+UMHJr/A==}
+    engines: {node: '>=12'}
+    peerDependencies:
+      '@tanstack/query-core': '>=5.90.0'
+      '@tanstack/router-core': '>=1.127.0'
 
   '@tanstack/store@0.8.0':
     resolution: {integrity: sha512-Om+BO0YfMZe//X2z0uLF2j+75nQga6TpTJgLJQBiq85aOyZNIhkCgleNcud2KQg4k4v9Y9l+Uhru3qWMPGTOzQ==}
@@ -654,6 +697,9 @@ packages:
 
   argparse@2.0.1:
     resolution: {integrity: sha512-8+9WqebbFzpX9OR+Wa6O29asIogeRMzcGtAINdpMHHyAg10f05aSFVBbcEqGf/PXw1EjAZ+q2/bEBg3DvurK3Q==}
+
+  babel-plugin-observing-components@0.2.0:
+    resolution: {integrity: sha512-nlOYLXHgZtTM7ejr6x6CpUE/a7W3xa58ItvHL7EMaTpYa9Jv0mQUnrmlIwpP7djadM32Bqx/RMJRro6ZLlYzGw==}
 
   babel-plugin-react-compiler@1.0.0:
     resolution: {integrity: sha512-Ixm8tFfoKKIPYdCCKYTsqv+Fd4IJ0DQqMyEimo+pxUOMUR9cVPlwTrFt9Avu+3cb6Zp3mAzl+t1MrG2fxxKsxw==}
@@ -1074,6 +1120,10 @@ packages:
     resolution: {integrity: sha512-PXwfBhYu0hBCPw8Dn0E+WDYb7af3dSLVWKi3HGv84IdF4TyFoC0ysxFd0Goxw7nSv4T/PzEJQxsYsEiFCKo2BA==}
     engines: {node: '>=8.6'}
 
+  minimatch@10.1.1:
+    resolution: {integrity: sha512-enIvLvRAFZYXJzkCYG5RKmPfrFArdLv+R+lbQ53BmIMLIry74bjKzX6iHAm8WYamJkhSSEabrWN5D97XnKObjQ==}
+    engines: {node: 20 || >=22}
+
   minimatch@3.1.2:
     resolution: {integrity: sha512-J7p63hRiAjw1NDEww1W7i37+ByIrOWO5XQQAzZ3VOcL0PNybwpfmV/N05zFAzwQ9USyEcX6t3UO+K5aqBQOIHw==}
 
@@ -1093,6 +1143,9 @@ packages:
         optional: true
       react-native:
         optional: true
+
+  mobx-react-observer@1.1.0:
+    resolution: {integrity: sha512-EtSneDeiuSDYHnCu1lANGgLuss14LmAHTMd3SWxvmF3GXfYH0Bl4wdeAGRP2VSt4nB4nGpwAiHval6P6mWjRJA==}
 
   mobx-react@9.2.1:
     resolution: {integrity: sha512-WJNNm0FB2n0Z0u+jS1QHmmWyV8l2WiAj8V8I/96kbUEN2YbYCoKW+hbbqKKRUBqElu0llxM7nWKehvRIkhBVJw==}
@@ -1320,6 +1373,9 @@ packages:
   supports-color@7.2.0:
     resolution: {integrity: sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw==}
     engines: {node: '>=8'}
+
+  swc-plugin-observing-components@0.2.0:
+    resolution: {integrity: sha512-Ah7RktyGpsd5q3fruW3HXElxo8Rezf7tjiyE5Boge0zoYR5qbzYLi+2kNbcUQV4Ao9oZgRRPA57t0VVmnX0BRw==}
 
   tailwindcss@4.1.17:
     resolution: {integrity: sha512-j9Ee2YjuQqYT9bbRTfTZht9W/ytp5H+jJpZKiYdP/bpnXARAuELt9ofP0lPnmHjbga7SNQIxdTAXCmtKVYjN+Q==}
@@ -1607,6 +1663,12 @@ snapshots:
 
   '@humanwhocodes/retry@0.4.3': {}
 
+  '@isaacs/balanced-match@4.0.1': {}
+
+  '@isaacs/brace-expansion@5.0.0':
+    dependencies:
+      '@isaacs/balanced-match': 4.0.1
+
   '@jridgewell/gen-mapping@0.3.13':
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.5
@@ -1783,6 +1845,14 @@ snapshots:
 
   '@tanstack/query-core@5.90.10': {}
 
+  '@tanstack/query-devtools@5.91.1': {}
+
+  '@tanstack/react-query-devtools@5.91.1(@tanstack/react-query@5.90.10(react@19.2.0))(react@19.2.0)':
+    dependencies:
+      '@tanstack/query-devtools': 5.91.1
+      '@tanstack/react-query': 5.90.10(react@19.2.0)
+      react: 19.2.0
+
   '@tanstack/react-query@5.90.10(react@19.2.0)':
     dependencies:
       '@tanstack/query-core': 5.90.10
@@ -1811,6 +1881,17 @@ snapshots:
       - terser
       - tsx
       - yaml
+
+  '@tanstack/react-router-ssr-query@1.141.1(@tanstack/query-core@5.90.10)(@tanstack/react-query@5.90.10(react@19.2.0))(@tanstack/react-router@1.136.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@tanstack/router-core@1.136.6)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
+    dependencies:
+      '@tanstack/query-core': 5.90.10
+      '@tanstack/react-query': 5.90.10(react@19.2.0)
+      '@tanstack/react-router': 1.136.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      '@tanstack/router-ssr-query-core': 1.141.1(@tanstack/query-core@5.90.10)(@tanstack/router-core@1.136.6)
+      react: 19.2.0
+      react-dom: 19.2.0(react@19.2.0)
+    transitivePeerDependencies:
+      - '@tanstack/router-core'
 
   '@tanstack/react-router@1.136.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
     dependencies:
@@ -1862,6 +1943,11 @@ snapshots:
       - terser
       - tsx
       - yaml
+
+  '@tanstack/router-ssr-query-core@1.141.1(@tanstack/query-core@5.90.10)(@tanstack/router-core@1.136.6)':
+    dependencies:
+      '@tanstack/query-core': 5.90.10
+      '@tanstack/router-core': 1.136.6
 
   '@tanstack/store@0.8.0': {}
 
@@ -2043,6 +2129,14 @@ snapshots:
       color-convert: 2.0.1
 
   argparse@2.0.1: {}
+
+  babel-plugin-observing-components@0.2.0:
+    dependencies:
+      '@babel/core': 7.28.5
+      '@babel/traverse': 7.28.5
+      minimatch: 10.1.1
+    transitivePeerDependencies:
+      - supports-color
 
   babel-plugin-react-compiler@1.0.0:
     dependencies:
@@ -2419,6 +2513,10 @@ snapshots:
       braces: 3.0.3
       picomatch: 2.3.1
 
+  minimatch@10.1.1:
+    dependencies:
+      '@isaacs/brace-expansion': 5.0.0
+
   minimatch@3.1.2:
     dependencies:
       brace-expansion: 1.1.12
@@ -2434,6 +2532,18 @@ snapshots:
       use-sync-external-store: 1.6.0(react@19.2.0)
     optionalDependencies:
       react-dom: 19.2.0(react@19.2.0)
+
+  mobx-react-observer@1.1.0(mobx@6.15.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
+    dependencies:
+      babel-plugin-observing-components: 0.2.0
+      mobx-react-lite: 4.1.1(mobx@6.15.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      swc-plugin-observing-components: 0.2.0
+    transitivePeerDependencies:
+      - mobx
+      - react
+      - react-dom
+      - react-native
+      - supports-color
 
   mobx-react@9.2.1(mobx@6.15.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
     dependencies:
@@ -2612,6 +2722,8 @@ snapshots:
   supports-color@7.2.0:
     dependencies:
       has-flag: 4.0.0
+
+  swc-plugin-observing-components@0.2.0: {}
 
   tailwindcss@4.1.17: {}
 
