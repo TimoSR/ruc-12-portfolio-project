@@ -53,6 +53,50 @@ public class AccountsController(IAccountService accountService) : ControllerBase
         };
     }
     
+    [HttpPost("login")]
+    [ProducesResponseType(typeof(AccountDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Login([FromBody] LoginCommandDto commandDto, CancellationToken cancellationToken)
+    {
+        var result = await accountService.LoginAsync(commandDto, cancellationToken);
+
+        if (result.IsSuccess)
+        {
+            return Ok(result.Value);
+        }
+
+        return result.Error switch
+        {
+            var e when e == AccountErrors.NotFound =>
+                NotFound(new ProblemDetails
+                {
+                    Type = "https://httpstatuses.com/404",
+                    Title = "Not Found",
+                    Detail = e.Description,
+                    Status = StatusCodes.Status404NotFound,
+                    Instance = HttpContext.TraceIdentifier
+                }),
+            var e when e == AccountErrors.InvalidCredentials =>
+                Unauthorized(new ProblemDetails
+                {
+                    Type = "https://httpstatuses.com/401",
+                    Title = "Unauthorized",
+                    Detail = e.Description,
+                    Status = StatusCodes.Status401Unauthorized,
+                    Instance = HttpContext.TraceIdentifier
+                }),
+            _ => StatusCode(StatusCodes.Status500InternalServerError, new ProblemDetails
+            {
+                Type = "https://httpstatuses.com/500",
+                Title = "Internal Server Error",
+                Status = StatusCodes.Status500InternalServerError,
+                Detail = result.Error.Description,
+                Instance = HttpContext.TraceIdentifier
+            })
+        };
+    }
+    
     [HttpGet("{accountId:guid}")]
     [ProducesResponseType(typeof(AccountDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

@@ -19,6 +19,14 @@ function RegisterViewBase() {
                     placeholder="your@email.com"
                 />
 
+                <Label>Username</Label>
+                <Input
+                    type="text"
+                    value={store.username}
+                    onChange={(e) => store.setUsername(e.target.value)}
+                    placeholder="your_username"
+                />
+
                 <Label>Password</Label>
                 <Input
                     type="password"

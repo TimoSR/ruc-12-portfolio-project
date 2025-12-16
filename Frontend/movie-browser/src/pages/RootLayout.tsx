@@ -6,9 +6,9 @@ export const RootLayout = () => {
 
   return (
     <>
-        <GlobalScrollbarFix />
-        <NavigationWithSearch />
-        <Outlet />
+      <GlobalScrollbarFix />
+      <NavigationWithSearch />
+      <Outlet />
     </>
   )
 }

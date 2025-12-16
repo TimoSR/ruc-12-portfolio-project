@@ -2,7 +2,7 @@
 import styled from "styled-components";
 import { LargeImage } from "../features/Tim/Images/LargeImageModules";
 import { UpNextModule, type UpNextItem } from "../features/Tim/Movies/UpNextModule";
-import { SearchSection } from "../features/Tim/search";
+import LegacyWidget from "../features/Tim/js-in-ts/LegacyWidget";
 
 export const HomePage = () => {
   return (
@@ -22,6 +22,7 @@ export const HomePage = () => {
           <UpNextModule items={upNextItems} />
         </UpNextWrapper>
       </MainModule>
+      <LegacyWidget title={"Hello from JS! Using JSDOC for type checking! Find me at the HomePage.tsx ;)"} />
     </Page>
   );
 };

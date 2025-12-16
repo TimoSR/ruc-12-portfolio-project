@@ -1,9 +1,10 @@
 // Navigation.tsx
-import { observer } from 'mobx-react'
+import { observer, useLocalObservable } from 'mobx-react'
 import styled from 'styled-components'
 import { Link } from '@tanstack/react-router'
 import type { ISearchStore } from '../../search/store/SearchStore'
 import { WideSearchInput } from '../../search'
+import { AuthStore, type IAuthStore } from '../../../Chris/auth/store/AuthStore'
 
 export const Navigation = observer(NavigationBase)
 
@@ -13,6 +14,8 @@ type NavigationProps = {
 }
 
 function NavigationBase({ className = '', searchStore }: NavigationProps) {
+    const authStore = useLocalObservable<IAuthStore>(() => new AuthStore())
+
     return (
         <NavContainer className={className}>
             <ContentWrapper>
@@ -34,9 +37,16 @@ function NavigationBase({ className = '', searchStore }: NavigationProps) {
                     <StyledLink to="/persons" activeProps={{ className: 'active' }}>
                         Persons
                     </StyledLink>
-                    <StyledLink to="/login" activeProps={{ className: 'active' }}>
-                        Login
-                    </StyledLink>
+
+                    {authStore.token ? (
+                        <NavButton onClick={authStore.logout}>
+                            Logout
+                        </NavButton>
+                    ) : (
+                        <StyledLink to="/login" activeProps={{ className: 'active' }}>
+                            Login
+                        </StyledLink>
+                    )}
                 </DesktopLinks>
             </ContentWrapper>
         </NavContainer>
@@ -139,5 +149,22 @@ const StyledLink = styled(Link)`
         height: 2px;
         background: linear-gradient(to right, #a855f7, #ec4899);
         border-radius: 2px;
+    }
+`
+
+const NavButton = styled.button`
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
+    color: #9ca3af;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    position: relative;
+
+    &:hover {
+        color: #e5e7eb;
     }
 `
