@@ -17,6 +17,10 @@ using infrastructure.repositories.movie;
 using infrastructure.repositories.profile;
 using Microsoft.AspNetCore.Mvc;
 using program;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using application.services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -60,6 +64,19 @@ builder.Services.AddScoped<ITitleService, TitleService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IRatingService, RatingService>();
 builder.Services.AddScoped<IPersonService, PersonService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["TokenKey"] ?? "super_secret_key_12345_must_be_long_enough_for_hmac_sha512_this_is_definitely_long_enough_now")),
+            ValidateIssuer = false,
+            ValidateAudience = false
+        };
+    });
 
 builder.Services.AddApiVersioning(options =>
 {
@@ -134,6 +151,8 @@ using (var scope = app.Services.CreateScope())
 
 app.UseCors();
 app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
 
 
 // Configure the HTTP request pipeline.
