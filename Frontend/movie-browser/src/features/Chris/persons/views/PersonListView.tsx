@@ -33,6 +33,11 @@ export function PersonListView({ onActorClick, className = '' }: PersonListViewP
         staleTime: 1000 * 60 * 5, // 5 minutes
     })
 
+    if (data !== undefined) {
+      // Pretty-print JSON in the console
+      console.log('persons response:', JSON.stringify(data, null, 2));
+    }
+
     const actors = data?.items ?? []
     const totalItems = data?.totalItems ?? 0
     const totalPages = Math.ceil(totalItems / pageSize)
