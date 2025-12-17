@@ -1,21 +1,62 @@
-import { useState } from 'react'
-import { observer } from 'mobx-react'
+import { useState, useEffect } from 'react'
+import { observer, useLocalObservable } from 'mobx-react'
 import { useNavigate, useParams } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import styled from 'styled-components'
 import { movieDetailsQueryOptions } from '../../../../api/queries/movieQueries'
+import { RatingStore, type IRatingStore } from '../store/RatingStore'
+import { BookmarkStore, type IBookmarkStore } from '../../../bookmarks/store/BookmarkStore'
+import { RatingComponent } from '../components/RatingComponent'
+import { BookmarkButton } from '../../common/components/BookmarkButton'
+import { AuthStore, type IAuthStore } from '../../auth/store/AuthStore'
+
+import { useRootStore } from '../../../../store/RootStore'
 
 export const MovieDetailsView = observer(MovieDetailsViewBase)
 
 function MovieDetailsViewBase() {
   const navigate = useNavigate()
-  const { movieId } = useParams({ from: '/movies/$movieId' })
+  const { movieId } = useParams({ strict: false }) as { movieId: string }
   const [imageError, setImageError] = useState(false)
 
   const { data: movie, isLoading, error } = useQuery(movieDetailsQueryOptions(movieId))
 
+  // Stores
+  const { ratingStore, bookmarkStore, authStore } = useRootStore()
+
+  useEffect(() => {
+    if (authStore.token && authStore.accountId) {
+      if (movie?.id) {
+        ratingStore.fetchUserRating(authStore.accountId, movie.id)
+      }
+      bookmarkStore.fetchBookmarks(authStore.accountId)
+    }
+  }, [authStore.token, authStore.accountId, movie?.id])
+
   const handleBack = () => {
     navigate({ to: '/movies', search: { page: 1, pageSize: 20, query: '' } })
+  }
+
+  const handleBookmarkToggle = () => {
+    if (!authStore.token || !authStore.accountId) {
+      navigate({ to: '/login' })
+      return
+    }
+    if (bookmarkStore.isBookmarked(movieId, 'title')) {
+      bookmarkStore.removeBookmark(authStore.accountId!, movieId, 'title')
+    } else {
+      bookmarkStore.addBookmark(authStore.accountId!, movieId, 'title', movie?.primaryTitle, movie?.posterUrl)
+    }
+  }
+
+  const handleRate = (rating: number) => {
+    if (!authStore.token || !authStore.accountId) {
+      navigate({ to: '/login' })
+      return
+    }
+    if (movie?.id) {
+      ratingStore.rateMovie(authStore.accountId, movie.id, rating)
+    }
   }
 
   if (isLoading) {
@@ -35,6 +76,12 @@ function MovieDetailsViewBase() {
     )
   }
 
+  // Explicitly access bookmarks to ensure tracking
+  const bookmarks = bookmarkStore.bookmarks
+  const isBookmarked = bookmarks.some(b => b.targetId === movieId && b.targetType === 'title')
+
+  console.log('MovieDetailsView render. isBookmarked:', isBookmarked, 'movieId:', movieId, 'bookmarks count:', bookmarks.length)
+
   return (
     <Page>
       <BackButton onClick={handleBack}>← Back to Movies</BackButton>
@@ -52,10 +99,27 @@ function MovieDetailsViewBase() {
               <PlaceholderIcon>🎬</PlaceholderIcon>
             </PosterPlaceholder>
           )}
+
+          <ActionButtons>
+            <BookmarkButton
+              onClick={handleBookmarkToggle}
+              isBookmarked={isBookmarked}
+              isLoading={bookmarkStore.isLoading}
+            />
+          </ActionButtons>
         </PosterSection>
 
         <InfoSection>
-          <Title>{movie.primaryTitle}</Title>
+          <HeaderRow>
+            <Title>{movie.primaryTitle}</Title>
+            <RatingWrapper>
+              <RatingComponent
+                initialRating={ratingStore.userRating}
+                onRate={handleRate}
+                isLoading={ratingStore.isLoading}
+              />
+            </RatingWrapper>
+          </HeaderRow>
 
           {movie.originalTitle && movie.originalTitle !== movie.primaryTitle && (
             <OriginalTitle>Original: {movie.originalTitle}</OriginalTitle>
@@ -112,7 +176,11 @@ const Content = styled.div`
   }
 `
 
-const PosterSection = styled.div``
+const PosterSection = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+`
 
 const Poster = styled.img`
   width: 100%;
@@ -136,11 +204,24 @@ const PlaceholderIcon = styled.span`
 
 const InfoSection = styled.div``
 
+const HeaderRow = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 2rem;
+    margin-bottom: 0.5rem;
+`
+
+const RatingWrapper = styled.div`
+    padding-top: 0.5rem;
+`
+
 const Title = styled.h1`
   font-size: 2.5rem;
   font-weight: 800;
   color: #f9fafb;
-  margin: 0 0 0.5rem 0;
+  margin: 0;
+  line-height: 1.1;
 `
 
 const OriginalTitle = styled.p`
@@ -199,3 +280,10 @@ const ErrorMessage = styled.div`
   margin-bottom: 1rem;
   text-align: center;
 `
+
+const ActionButtons = styled.div`
+    display: flex;
+    gap: 1rem;
+`
+
+

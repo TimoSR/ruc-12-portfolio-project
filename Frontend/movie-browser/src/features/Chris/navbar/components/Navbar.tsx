@@ -1,5 +1,7 @@
 import styled from 'styled-components'
 import { Link } from '@tanstack/react-router'
+import { useState } from 'react'
+import { BookmarkDropdown } from '../../bookmarks/components/BookmarkDropdown'
 
 export interface NavbarProps {
     className?: string
@@ -8,6 +10,8 @@ export interface NavbarProps {
 export const Navbar = ({
     className = '',
 }: NavbarProps) => {
+    const [isBookmarksOpen, setIsBookmarksOpen] = useState(false)
+
     return (
         <Nav className={className}>
             <Container>
@@ -23,6 +27,12 @@ export const Navbar = ({
                 </DesktopLinks>
 
                 <UserSection>
+                    <BookmarkWrapper>
+                        <BookmarkToggle onClick={() => setIsBookmarksOpen(!isBookmarksOpen)}>
+                            Bookmarks
+                        </BookmarkToggle>
+                        {isBookmarksOpen && <BookmarkDropdown />}
+                    </BookmarkWrapper>
                     <LoginButton>Login</LoginButton>
                 </UserSection>
             </Container>
@@ -79,16 +89,6 @@ const BrandText = styled.span`
     }
 `
 
-const SearchBarWrapper = styled.div`
-    flex: 1;
-    max-width: 600px;
-    display: flex;
-
-    @media (max-width: 1024px) {
-        display: none;
-    }
-`
-
 const DesktopLinks = styled.div`
     display: flex;
     align-items: center;
@@ -139,5 +139,23 @@ const LoginButton = styled.button`
 
     &:hover {
         opacity: 0.9;
+    }
+`
+
+const BookmarkWrapper = styled.div`
+    position: relative;
+`
+
+const BookmarkToggle = styled.button`
+    background: transparent;
+    border: none;
+    color: var(--color-text-muted);
+    font-weight: 500;
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: color 0.2s;
+
+    &:hover {
+        color: var(--color-text);
     }
 `

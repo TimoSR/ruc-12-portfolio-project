@@ -1,7 +1,7 @@
-import { observer, useLocalObservable } from 'mobx-react'
+import { observer } from 'mobx-react'
 import styled from 'styled-components'
 import { Link } from '@tanstack/react-router'
-import { type IBookmarkStore, BookmarkStore } from '../store/BookmarkStore'
+import { useRootStore } from '../../../store/RootStore'
 import type { BookmarkTargetType } from '../types'
 import { useEffect, useState } from 'react'
 
@@ -12,7 +12,7 @@ type BookmarksSectionProps = {
 }
 
 function BookmarksSectionBase({ className = '' }: BookmarksSectionProps) {
-    const store = useLocalObservable<IBookmarkStore>(() => new BookmarkStore())
+    const { bookmarkStore: store } = useRootStore()
     const [filter, setFilter] = useState<BookmarkTargetType | 'all'>('all')
 
     useEffect(() => {
@@ -71,10 +71,10 @@ function BookmarksSectionBase({ className = '' }: BookmarksSectionProps) {
                         return (
                             <BookmarkCard key={bookmark.id}>
                                 <BookmarkLink to={linkPath}>
-                                    {bookmark.note?.imageUrl ? (
+                                    {bookmark.posterUrl ? (
                                         <BookmarkImage
-                                            src={bookmark.note.imageUrl as string}
-                                            alt={bookmark.note.title as string || 'Bookmark'}
+                                            src={bookmark.posterUrl}
+                                            alt={bookmark.title || 'Bookmark'}
                                         />
                                     ) : (
                                         <BookmarkType>
@@ -83,7 +83,7 @@ function BookmarksSectionBase({ className = '' }: BookmarksSectionProps) {
                                     )}
                                     <BookmarkContent>
                                         <BookmarkTitle>
-                                            {bookmark.note?.title as string || bookmark.targetId}
+                                            {bookmark.title || bookmark.targetId}
                                         </BookmarkTitle>
                                         <BookmarkDate>
                                             {new Date(bookmark.addedAt).toLocaleDateString()}

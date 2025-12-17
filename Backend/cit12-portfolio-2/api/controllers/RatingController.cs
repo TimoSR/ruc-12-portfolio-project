@@ -62,6 +62,18 @@ public class RatingsController : ControllerBase
             })
         };
     }
+
+    [HttpGet]
+    [ProducesResponseType(typeof(List<RatingDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetRatings([FromRoute] Guid accountId, CancellationToken cancellationToken)
+    {
+        var result = await _ratingService.GetRatingsAsync(accountId, cancellationToken);
+        if (result.IsSuccess)
+        {
+            return Ok(result.Value);
+        }
+        return StatusCode(500, result.Error);
+    }
     
     [HttpGet("{ratingId:guid}")]
     [ProducesResponseType(typeof(RatingDto), StatusCodes.Status200OK)]

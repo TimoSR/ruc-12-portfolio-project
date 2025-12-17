@@ -11,6 +11,7 @@ export interface IAuthStore {
     error: string
     success: string
     token: string | null
+    accountId: string | null
     login(): Promise<void>
     register(): Promise<void>
     logout(): void
@@ -25,6 +26,7 @@ export class AuthStore implements IAuthStore {
     error = ''
     success = ''
     token: string | null = null
+    accountId: string | null = null
 
     constructor() {
         makeAutoObservable(this, {}, { autoBind: true })
@@ -34,6 +36,7 @@ export class AuthStore implements IAuthStore {
             try {
                 const user = JSON.parse(userStr)
                 this.username = user.username
+                this.accountId = user.id
             } catch (e) {
                 console.error('Failed to parse user from localStorage', e)
             }

@@ -1,16 +1,15 @@
-import { makeAutoObservable, runInAction } from 'mobx'
+import { makeObservable, observable, action, runInAction } from 'mobx'
+import { apiClient } from '../../../api/client'
 import type { Bookmark, BookmarkTargetType } from '../types'
-
-const STORAGE_KEY = 'movie-browser-bookmarks'
 
 export interface IBookmarkStore {
     bookmarks: Bookmark[]
     isLoading: boolean
     error: string | null
 
-    fetchBookmarks(type?: BookmarkTargetType): Promise<void>
-    addBookmark(targetId: string, type: BookmarkTargetType, title?: string): Promise<void>
-    removeBookmark(targetId: string, type: BookmarkTargetType): Promise<void>
+    fetchBookmarks(accountId: string): Promise<void>
+    addBookmark(accountId: string, targetId: string, type: BookmarkTargetType, title?: string, posterUrl?: string): Promise<void>
+    removeBookmark(accountId: string, targetId: string, type: BookmarkTargetType): Promise<void>
     isBookmarked(targetId: string, type: BookmarkTargetType): boolean
     getBookmarksByType(type: BookmarkTargetType): Bookmark[]
 }
@@ -22,75 +21,85 @@ export class BookmarkStore implements IBookmarkStore {
     error: string | null = null
 
     constructor() {
-        makeAutoObservable(this, {}, { autoBind: true })
-        this.loadFromStorage()
+        makeObservable(this, {
+            bookmarks: observable,
+            isLoading: observable,
+            error: observable,
+            fetchBookmarks: action,
+            addBookmark: action,
+            removeBookmark: action
+        })
     }
 
-    private loadFromStorage(): void {
-        try {
-            const stored = localStorage.getItem(STORAGE_KEY)
-            if (stored) {
-                this.bookmarks = JSON.parse(stored)
-            }
-        } catch (error) {
-            console.error('Failed to load bookmarks from storage:', error)
-        }
-    }
-
-    private saveToStorage(): void {
-        try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(this.bookmarks))
-        } catch (error) {
-            console.error('Failed to save bookmarks to storage:', error)
-        }
-    }
-
-    async fetchBookmarks(_type?: BookmarkTargetType): Promise<void> {
+    async fetchBookmarks(accountId: string): Promise<void> {
         this.isLoading = true
-        this.error = null
-
         try {
-            await new Promise(resolve => setTimeout(resolve, 200))
-
+            const data = await apiClient(`/accounts/${accountId}/bookmarks`) as any[]
             runInAction(() => {
+                this.bookmarks = data.map(b => {
+                    let title = b.targetId
+                    let posterUrl = undefined
+                    try {
+                        if (b.note) {
+                            const noteData = JSON.parse(b.note)
+                            title = noteData.title || title
+                            posterUrl = noteData.imageUrl
+                        }
+                    } catch (e) {
+                        // Note wasn't JSON, ignore
+                    }
+                    return {
+                        ...b,
+                        title,
+                        posterUrl
+                    }
+                })
                 this.isLoading = false
             })
         } catch (error) {
-            const message = error instanceof Error ? error.message : 'Failed to fetch bookmarks'
-
             runInAction(() => {
-                this.error = message
+                this.error = 'Failed to fetch bookmarks'
                 this.isLoading = false
             })
         }
     }
 
-    async addBookmark(targetId: string, type: BookmarkTargetType, title?: string): Promise<void> {
-        if (this.isBookmarked(targetId, type)) {
-            return
-        }
+    async addBookmark(accountId: string, targetId: string, type: BookmarkTargetType, title?: string, posterUrl?: string): Promise<void> {
+        if (this.isBookmarked(targetId, type)) return
 
-        const newBookmark: Bookmark = {
-            id: crypto.randomUUID(),
-            targetId,
-            targetType: type,
-            addedAt: new Date().toISOString(),
-            note: title ? { title } : undefined
+        this.isLoading = true
+        try {
+            const note = JSON.stringify({ title, imageUrl: posterUrl })
+            await apiClient(`/accounts/${accountId}/bookmarks`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    targetId,
+                    targetType: type,
+                    note
+                })
+            })
+            await this.fetchBookmarks(accountId)
+        } catch (error) {
+            runInAction(() => {
+                this.error = 'Failed to add bookmark'
+                this.isLoading = false
+            })
         }
-
-        runInAction(() => {
-            this.bookmarks.push(newBookmark)
-            this.saveToStorage()
-        })
     }
 
-    async removeBookmark(targetId: string, type: BookmarkTargetType): Promise<void> {
-        runInAction(() => {
-            this.bookmarks = this.bookmarks.filter(
-                b => !(b.targetId === targetId && b.targetType === type)
-            )
-            this.saveToStorage()
-        })
+    async removeBookmark(accountId: string, targetId: string, type: BookmarkTargetType): Promise<void> {
+        this.isLoading = true
+        try {
+            await apiClient(`/accounts/${accountId}/bookmarks/${targetId}`, {
+                method: 'DELETE'
+            })
+            await this.fetchBookmarks(accountId)
+        } catch (error) {
+            runInAction(() => {
+                this.error = 'Failed to remove bookmark'
+                this.isLoading = false
+            })
+        }
     }
 
     isBookmarked(targetId: string, type: BookmarkTargetType): boolean {
