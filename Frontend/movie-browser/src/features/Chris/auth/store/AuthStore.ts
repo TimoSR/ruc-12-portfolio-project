@@ -11,6 +11,7 @@ export interface IAuthStore {
     error: string
     success: string
     token: string | null
+    isAuthenticated: boolean
     login(): Promise<void>
     register(): Promise<void>
     logout(): void
@@ -25,6 +26,10 @@ export class AuthStore implements IAuthStore {
     error = ''
     success = ''
     token: string | null = null
+
+    get isAuthenticated() {
+        return !!this.token
+    }
 
     constructor() {
         makeAutoObservable(this, {}, { autoBind: true })

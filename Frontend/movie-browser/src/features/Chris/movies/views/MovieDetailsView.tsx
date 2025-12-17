@@ -1,9 +1,11 @@
 import { useState } from 'react'
-import { observer } from 'mobx-react'
+import { observer, useLocalObservable } from 'mobx-react'
 import { useNavigate, useParams } from '@tanstack/react-router'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import styled from 'styled-components'
-import { movieDetailsQueryOptions } from '../../../../api/queries/movieQueries'
+import { movieDetailsQueryOptions, rateMovieMutation } from '../../../../api/queries/movieQueries'
+import { Rating } from '../components/Rating'
+import { AuthStore } from '../../auth/store/AuthStore'
 
 export const MovieDetailsView = observer(MovieDetailsViewBase)
 
@@ -11,8 +13,21 @@ function MovieDetailsViewBase() {
   const navigate = useNavigate()
   const { movieId } = useParams({ from: '/movies/$movieId' })
   const [imageError, setImageError] = useState(false)
+  const queryClient = useQueryClient()
+
+  // Create a local instance of auth store to check login status. 
+  // Ideally this should be a global context/store, but sticking to pattern seen in LoginView for now.
+  const authStore = useLocalObservable(() => new AuthStore())
 
   const { data: movie, isLoading, error } = useQuery(movieDetailsQueryOptions(movieId))
+
+  const rateMutation = useMutation({
+    mutationFn: rateMovieMutation(movieId),
+    onSuccess: () => {
+      // Invalidate queries to refresh the rating if backend updates the average immediately
+      queryClient.invalidateQueries({ queryKey: ['titles', movieId] })
+    }
+  })
 
   const handleBack = () => {
     navigate({ to: '/movies', search: { page: 1, pageSize: 20, query: '' } })
@@ -73,6 +88,27 @@ function MovieDetailsViewBase() {
               <Plot>{movie.plot}</Plot>
             </PlotSection>
           )}
+
+          <RatingSection>
+            <SectionTitle>Rating</SectionTitle>
+            {authStore.isAuthenticated ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                <Rating
+                  initialRating={movie.averageRating || 0}
+                  onRate={(rating) => {
+                    rateMutation.mutate({ rating })
+                  }}
+                />
+                {rateMutation.isPending && <SmallMeta>Saving rating...</SmallMeta>}
+                {rateMutation.isSuccess && <SmallMeta style={{ color: '#4ade80' }}>Rating saved!</SmallMeta>}
+                {rateMutation.isError && <SmallMeta style={{ color: '#f87171' }}>Failed to save rating</SmallMeta>}
+              </div>
+            ) : (
+              <LoginToRateMsg>
+                <a href="/login" style={{ color: '#a78bfa', textDecoration: 'underline' }}>Log in</a> to rate this movie
+              </LoginToRateMsg>
+            )}
+          </RatingSection>
         </InfoSection>
       </Content>
     </Page>
@@ -182,6 +218,21 @@ const Plot = styled.p`
   color: #d1d5db;
   margin: 0;
 `
+
+const RatingSection = styled.div`
+  margin-top: 2rem;
+`
+
+const LoginToRateMsg = styled.p`
+  color: #9ca3af;
+  font-style: italic;
+`
+
+const SmallMeta = styled.span`
+  font-size: 0.875rem;
+  margin-left: 0.5rem;
+`
+
 
 const LoadingMessage = styled.div`
   text-align: center;

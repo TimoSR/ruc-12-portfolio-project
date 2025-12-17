@@ -28,3 +28,21 @@ export const movieDetailsQueryOptions = (movieId: string) => {
         queryFn: () => apiClient(`/titles/${movieId}`),
     });
 };
+
+// Simplified type for the mutation payload
+type RateMoviePayload = {
+    rating: number;
+}
+
+export const rateMovieMutation = (movieId: string) => {
+    // In React Query v5, we often just use the useMutation hook directly in components,
+    // or return the config object here. Since we are using standard patterns,
+    // let's just export the function that performs the request so useMutation can call it.
+    return (payload: RateMoviePayload) => apiClient(`/titles/${movieId}/rating`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload)
+    });
+};
