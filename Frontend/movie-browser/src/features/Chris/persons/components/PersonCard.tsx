@@ -36,27 +36,32 @@ function PersonCardBase({ actor, onClick, className = '' }: PersonCardProps) {
 // === Styled Components ===
 
 const Card = styled.div`
-  background: linear-gradient(145deg, #1e1e2e, #2a2a3e);
-  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(55, 65, 81, 0.6);
+  border-radius: 0.75rem;
   overflow: hidden;
   cursor: pointer;
-  transition: all 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.2s ease;
 
   &:hover {
     transform: translateY(-4px);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
-    border-color: rgba(139, 92, 246, 0.5);
-  }
+    border-color: rgba(168, 85, 247, 0.6);
+    box-shadow: 0 20px 40px rgba(168, 85, 247, 0.3);
+  } 
 `
 
 const ImagePlaceholder = styled.div`
-  width: 100%;
   aspect-ratio: 2/3;
-  background: linear-gradient(135deg, #3b3b5c, #2a2a3e);
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(236, 72, 153, 0.2));
   display: flex;
   align-items: center;
   justify-content: center;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 `
 
 const PlaceholderIcon = styled.span`
