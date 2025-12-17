@@ -4,6 +4,7 @@ import { loginRoute, registerRoute } from "./routes/auth";
 import { personListRoute, personDetailsRoute } from "./routes/persons";
 import { homeRoute } from "./routes/home";
 import { styledRoute } from "./routes/styled";
+import { bookmarksRoute } from "./routes/bookmarks";
 import { movieListRoute, movieDetailsRoute } from "./routes/movies";
 
 export const routeTree = rootRoute.addChildren([
@@ -11,6 +12,7 @@ export const routeTree = rootRoute.addChildren([
   appLayoutRoute.addChildren([
     homeRoute,
     styledRoute,
+    bookmarksRoute,
     personListRoute,
     personDetailsRoute,
     movieListRoute,
