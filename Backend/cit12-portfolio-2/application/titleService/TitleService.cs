@@ -16,6 +16,8 @@ public class TitleService(IUnitOfWork unitOfWork, ILogger<TitleService> logger) 
 
             if (title is null)
                 return Result<TitleDto>.Failure(TitleErrors.NotFound);
+
+            var stats = await unitOfWork.TitleStatisticsRepository.GetByTitleIdAsync(id, cancellationToken);
             
             var dto = new TitleDto(
                 Id: title.Id,
@@ -27,7 +29,9 @@ public class TitleService(IUnitOfWork unitOfWork, ILogger<TitleService> logger) 
                 EndYear: title.EndYear,
                 RuntimeMinutes: title.RuntimeMinutes,
                 PosterUrl: title.PosterUrl,
-                Plot: title.Plot
+                Plot: title.Plot,
+                AverageRating: stats?.AverageRating,
+                NumVotes: stats?.NumVotes
             );
 
             return Result<TitleDto>.Success(dto);
@@ -88,7 +92,9 @@ public class TitleService(IUnitOfWork unitOfWork, ILogger<TitleService> logger) 
                 EndYear: title.EndYear,
                 RuntimeMinutes: title.RuntimeMinutes,
                 PosterUrl: title.PosterUrl,
-                Plot: title.Plot
+                Plot: title.Plot,
+                AverageRating: null,
+                NumVotes: null
             ));
 
             return Result<(IEnumerable<TitleDto> items, int totalCount)>.Success((dtos, totalCount));
@@ -131,7 +137,9 @@ public class TitleService(IUnitOfWork unitOfWork, ILogger<TitleService> logger) 
                 EndYear: title.EndYear,
                 RuntimeMinutes: title.RuntimeMinutes,
                 PosterUrl: title.PosterUrl,
-                Plot: title.Plot
+                Plot: title.Plot,
+                AverageRating: null,
+                NumVotes: null
             );
 
             return Result<TitleDto>.Success(dto);
@@ -189,7 +197,9 @@ public class TitleService(IUnitOfWork unitOfWork, ILogger<TitleService> logger) 
                 EndYear: title.EndYear,
                 RuntimeMinutes: title.RuntimeMinutes,
                 PosterUrl: title.PosterUrl,
-                Plot: title.Plot
+                Plot: title.Plot,
+                AverageRating: null,
+                NumVotes: null
             );
 
             return Result<TitleDto>.Success(dto);

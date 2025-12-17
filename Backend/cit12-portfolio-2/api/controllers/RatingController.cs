@@ -97,4 +97,39 @@ public class RatingsController : ControllerBase
             })
         };
     }
+
+    [HttpGet]
+    [ProducesResponseType(typeof(RatingDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetRatingByTitle([FromRoute] Guid accountId, [FromQuery] Guid titleId, CancellationToken cancellationToken)
+    {
+        var result = await _ratingService.GetRatingByAccountAndTitleAsync(accountId, titleId, cancellationToken);
+
+        if (result.IsSuccess)
+        {
+            return Ok(result.Value);
+        }
+        
+        return result.Error switch
+        {
+            var e when e.Code == "Rating.NotFound" =>
+                NotFound(new ProblemDetails
+                {
+                    Type = "https://httpstatuses.com/404",
+                    Title = "Not Found",
+                    Detail = e.Description,
+                    Status = StatusCodes.Status404NotFound,
+                    Instance = HttpContext.TraceIdentifier
+                }),
+
+            _ => StatusCode(StatusCodes.Status500InternalServerError, new ProblemDetails
+            {
+                Type = "https://httpstatuses.com/500",
+                Title = "Internal Server Error",
+                Status = StatusCodes.Status500InternalServerError,
+                Detail = result.Error.Description,
+                Instance = HttpContext.TraceIdentifier
+            })
+        };
+    }
 }

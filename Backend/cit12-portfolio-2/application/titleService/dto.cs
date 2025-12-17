@@ -13,6 +13,8 @@ public record TitleDto(
     int? RuntimeMinutes,
     string? PosterUrl,
     string? Plot,
+    double? AverageRating = null,
+    int? NumVotes = null,
     string? Url = null
 ) : IDTO;
 

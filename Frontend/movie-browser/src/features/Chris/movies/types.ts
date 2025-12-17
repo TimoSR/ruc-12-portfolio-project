@@ -9,6 +9,8 @@ export type MovieItem = {
     runtimeMinutes: number | null
     posterUrl: string | null
     plot: string | null
+    averageRating: number | null
+    numVotes: number | null
     url: string | null
 }
 

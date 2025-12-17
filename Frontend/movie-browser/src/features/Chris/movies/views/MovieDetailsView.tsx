@@ -5,14 +5,16 @@ import { useQuery } from '@tanstack/react-query'
 import styled from 'styled-components'
 import { movieDetailsQueryOptions } from '../../../../api/queries/movieQueries'
 
+import { RatingComponent } from '../components/RatingComponent'
+
 export const MovieDetailsView = observer(MovieDetailsViewBase)
 
 function MovieDetailsViewBase() {
   const navigate = useNavigate()
-  const { movieId } = useParams({ from: '/movies/$movieId' })
+  const { movieId } = useParams({ strict: false })
   const [imageError, setImageError] = useState(false)
 
-  const { data: movie, isLoading, error } = useQuery(movieDetailsQueryOptions(movieId))
+  const { data: movie, isLoading, error } = useQuery(movieDetailsQueryOptions(movieId || ''))
 
   const handleBack = () => {
     navigate({ to: '/movies', search: { page: 1, pageSize: 20, query: '' } })
@@ -67,6 +69,16 @@ function MovieDetailsViewBase() {
             {movie.titleType && <MetaItem>{movie.titleType}</MetaItem>}
           </MetaRow>
 
+          <RatingSection>
+            <SectionTitle>Rate this movie</SectionTitle>
+            {movie.averageRating && (
+              <div className="mb-2 text-yellow-400 text-lg font-bold">
+                ★ {movie.averageRating.toFixed(1)} <span className="text-gray-500 text-sm font-normal">({movie.numVotes} votes)</span>
+              </div>
+            )}
+            <RatingComponent titleId={movieId || ''} />
+          </RatingSection>
+
           {movie.plot && (
             <PlotSection>
               <SectionTitle>Plot</SectionTitle>
@@ -78,6 +90,10 @@ function MovieDetailsViewBase() {
     </Page>
   )
 }
+
+const RatingSection = styled.div`
+  margin-bottom: 2rem;
+`
 
 const Page = styled.main`
   max-width: 1280px;

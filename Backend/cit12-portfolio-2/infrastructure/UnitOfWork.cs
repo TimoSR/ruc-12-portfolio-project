@@ -15,6 +15,7 @@ public class UnitOfWork : IUnitOfWork
     public ITitleRepository TitleRepository { get; }
     public IAccountRatingRepository AccountRatingRepository { get; }
     public ITitleRatingRepository TitleRatingRepository { get; }
+    public ITitleStatisticsRepository TitleStatisticsRepository { get; }
     public IPersonRepository PersonRepository { get; }
     public IPersonQueriesRepository PersonQueriesRepository { get; }
 
@@ -27,6 +28,7 @@ public class UnitOfWork : IUnitOfWork
         IAccountRatingRepository accountRatingRepository,
         ITitleRepository titleRepository,
         ITitleRatingRepository titleRatingRepository,
+        ITitleStatisticsRepository titleStatisticsRepository,
         IPersonRepository personRepository,
         IPersonQueriesRepository personQueriesRepository)
     {
@@ -35,6 +37,7 @@ public class UnitOfWork : IUnitOfWork
         TitleRepository = titleRepository;
         AccountRatingRepository =  accountRatingRepository;
         TitleRatingRepository = titleRatingRepository;
+        TitleStatisticsRepository = titleStatisticsRepository;
         PersonRepository = personRepository;
         PersonQueriesRepository = personQueriesRepository;
     }

@@ -55,6 +55,7 @@ builder.Services.AddScoped<IAccountRatingRepository, AccountRatingRepository>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<ITitleRepository, TitleRepository>();
 builder.Services.AddScoped<ITitleRatingRepository, TitleRatingRepository>();
+builder.Services.AddScoped<ITitleStatisticsRepository, TitleStatisticsRepository>();
 builder.Services.AddScoped<IPersonRepository, PersonRepository>();
 builder.Services.AddScoped<IPersonQueriesRepository, PersonQueriesRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();

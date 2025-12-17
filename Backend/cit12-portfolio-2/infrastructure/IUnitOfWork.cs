@@ -13,6 +13,7 @@ public interface IUnitOfWork : IDisposable, IAsyncDisposable
     ITitleRepository TitleRepository { get; }
     IAccountRatingRepository AccountRatingRepository { get; }
     ITitleRatingRepository  TitleRatingRepository { get; }
+    ITitleStatisticsRepository TitleStatisticsRepository { get; }
     
     IPersonQueriesRepository PersonQueriesRepository { get; }
     IPersonRepository PersonRepository { get; }

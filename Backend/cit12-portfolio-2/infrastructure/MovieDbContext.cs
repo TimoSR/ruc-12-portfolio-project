@@ -15,6 +15,7 @@ public class MovieDbContext(DbContextOptions<MovieDbContext> options) : DbContex
     public DbSet<Title> Titles => Set<Title>();
     public DbSet<AccountRating> AccountRatings => Set<AccountRating>();
     public DbSet<TitleRating> TitleRatings => Set<TitleRating>();
+    public DbSet<TitleStatistics> TitleStatistics => Set<TitleStatistics>();
     public DbSet<Person> Persons => Set<Person>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -84,6 +85,15 @@ public class MovieDbContext(DbContextOptions<MovieDbContext> options) : DbContex
             entity.Property(x => x.PrimaryName).HasColumnName("primary_name");
             entity.Property(x => x.BirthYear).HasColumnName("birth_year");
             entity.Property(x => x.DeathYear).HasColumnName("death_year");
+        });
+
+        modelBuilder.Entity<TitleStatistics>(entity =>
+        {
+            entity.ToTable("rating", "movie_db");
+            entity.HasKey(x => x.TitleId);
+            entity.Property(x => x.TitleId).HasColumnName("title_id");
+            entity.Property(x => x.AverageRating).HasColumnName("average_rating");
+            entity.Property(x => x.NumVotes).HasColumnName("num_votes");
         });
     }
 }

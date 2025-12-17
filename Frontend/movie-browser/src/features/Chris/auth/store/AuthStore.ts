@@ -5,6 +5,7 @@ export interface IAuthStore {
     setEmail(email: string): void
     username: string
     setUsername(username: string): void
+    accountId: string
     password: string
     setPassword(password: string): void
     loading: boolean
@@ -20,6 +21,7 @@ export interface IAuthStore {
 export class AuthStore implements IAuthStore {
     email = ''
     username = ''
+    accountId = ''
     password = ''
     loading = false
     error = ''
@@ -34,6 +36,7 @@ export class AuthStore implements IAuthStore {
             try {
                 const user = JSON.parse(userStr)
                 this.username = user.username
+                this.accountId = user.id
             } catch (e) {
                 console.error('Failed to parse user from localStorage', e)
             }
