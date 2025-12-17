@@ -2,6 +2,7 @@
 
 using domain.movie.person.interfaces;
 using domain.movie.title.interfaces;
+using domain.profile.bookmark.interfaces;
 using domain.movie.titleRatings;
 using domain.profile.account.interfaces;
 using domain.profile.accountRatings;
@@ -18,6 +19,7 @@ public class UnitOfWork : IUnitOfWork
     public ITitleStatisticsRepository TitleStatisticsRepository { get; }
     public IPersonRepository PersonRepository { get; }
     public IPersonQueriesRepository PersonQueriesRepository { get; }
+    public IBookmarkRepository BookmarkRepository { get; } // Added this property
 
     private readonly MovieDbContext _dbContext;
     private IDbContextTransaction? _currentTransaction;
@@ -30,7 +32,8 @@ public class UnitOfWork : IUnitOfWork
         ITitleRatingRepository titleRatingRepository,
         ITitleStatisticsRepository titleStatisticsRepository,
         IPersonRepository personRepository,
-        IPersonQueriesRepository personQueriesRepository)
+        IPersonQueriesRepository personQueriesRepository,
+        IBookmarkRepository bookmarkRepository) // Added this parameter
     {
         _dbContext = dbContext;
         AccountRepository = accountRepository;
@@ -40,6 +43,7 @@ public class UnitOfWork : IUnitOfWork
         TitleStatisticsRepository = titleStatisticsRepository;
         PersonRepository = personRepository;
         PersonQueriesRepository = personQueriesRepository;
+        BookmarkRepository = bookmarkRepository;
     }
 
     public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)

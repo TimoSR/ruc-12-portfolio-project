@@ -2,6 +2,7 @@ using domain.movie.person;
 using domain.movie.title;
 using domain.movie.titleRatings;
 using domain.profile.account;
+using domain.profile.bookmark;
 using domain.profile.accountRatings;
 using domain.title;
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +18,8 @@ public class MovieDbContext(DbContextOptions<MovieDbContext> options) : DbContex
     public DbSet<TitleRating> TitleRatings => Set<TitleRating>();
     public DbSet<TitleStatistics> TitleStatistics => Set<TitleStatistics>();
     public DbSet<Person> Persons => Set<Person>();
+
+    public DbSet<Bookmark> Bookmarks => Set<Bookmark>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -43,6 +46,20 @@ public class MovieDbContext(DbContextOptions<MovieDbContext> options) : DbContex
             entity.Property(x => x.TitleId).HasColumnName("title_id");
             entity.Property(x => x.Score).HasColumnName("rating");
             entity.Property(x => x.Comment).HasColumnName("comment");
+            entity.Property(x => x.CreatedAt).HasColumnName("created_at");
+        });
+
+        modelBuilder.Entity<Bookmark>(entity =>
+        {
+            entity.ToTable("bookmark", "profile");
+            
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.Id).HasColumnName("id");
+            
+            entity.Property(x => x.AccountId).HasColumnName("account_id");
+            entity.Property(x => x.TitleId).HasColumnName("title_id");
+            entity.Property(x => x.PersonId).HasColumnName("person_id");
+            entity.Property(x => x.Notes).HasColumnName("notes");
             entity.Property(x => x.CreatedAt).HasColumnName("created_at");
         });
 

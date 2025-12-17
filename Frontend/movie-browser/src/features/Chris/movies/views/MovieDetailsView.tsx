@@ -6,6 +6,7 @@ import styled from 'styled-components'
 import { movieDetailsQueryOptions } from '../../../../api/queries/movieQueries'
 
 import { RatingComponent } from '../components/RatingComponent'
+import { BookmarkButton } from '../../common/components/BookmarkButton'
 
 export const MovieDetailsView = observer(MovieDetailsViewBase)
 
@@ -76,7 +77,10 @@ function MovieDetailsViewBase() {
                 ★ {movie.averageRating.toFixed(1)} <span className="text-gray-500 text-sm font-normal">({movie.numVotes} votes)</span>
               </div>
             )}
-            <RatingComponent titleId={movieId || ''} />
+            <div className="flex flex-col gap-4">
+              <RatingComponent titleId={movieId || ''} />
+              <BookmarkButton titleId={movieId} />
+            </div>
           </RatingSection>
 
           {movie.plot && (

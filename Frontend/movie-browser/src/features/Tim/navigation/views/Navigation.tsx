@@ -38,6 +38,12 @@ function NavigationBase({ className = '', searchStore }: NavigationProps) {
                         Persons
                     </StyledLink>
 
+                    {authStore.token && (
+                        <StyledLink to="/profile" activeProps={{ className: 'active' }}>
+                            Profile
+                        </StyledLink>
+                    )}
+
                     {authStore.token ? (
                         <NavButton onClick={authStore.logout}>
                             Logout

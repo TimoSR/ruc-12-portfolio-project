@@ -6,11 +6,13 @@ using application.personService;
 using Microsoft.EntityFrameworkCore;
 using domain.title.interfaces;
 using application.ratingService;
+using application.bookmarkService;
 using domain.movie.person.interfaces;
 using domain.movie.title.interfaces;
 using domain.movie.titleRatings;
 using domain.profile.account.interfaces;
 using domain.profile.accountRatings;
+using domain.profile.bookmark.interfaces;
 using infrastructure;
 using infrastructure.repositories;
 using infrastructure.repositories.movie;
@@ -56,6 +58,7 @@ builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<ITitleRepository, TitleRepository>();
 builder.Services.AddScoped<ITitleRatingRepository, TitleRatingRepository>();
 builder.Services.AddScoped<ITitleStatisticsRepository, TitleStatisticsRepository>();
+builder.Services.AddScoped<IBookmarkRepository, BookmarkRepository>();
 builder.Services.AddScoped<IPersonRepository, PersonRepository>();
 builder.Services.AddScoped<IPersonQueriesRepository, PersonQueriesRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -64,6 +67,7 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ITitleService, TitleService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IRatingService, RatingService>();
+builder.Services.AddScoped<IBookmarkService, BookmarkService>();
 builder.Services.AddScoped<IPersonService, PersonService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
@@ -92,6 +96,7 @@ builder.Services
     .AddApplicationPart(typeof(AccountsController).Assembly)
     .AddApplicationPart(typeof(TitlesController).Assembly)
     .AddApplicationPart(typeof(RatingsController).Assembly)
+    .AddApplicationPart(typeof(BookmarkController).Assembly)
     .AddApplicationPart(typeof(PersonsController).Assembly)
     .AddControllersAsServices();
 

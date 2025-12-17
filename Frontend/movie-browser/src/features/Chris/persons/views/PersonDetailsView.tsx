@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { observer, useLocalObservable } from 'mobx-react'
 import styled from 'styled-components'
 import { PersonDetailsStore, type IPersonDetailsStore } from '../store/PersonDetailsStore'
+import { BookmarkButton } from '../../common/components/BookmarkButton'
 
 
 export const PersonDetailsView = observer(PersonDetailsViewBase)
@@ -72,6 +73,7 @@ function PersonDetailsViewBase({ actorId, onBack, className = '' }: PersonDetail
                         {actor.averageRating && (
                             <RatingBadge>★ {actor.averageRating.toFixed(1)}</RatingBadge>
                         )}
+                        <BookmarkButton personId={actorId} />
                     </MetaRow>
 
                     {actor.primaryProfession && actor.primaryProfession.length > 0 && (
