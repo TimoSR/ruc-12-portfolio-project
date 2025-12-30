@@ -282,8 +282,37 @@ Update `src/features/Chris/navbar/components/Navbar.tsx`:
 | **Search** | Component | `src/features/Tim/search/components/SearchForm.jsx` |
 | **Search** | Component | `src/features/Tim/search/components/SearchResults.jsx` |
 | **Search** | Store | `src/features/Tim/search/store/SearchStore.js` (Update) |
+| **History** | View | `src/features/Chris/auth/views/UserProfileView.jsx` |
+| **Recs** | Component | `src/features/Chris/movies/components/SimilarMovies.jsx` |
+| **Recs** | Component | `src/features/Chris/persons/components/CoPlayers.jsx` |
 | **Route** | Logic | `src/routes/bookmarks.tsx` |
 
+
+## 7. Advanced Features (From 1-D Requirements)
+
+> **Requirements:** 
+> - "Visualize user-generated data (history...)" (Goal)
+> - 1-D.6: Co-players
+> - 1-D.9: Similar Movies
+> - 3-E.5: Frontend should support functional requirements from 1-D
+
+### 7.1 User Profile (History & Ratings)
+**Location:** `src/features/Chris/auth/views/UserProfileView.jsx` (New)
+- **Logic:** 
+  - Fetch and display user's **Search History** (Requirement 1-D.2 visualization)
+  - Fetch and display user's **Ratings** (Requirement "Visualize... my rating")
+
+### 7.2 Similar Movies
+**Location:** `src/features/Chris/movies/components/SimilarMovies.jsx` (New)
+- **Use in:** `MovieDetailsView`
+- **Logic:** Display list of similar movies (requires backend 1-D.9 support).
+
+### 7.3 Co-Players
+**Location:** `src/features/Chris/persons/components/CoPlayers.jsx` (New)
+- **Use in:** `PersonDetailsView`
+- **Logic:** Display frequent co-actors (requires backend 1-D.6 support).
+
+---
 
 ## Next Steps
 1. Get approval on DB changes.
