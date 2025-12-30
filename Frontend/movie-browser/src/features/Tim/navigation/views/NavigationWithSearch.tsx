@@ -1,21 +1,18 @@
-import { observer, useLocalObservable } from "mobx-react"
+import { observer } from "mobx-react"
 import { SearchResults } from "../../search/components/SearchResults"
-import { type ISearchStore, SearchStore } from "../../search/store/SearchStore"
 import { Navigation } from "./Navigation"
 import styled from "styled-components"
 
 export const NavigationWithSearch = observer(() => {
 
-  const searchStore = useLocalObservable<ISearchStore>(() => new SearchStore())
-
   return (
     <>
-        <Navigation searchStore={searchStore} />
-        <SearchResultsOverlay>
-          <SearchResultsContainer>
-            <SearchResults searchStore={searchStore} />
-          </SearchResultsContainer> 
-        </SearchResultsOverlay>
+      <Navigation />
+      <SearchResultsOverlay>
+        <SearchResultsContainer>
+          <SearchResults />
+        </SearchResultsContainer>
+      </SearchResultsOverlay>
     </>
   )
 })

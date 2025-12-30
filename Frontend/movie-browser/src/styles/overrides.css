@@ -1,0 +1,18 @@
+/* overrides.css */
+/* Minimal overrides to ensure Bootstrap doesn't look too generic */
+
+.card {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: rgba(30, 41, 59, 0.5); /* dark slate 800 with opacity */
+  color: #fff;
+}
+
+.btn-primary {
+  background-color: #7c3aed; /* violet-600 */
+  border-color: #7c3aed;
+}
+
+.btn-primary:hover {
+  background-color: #6d28d9; /* violet-700 */
+  border-color: #6d28d9;
+}

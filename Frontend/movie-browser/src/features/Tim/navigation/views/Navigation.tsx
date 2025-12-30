@@ -2,7 +2,7 @@
 import { observer, useLocalObservable } from 'mobx-react'
 import styled from 'styled-components'
 import { Link } from '@tanstack/react-router'
-import type { ISearchStore } from '../../search/store/SearchStore'
+
 import { WideSearchInput } from '../../search'
 import { AuthStore, type IAuthStore } from '../../../Chris/auth/store/AuthStore'
 
@@ -10,10 +10,9 @@ export const Navigation = observer(NavigationBase)
 
 type NavigationProps = {
     className?: string
-    searchStore: ISearchStore
 }
 
-function NavigationBase({ className = '', searchStore }: NavigationProps) {
+function NavigationBase({ className = '' }: NavigationProps) {
     const authStore = useLocalObservable<IAuthStore>(() => new AuthStore())
 
     return (
@@ -24,7 +23,7 @@ function NavigationBase({ className = '', searchStore }: NavigationProps) {
                 </Logo>
 
                 <SearchContainer>
-                    <WideSearchInput searchStore={searchStore} />
+                    <WideSearchInput />
                 </SearchContainer>
 
                 <DesktopLinks>

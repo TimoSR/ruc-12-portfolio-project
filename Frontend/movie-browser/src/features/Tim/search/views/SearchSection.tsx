@@ -1,7 +1,6 @@
-import { observer, useLocalObservable } from 'mobx-react'
+import { observer } from 'mobx-react'
 import styled from 'styled-components'
-import {type ISearchStore, SearchStore} from '../store/SearchStore'
-import { SearchInput } from '../components/SearchInput'
+import { SearchForm } from '../components/SearchForm'
 import { SearchResults } from '../components/SearchResults'
 
 export const SearchSection = observer(SearchSectionBase)
@@ -12,26 +11,20 @@ export type SearchSectioProps = {
     className?: string
 }
 
-function SearchSectionBase ({ className = '' }: SearchSectioProps) {
-
-    const searchStore = useLocalObservable<ISearchStore>(() => new SearchStore())
+function SearchSectionBase({ className = '' }: SearchSectioProps) {
 
     return (
         <Section className={className}>
             <Header>
-                <Title> 
-                    Search 
+                <Title>
+                    Search
                 </Title>
-                <Subtitle> 
-                    Type a query and we&apos;ll fetch matching items. 
+                <Subtitle>
+                    Type a query and we&apos;ll fetch matching items.
                 </Subtitle>
             </Header>
-            <SearchInput 
-                searchStore={searchStore} 
-            />
-            <SearchResults 
-                searchStore={searchStore} 
-            />
+            <SearchForm />
+            <SearchResults />
         </Section>
     )
 }

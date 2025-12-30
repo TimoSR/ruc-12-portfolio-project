@@ -19,6 +19,7 @@ export const Navbar = ({
                 <DesktopLinks>
                     <NavLink to="/">Home</NavLink>
                     <NavLink to="/movies">Movies</NavLink>
+                    <NavLink to="/bookmarks">Bookmarks</NavLink>
                     <NavLink to="/profile">Profile</NavLink>
                 </DesktopLinks>
 
@@ -79,15 +80,7 @@ const BrandText = styled.span`
     }
 `
 
-const SearchBarWrapper = styled.div`
-    flex: 1;
-    max-width: 600px;
-    display: flex;
 
-    @media (max-width: 1024px) {
-        display: none;
-    }
-`
 
 const DesktopLinks = styled.div`
     display: flex;

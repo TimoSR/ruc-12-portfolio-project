@@ -6,6 +6,9 @@ import { homeRoute } from "./routes/home";
 import { styledRoute } from "./routes/styled";
 import { movieListRoute, movieDetailsRoute } from "./routes/movies";
 
+import { Route as bookmarksRoute } from "./routes/bookmarks";
+import { Route as profileRoute } from "./routes/profile";
+
 export const routeTree = rootRoute.addChildren([
   // Branch A: Pages with Navbar
   appLayoutRoute.addChildren([
@@ -15,6 +18,8 @@ export const routeTree = rootRoute.addChildren([
     personDetailsRoute,
     movieListRoute,
     movieDetailsRoute,
+    bookmarksRoute,
+    profileRoute,
   ]),
 
   // Branch B: Pages without Navbar (Auth)

@@ -136,14 +136,7 @@ const Description = styled.p`
   overflow: hidden;
 `;
 
-const Meta = styled.div`
-  margin-top: 0.3rem;
-  font-size: 0.75rem;
-  color: #c4b5fd;
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-`;
+
 
 /**
  * Public component

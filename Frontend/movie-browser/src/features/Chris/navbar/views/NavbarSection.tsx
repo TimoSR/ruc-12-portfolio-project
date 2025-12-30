@@ -1,5 +1,4 @@
-import { observer, useLocalObservable } from 'mobx-react'
-import { NavbarStore } from '../store/NavbarStore'
+import { observer } from 'mobx-react'
 import { Navbar } from '../components/Navbar'
 
 export interface NavbarSectionProps {
@@ -7,17 +6,11 @@ export interface NavbarSectionProps {
 }
 
 const NavbarSectionBase = ({ className = '' }: NavbarSectionProps) => {
-    const store = useLocalObservable(() => new NavbarStore())
+
 
     return (
         <Navbar
             className={className}
-            isMobileMenuOpen={store.isMobileMenuOpen}
-            onToggleMobileMenu={store.toggleMobileMenu}
-            onCloseMobileMenu={store.closeMobileMenu}
-            searchQuery={store.searchQuery}
-            onSearchChange={store.setSearchQuery}
-            onSearch={store.handleSearch}
         />
     )
 }

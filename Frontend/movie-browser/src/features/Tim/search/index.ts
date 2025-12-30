@@ -1,13 +1,13 @@
 import styled from "styled-components"
 import { SearchSection } from "./views/SearchSection"
-import { SearchInput } from "./components/SearchInput";
+import { SearchForm } from "./components/SearchForm";
 
 // === Export individual components ===
 export { SearchSection } from "./views/SearchSection"
 
 // Search
 
-export const WideSearchInput = styled(SearchInput)`
+export const WideSearchInput = styled(SearchForm)`
   width: 100%;
 `;
 
