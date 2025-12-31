@@ -11,7 +11,7 @@
 @import url('./theme/_keyframes.css') layer(theme);
 
 /* 3. Base Layer (Resets & Global Defaults) */
-@import url('./base/_reset.css') layer(base);
+@import url('./base/_reset.css');
 @import url('./base/_typography.css') layer(base);
 
 /* 4. Component Layer (Visual Patterns) */
