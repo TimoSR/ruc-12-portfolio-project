@@ -3,16 +3,56 @@
 
 .card {
   border: 1px solid rgba(255, 255, 255, 0.1);
-  background-color: rgba(30, 41, 59, 0.5); /* dark slate 800 with opacity */
+  background-color: rgba(30, 41, 59, 0.5);
+  /* dark slate 800 with opacity */
   color: #fff;
 }
 
 .btn-primary {
-  background-color: #7c3aed; /* violet-600 */
+  background-color: #7c3aed;
+  /* violet-600 */
   border-color: #7c3aed;
 }
 
 .btn-primary:hover {
-  background-color: #6d28d9; /* violet-700 */
+  background-color: #6d28d9;
+  /* violet-700 */
   border-color: #6d28d9;
+}
+
+/* ===== SEARCH BAR OVERRIDES ===== */
+/* Force white text in search input */
+.input-group .form-control[type="search"] {
+  color: #ffffff !important;
+  background-color: #1e293b !important;
+  caret-color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+.input-group .form-control[type="search"]::placeholder {
+  color: #9ca3af !important;
+  -webkit-text-fill-color: #9ca3af !important;
+}
+
+/* Force dropdown button text to be visible */
+.input-group .dropdown .btn,
+.input-group .dropdown-toggle,
+.input-group>.btn {
+  color: #ffffff !important;
+}
+
+/* Dropdown menu styling */
+.dropdown-menu {
+  background-color: #1e293b;
+  border: 1px solid #374151;
+}
+
+.dropdown-item {
+  color: #e5e7eb;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+  background-color: #374151;
+  color: #ffffff;
 }

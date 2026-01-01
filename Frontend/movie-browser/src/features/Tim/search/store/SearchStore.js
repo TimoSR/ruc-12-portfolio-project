@@ -7,8 +7,8 @@ import { makeAutoObservable, runInAction } from 'mobx'
  */
 export class SearchStore {
     query = ''
-    /** @type {'movie'|'person'} */
-    searchType = 'movie'
+    /** @type {'movie'|'person'|'all'} */
+    searchType = 'all'
     results = []
     isSearching = false
     error = null
@@ -25,21 +25,25 @@ export class SearchStore {
      * @param {string} value 
      */
     setQuery(value) {
-        this.query = value
+        console.log('[SearchStore] setQuery called with:', value);
+        this.query = value;
+        console.log('[SearchStore] query is now:', this.query);
     }
 
     /**
-     * Toggle between movie and person search.
-     * @param {'movie'|'person'} type
+     * Toggle between movie, person, or all search.
+     * @param {'movie'|'person'|'all'} type
      */
     setSearchType(type) {
+        console.log('[SearchStore] setSearchType called with:', type);
         this.searchType = type;
-        // Optional: Auto-trigger search when type changes? 
-        // For now, let's clear results to avoid confusion
+        console.log('[SearchStore] searchType is now:', this.searchType);
+        // Clear results to avoid confusion
         this.results = [];
     }
 
     clear() {
+        console.log('[SearchStore] clear called');
         this.query = ''
         this.results = []
         this.error = null
@@ -108,22 +112,28 @@ export class SearchStore {
     /**
      * Mock Fetch Results
      * @param {string} query 
-     * @param {'movie'|'person'} type
+     * @param {'movie'|'person'|'all'} type
      */
     async fetchResults(query, type) {
         await new Promise(r => setTimeout(r, 600)); // Network delay
 
-        // Mock data based on type
+        const movies = [
+            { id: 'tt0110912', title: `Movie: ${query} Fiction`, description: '1994 • Crime, Drama', type: 'movie' },
+            { id: 'tt0068646', title: `Movie: The ${query}father`, description: '1972 • Crime, Drama', type: 'movie' },
+        ];
+
+        const people = [
+            { id: 'nm0000158', name: `Actor: ${query} Hanks`, description: 'Actor • Producer', type: 'person' },
+            { id: 'nm0000204', name: `Actor: Natalie ${query}`, description: 'Actress • Producer', type: 'person' },
+        ];
+
         if (type === 'movie') {
-            return [
-                { id: 'tt0110912', title: `Movie: ${query} Fiction`, description: '1994 • Crime, Drama', type: 'movie' },
-                { id: 'tt0068646', title: `Movie: The ${query}father`, description: '1972 • Crime, Drama', type: 'movie' },
-            ];
+            return movies;
+        } else if (type === 'person') {
+            return people;
         } else {
-            return [
-                { id: 'nm0000158', name: `Actor: ${query} Hanks`, description: 'Actor • Producer', type: 'person' },
-                { id: 'nm0000204', name: `Actor: Natalie ${query}`, description: 'Actress • Producer', type: 'person' },
-            ];
+            // 'all' - Merge results
+            return [...movies, ...people];
         }
     }
 

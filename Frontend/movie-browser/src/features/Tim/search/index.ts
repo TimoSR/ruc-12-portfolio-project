@@ -5,11 +5,8 @@ import { SearchForm } from "./components/SearchForm";
 // === Export individual components ===
 export { SearchSection } from "./views/SearchSection"
 
-// Search
-
-export const WideSearchInput = styled(SearchForm)`
-  width: 100%;
-`;
+// Search - Export SearchForm directly (width handled via className in component)
+export const WideSearchInput = SearchForm;
 
 // === layout variants of the *view* SearchSection ===
 

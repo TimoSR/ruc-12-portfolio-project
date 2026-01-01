@@ -58,7 +58,7 @@ const NavContainer = styled.nav`
     position: sticky;
     top: 0;
     width: 100%;
-    overflow-x: hidden;
+    /* overflow-x: hidden;  <-- REMOVED to allow dropdowns to overflow */
     z-index: 40;
     background: rgba(15, 23, 42, 0.8);
     backdrop-filter: blur(12px);
@@ -105,6 +105,8 @@ const SearchContainer = styled.div`
     transform: translate(-50%, -50%);
 
     width: min(600px, 100% - 4rem);  /* bigger input + some side padding */
+    z-index: 100; /* Ensure search is clickable and above other elements */
+    pointer-events: none; /* Allow clicks to pass through empty space... */
 
     display: flex;
     align-items: center;
@@ -112,6 +114,7 @@ const SearchContainer = styled.div`
 
     & > * {
         width: 100%;  /* WideSearchInput fills this area */
+        pointer-events: auto; /* ...but enable clicks on the search form itself */
     }
 `
 
