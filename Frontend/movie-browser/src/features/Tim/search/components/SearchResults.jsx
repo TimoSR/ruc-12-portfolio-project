@@ -39,7 +39,7 @@ const SearchResultsBase = () => {
     if (results.length === 0) return null;
 
     return (
-        <div className="mt-4">
+        <div className="mt-4 search-results-container">
             <h5 className="text-white mb-3 border-bottom pb-2">
                 Results ({results.length})
             </h5>
@@ -47,7 +47,10 @@ const SearchResultsBase = () => {
                 {results.map((item) => (
                     <ListGroup.Item
                         key={item.id}
+                        action
+                        href={`/${item.type === 'movie' ? 'movies' : 'persons'}/${item.id}`}
                         className="bg-dark text-white border-secondary mb-2 rounded d-flex justify-content-between align-items-center"
+                        style={{ cursor: 'pointer' }}
                     >
                         <div>
                             <div className="fw-bold">{item.title || item.name}</div>
@@ -59,16 +62,14 @@ const SearchResultsBase = () => {
                                 {item.type === 'movie' ? 'Movie' : 'Person'}
                             </Badge>
 
-                            {/* Re-use our new Bookmark feature! */}
-                            <BookmarkButton
-                                targetId={item.id}
-                                targetType={item.type}
-                                displayName={item.title || item.name}
-                            />
-
-                            <Button size="sm" variant="outline-light" href={`/details/${item.id}`}>
-                                View
-                            </Button>
+                            {/* Bookmark - stop propagation så klik ikke navigerer */}
+                            <span onClick={(e) => e.stopPropagation()}>
+                                <BookmarkButton
+                                    targetId={item.id}
+                                    targetType={item.type}
+                                    displayName={item.title || item.name}
+                                />
+                            </span>
                         </div>
                     </ListGroup.Item>
                 ))}

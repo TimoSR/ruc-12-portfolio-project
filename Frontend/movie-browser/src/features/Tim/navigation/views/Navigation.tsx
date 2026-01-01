@@ -59,8 +59,8 @@ const NavContainer = styled.nav`
     top: 0;
     width: 100%;
     /* overflow-x: hidden;  <-- REMOVED to allow dropdowns to overflow */
-    z-index: 40;
-    background: rgba(15, 23, 42, 0.8);
+    z-index: 1000;  /* Very high to keep navbar and its dropdowns above everything */
+    background: rgba(15, 23, 42, 0.95);  /* Slightly more opaque */
     backdrop-filter: blur(12px);
     border-bottom: 1px solid rgba(55, 65, 81, 0.4);
 `

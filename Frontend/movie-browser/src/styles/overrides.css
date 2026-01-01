@@ -45,6 +45,9 @@
 .dropdown-menu {
   background-color: #1e293b;
   border: 1px solid #374151;
+  z-index: 9999 !important;
+  /* Very high to ensure it's above everything */
+  position: absolute !important;
 }
 
 .dropdown-item {
@@ -55,4 +58,16 @@
 .dropdown-item:focus {
   background-color: #374151;
   color: #ffffff;
+}
+
+/* ===== SEARCH RESULTS CONTAINER ===== */
+/* Solid background so carousel doesn't show through */
+.search-results-container {
+  background-color: #0f172a;
+  /* Same as body background */
+  position: relative;
+  z-index: 10;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-top: 1rem;
 }
