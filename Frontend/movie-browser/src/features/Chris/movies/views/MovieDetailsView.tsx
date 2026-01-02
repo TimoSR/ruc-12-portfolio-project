@@ -13,6 +13,8 @@ import {
   rateMovieMutation,
 } from "../../../../api/queries/movieQueries";
 import { Rating } from "../components/Rating";
+import { BookmarkButton } from "../../bookmarks/components/BookmarkButton";
+import { SimilarMovies } from "../components/SimilarMovies";
 import { AuthStore } from "../../auth/store/AuthStore";
 import { movieDetailsRoute, movieListRoute } from "../../../../routes/movies";
 
@@ -79,7 +81,7 @@ function MovieDetailsViewBase() {
       <BackButton onClick={handleBack}>← Back to Movies</BackButton>
 
       <Content>
-        <PosterSection>
+        <PosterSection style={{ position: 'relative' }}>
           {movie.posterUrl && !imageError ? (
             <Poster
               src={movie.posterUrl}
@@ -91,6 +93,13 @@ function MovieDetailsViewBase() {
               <PlaceholderIcon>🎬</PlaceholderIcon>
             </PosterPlaceholder>
           )}
+          <div style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 10 }}>
+            <BookmarkButton
+              targetId={movie.id}
+              targetType="movie"
+              displayName={movie.primaryTitle}
+            />
+          </div>
         </PosterSection>
 
         <InfoSection>
@@ -114,6 +123,8 @@ function MovieDetailsViewBase() {
               <Plot>{movie.plot}</Plot>
             </PlotSection>
           )}
+
+          <SimilarMovies tconst={movie.tconst} />
 
           <RatingSection>
             <SectionTitle>Rating</SectionTitle>

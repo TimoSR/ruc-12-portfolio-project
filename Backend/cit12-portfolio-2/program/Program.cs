@@ -15,6 +15,10 @@ using infrastructure;
 using infrastructure.repositories;
 using infrastructure.repositories.movie;
 using infrastructure.repositories.profile;
+using domain.profile.bookmarks;
+using domain.profile.searchHistory;
+using application.bookmarkService;
+using application.searchHistoryService;
 using Microsoft.AspNetCore.Mvc;
 using program;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -57,6 +61,8 @@ builder.Services.AddScoped<ITitleRepository, TitleRepository>();
 builder.Services.AddScoped<ITitleRatingRepository, TitleRatingRepository>();
 builder.Services.AddScoped<IPersonRepository, PersonRepository>();
 builder.Services.AddScoped<IPersonQueriesRepository, PersonQueriesRepository>();
+builder.Services.AddScoped<IBookmarkRepository, BookmarkRepository>();
+builder.Services.AddScoped<ISearchHistoryRepository, SearchHistoryRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // 4. Register you applications services
@@ -64,6 +70,8 @@ builder.Services.AddScoped<ITitleService, TitleService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IRatingService, RatingService>();
 builder.Services.AddScoped<IPersonService, PersonService>();
+builder.Services.AddScoped<IBookmarkService, BookmarkService>();
+builder.Services.AddScoped<ISearchHistoryService, SearchHistoryService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

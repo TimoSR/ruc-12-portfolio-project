@@ -13,9 +13,9 @@ export const MOVIE_DEFAULTS = {
 } as const;
 
 export type MovieSearch = {
-  query: string;
-  page: number;
-  pageSize: number;
+  query?: string;
+  page?: number;
+  pageSize?: number;
 };
 
 export const movieListRoute = createRoute({
@@ -23,17 +23,34 @@ export const movieListRoute = createRoute({
   path: "/movies",
 
   validateSearch: (search: Record<string, unknown>): MovieSearch => {
-    return {
-      query: (search.query as string) || MOVIE_DEFAULTS.query,
-      page: Number(search.page) || MOVIE_DEFAULTS.page,
-      pageSize: Number(search.pageSize) || MOVIE_DEFAULTS.pageSize,
-    };
+    const result: MovieSearch = {};
+
+    if (search.query && String(search.query) !== MOVIE_DEFAULTS.query) {
+      result.query = String(search.query);
+    }
+
+    const page = Number(search.page);
+    if (page && page !== MOVIE_DEFAULTS.page) {
+      result.page = page;
+    }
+
+    const pageSize = Number(search.pageSize);
+    if (pageSize && pageSize !== MOVIE_DEFAULTS.pageSize) {
+      result.pageSize = pageSize;
+    }
+
+    return result;
   },
 
   loaderDeps: ({ search }) => search,
 
   loader: ({ context: { queryClient }, deps }) => {
-    return queryClient.ensureQueryData(movieListQueryOptions(deps));
+    const queryParams = {
+      query: deps.query ?? MOVIE_DEFAULTS.query,
+      page: deps.page ?? MOVIE_DEFAULTS.page,
+      pageSize: deps.pageSize ?? MOVIE_DEFAULTS.pageSize,
+    };
+    return queryClient.ensureQueryData(movieListQueryOptions(queryParams));
   },
 
   component: MovieListView,
@@ -45,11 +62,23 @@ export const movieDetailsRoute = createRoute({
 
   // ✅ Keep the same URL search contract as /movies
   validateSearch: (search: Record<string, unknown>): MovieSearch => {
-    return {
-      query: (search.query as string) || MOVIE_DEFAULTS.query,
-      page: Number(search.page) || MOVIE_DEFAULTS.page,
-      pageSize: Number(search.pageSize) || MOVIE_DEFAULTS.pageSize,
-    };
+    const result: MovieSearch = {};
+
+    if (search.query && String(search.query) !== MOVIE_DEFAULTS.query) {
+      result.query = String(search.query);
+    }
+
+    const page = Number(search.page);
+    if (page && page !== MOVIE_DEFAULTS.page) {
+      result.page = page;
+    }
+
+    const pageSize = Number(search.pageSize);
+    if (pageSize && pageSize !== MOVIE_DEFAULTS.pageSize) {
+      result.pageSize = pageSize;
+    }
+
+    return result;
   },
 
   loader: ({ context: { queryClient }, params }) => {

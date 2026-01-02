@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { observer } from "mobx-react";
 import { useState, useEffect } from "react";
-import { Form, InputGroup, Button, Dropdown } from "react-bootstrap";
+import { Form, InputGroup, Button, Dropdown, ListGroup } from "react-bootstrap";
 import { searchStore } from "../store/SearchStore";
 
 /**
@@ -12,10 +12,17 @@ const SearchFormBase = ({ className = '' }) => {
     // Local state for input to prevent focus loss during MobX updates
     const [inputValue, setInputValue] = useState(searchStore.query);
     const [searchType, setSearchType] = useState(searchStore.searchType);
+    const [isFocused, setIsFocused] = useState(false);
 
     // Sync local searchType with store when it changes externally
     useEffect(() => {
         setSearchType(searchStore.searchType);
+
+        // Initial history fetch
+        const userUser = JSON.parse(localStorage.getItem('user') || '{}');
+        if (userUser.id || userUser.userId) {
+            searchStore.fetchSearchHistory(userUser.id || userUser.userId);
+        }
     }, [searchStore.searchType]);
 
     const handleSearch = (e) => {
@@ -66,6 +73,18 @@ const SearchFormBase = ({ className = '' }) => {
                     placeholder="Search IMDb..."
                     value={inputValue}
                     onChange={handleInputChange}
+                    onFocus={() => {
+                        setIsFocused(true);
+                        // Refresh history when focusing
+                        const userUser = JSON.parse(localStorage.getItem('user') || '{}');
+                        if (userUser.id || userUser.userId) {
+                            searchStore.fetchSearchHistory(userUser.id || userUser.userId);
+                        }
+                    }}
+                    onBlur={() => {
+                        // Delay hiding so clicks on items register
+                        setTimeout(() => setIsFocused(false), 200);
+                    }}
                     className="bg-dark text-white border-secondary"
                     style={{
                         color: '#ffffff',
@@ -81,6 +100,33 @@ const SearchFormBase = ({ className = '' }) => {
                 >
                     {searchStore.isSearching ? '...' : 'Search'}
                 </Button>
+
+                {/* History Dropdown */}
+                {isFocused && inputValue.trim() === '' && searchStore.history.length > 0 && (
+                    <div className="position-absolute w-100" style={{ top: '100%', left: 0, zIndex: 1050 }}>
+                        <ListGroup className="shadow-sm mt-1">
+                            <ListGroup.Item variant="dark" className="text-muted small py-1 bg-dark border-secondary">
+                                Recent Searches
+                            </ListGroup.Item>
+                            {searchStore.history.slice(0, 10).map((item) => (
+                                <ListGroup.Item
+                                    key={item.id || item.timestamp}
+                                    className="bg-dark text-white border-secondary action-item"
+                                    style={{ cursor: 'pointer' }}
+                                    onClick={() => {
+                                        const query = item.query;
+                                        setInputValue(query);
+                                        searchStore.setQuery(query);
+                                        searchStore.searchNow();
+                                        setIsFocused(false);
+                                    }}
+                                >
+                                    🕒 {item.query}
+                                </ListGroup.Item>
+                            ))}
+                        </ListGroup>
+                    </div>
+                )}
             </InputGroup>
         </Form>
     );

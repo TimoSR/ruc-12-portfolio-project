@@ -3,6 +3,8 @@ using domain.movie.title;
 using domain.movie.titleRatings;
 using domain.profile.account;
 using domain.profile.accountRatings;
+using domain.profile.bookmarks;
+using domain.profile.searchHistory;
 using domain.title;
 using Microsoft.EntityFrameworkCore;
 using service_patterns;
@@ -16,6 +18,8 @@ public class MovieDbContext(DbContextOptions<MovieDbContext> options) : DbContex
     public DbSet<AccountRating> AccountRatings => Set<AccountRating>();
     public DbSet<TitleRating> TitleRatings => Set<TitleRating>();
     public DbSet<Person> Persons => Set<Person>();
+    public DbSet<Bookmark> Bookmarks => Set<Bookmark>();
+    public DbSet<SearchHistory> SearchHistory => Set<SearchHistory>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -43,6 +47,28 @@ public class MovieDbContext(DbContextOptions<MovieDbContext> options) : DbContex
             entity.Property(x => x.Score).HasColumnName("rating");
             entity.Property(x => x.Comment).HasColumnName("comment");
             entity.Property(x => x.CreatedAt).HasColumnName("created_at");
+        });
+
+        modelBuilder.Entity<Bookmark>(entity =>
+        {
+            entity.ToTable("bookmark", "profile");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.Id).HasColumnName("id");
+            entity.Property(x => x.AccountId).HasColumnName("account_id");
+            entity.Property(x => x.TargetId).HasColumnName("target_id");
+            entity.Property(x => x.TargetType).HasColumnName("target_type");
+            entity.Property(x => x.CreatedAt).HasColumnName("created_at");
+            entity.Property(x => x.Note).HasColumnName("note");
+        });
+
+        modelBuilder.Entity<SearchHistory>(entity =>
+        {
+            entity.ToTable("search_history", "profile");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.Id).HasColumnName("id");
+            entity.Property(x => x.AccountId).HasColumnName("account_id");
+            entity.Property(x => x.Query).HasColumnName("query");
+            entity.Property(x => x.Timestamp).HasColumnName("timestamp");
         });
 
         modelBuilder.Entity<Title>(entity =>

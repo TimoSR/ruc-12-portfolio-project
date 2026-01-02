@@ -38,9 +38,14 @@ function NavigationBase({ className = '' }: NavigationProps) {
                     </StyledLink>
 
                     {authStore.token ? (
-                        <NavButton onClick={authStore.logout}>
-                            Logout
-                        </NavButton>
+                        <>
+                            <StyledLink to="/profile" activeProps={{ className: 'active' }}>
+                                Profile
+                            </StyledLink>
+                            <NavButton onClick={authStore.logout}>
+                                Logout
+                            </NavButton>
+                        </>
                     ) : (
                         <StyledLink to="/login" activeProps={{ className: 'active' }}>
                             Login

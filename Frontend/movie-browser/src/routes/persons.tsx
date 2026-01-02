@@ -12,28 +12,48 @@ export const PERSON_DEFAULTS = {
 } as const; // 'as const' makes these read-only values
 
 export type PersonSearch = {
-  query: string;
-  page: number;
-  pageSize: number;
+  query?: string;
+  page?: number;
+  pageSize?: number;
 };
 
 export const personListRoute = createRoute({
   getParentRoute: () => appLayoutRoute,
   path: '/persons',
-  
+
   validateSearch: (search: Record<string, unknown>): PersonSearch => {
-    return {
-      query: (search.query as string) || PERSON_DEFAULTS.query,
-      page: Number(search.page) || PERSON_DEFAULTS.page,
-      // Now this is the ONLY place that decides "24" is the fallback
-      pageSize: Number(search.pageSize) || PERSON_DEFAULTS.pageSize,
-    };
+    // Only return values that are different from defaults
+    const result: PersonSearch = {};
+
+    if (search.query && String(search.query) !== PERSON_DEFAULTS.query) {
+      result.query = String(search.query);
+    }
+
+    // Parse page, only keep if > 1 (assuming default is 1)
+    const page = Number(search.page);
+    if (page && page !== PERSON_DEFAULTS.page) {
+      result.page = page;
+    }
+
+    // Parse pageSize, only keep if != default
+    const pageSize = Number(search.pageSize);
+    if (pageSize && pageSize !== PERSON_DEFAULTS.pageSize) {
+      result.pageSize = pageSize;
+    }
+
+    return result;
   },
 
   loaderDeps: ({ search }) => search,
 
   loader: ({ context: { queryClient }, deps }) => {
-    return queryClient.ensureQueryData(personListQueryOptions(deps));
+    // Apply defaults here for the actual query
+    const queryParams = {
+      query: deps.query ?? PERSON_DEFAULTS.query,
+      page: deps.page ?? PERSON_DEFAULTS.page,
+      pageSize: deps.pageSize ?? PERSON_DEFAULTS.pageSize,
+    };
+    return queryClient.ensureQueryData(personListQueryOptions(queryParams));
   },
 
   component: PersonListPage,

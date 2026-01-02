@@ -1,97 +1,135 @@
 // @ts-nocheck
-import { observer } from "mobx-react";
-import { useEffect, useState } from "react";
-import { Container, Row, Col, Card, ListGroup, Badge, Tab, Tabs } from "react-bootstrap";
-import { BookmarksView } from "../../bookmarks/views/BookmarksView";
+import React, { useEffect } from 'react';
+import { Container, Row, Col, Card, ListGroup, Tab, Tabs, Button, Badge } from 'react-bootstrap';
+import { observer } from 'mobx-react';
+import { useNavigate } from '@tanstack/react-router';
+import { searchStore } from '../../../Tim/search/store/SearchStore';
+import { bookmarksStore } from '../../bookmarks/store/BookmarksStore';
+import { ratingStore } from '../../movies/store/RatingStore';
 
 /**
  * @fileoverview User Profile View.
- * VISUALIZES user-generated data: History, Ratings, Bookmarks.
- * Implements requirement "Visualize user-generated data".
+ * Displays user's search history, bookmarks, and ratings.
+ * Requirement 1-D.2, 1-D.6, 1-D.9 visualization.
  */
-export const UserProfileView = () => {
-    const [userId, setUserId] = useState(null);
-    const [key, setKey] = useState('history');
+export const UserProfileView = observer(() => {
+    const navigate = useNavigate();
 
-    // MOCK DATA for History (Requirement 1-D.2)
-    const mockHistory = [
-        { query: "Pulp Fiction", timestamp: "2025-12-30 14:00" },
-        { query: "Tom Hanks", timestamp: "2025-12-30 13:45" },
-        { query: "Action movies", timestamp: "2025-12-29 10:00" },
-    ];
-
-    // MOCK DATA for Ratings (Requirement "Visualize my rating")
-    const mockRatings = [
-        { tconst: "tt0110912", title: "Pulp Fiction", rating: 9, timestamp: "2025-12-30" },
-        { tconst: "tt0068646", title: "The Godfather", rating: 10, timestamp: "2025-12-28" },
-    ];
+    // Mock User ID - In real app, get from AuthStore/Context
+    const userId = "mock-user-123";
 
     useEffect(() => {
-        const stored = localStorage.getItem('user');
-        if (stored) {
-            try { setUserId(JSON.parse(stored).id || JSON.parse(stored).userId); }
-            catch (e) { }
-        }
-    }, []);
+        // Load data on mount
+        searchStore.fetchSearchHistory(userId);
+        bookmarksStore.fetchUserBookmarks(userId);
+        ratingStore.fetchUserRatings(userId);
+    }, [userId]);
 
-    if (!userId) {
-        return (
-            <Container className="py-5 text-white">
-                <h2>Please Log In</h2>
-                <p>You need to be logged in to view your profile history.</p>
-            </Container>
-        );
-    }
+    const handleHistoryClick = (query) => {
+        searchStore.setQuery(query);
+        searchStore.searchNow();
+        navigate({ to: '/' }); // Go to home/search page
+    };
 
     return (
-        <Container className="py-4">
-            <h1 className="text-white mb-4">User Profile</h1>
+        <Container className="py-5">
+            <h1 className="mb-4 text-white">My Profile</h1>
 
-            <Tabs
-                id="profile-tabs"
-                activeKey={key}
-                onSelect={(k) => setKey(k)}
-                className="mb-4"
-                variant="pills"
-            >
+            <Row className="mb-4">
+                <Col md={12}>
+                    <Card className="bg-dark text-white border-secondary">
+                        <Card.Body>
+                            <Card.Title>User Overview</Card.Title>
+                            <Card.Text>
+                                Welcome back! Here is your activity summary.
+                            </Card.Text>
+                            <div className="d-flex gap-3">
+                                <Badge bg="primary" className="p-2">
+                                    History: {searchStore.history.length}
+                                </Badge>
+                                <Badge bg="warning" className="text-dark p-2">
+                                    Bookmarks: {bookmarksStore.bookmarks.length}
+                                </Badge>
+                                <Badge bg="info" className="p-2">
+                                    Ratings: {ratingStore.ratings.length}
+                                </Badge>
+                            </div>
+                        </Card.Body>
+                    </Card>
+                </Col>
+            </Row>
+
+            <Tabs defaultActiveKey="history" id="profile-tabs" className="mb-4" variant="pills">
+
+                {/* TAB: SEARCH HISTORY */}
                 <Tab eventKey="history" title="Search History">
-                    <Card className="bg-dark text-white border-secondary">
-                        <Card.Header>Recent Searches (1-D.2)</Card.Header>
+                    <Card className="bg-dark border-secondary text-white">
+                        <Card.Header>Recent Searches</Card.Header>
                         <ListGroup variant="flush">
-                            {mockHistory.map((h, i) => (
-                                <ListGroup.Item key={i} className="bg-transparent text-white border-secondary d-flex justify-content-between">
-                                    <span>"{h.query}"</span>
-                                    <small className="text-muted">{h.timestamp}</small>
-                                </ListGroup.Item>
-                            ))}
+                            {searchStore.history.length === 0 ? (
+                                <ListGroup.Item className="bg-dark text-white-50">No history found.</ListGroup.Item>
+                            ) : (
+                                searchStore.history.map((item) => (
+                                    <ListGroup.Item
+                                        key={item.id}
+                                        className="bg-dark text-white d-flex justify-content-between align-items-center action-item"
+                                        action
+                                        onClick={() => handleHistoryClick(item.query)}
+                                    >
+                                        <span>
+                                            <span className="fw-bold me-2">🔍</span>
+                                            {item.query}
+                                        </span>
+                                        <small className="text-muted">
+                                            {new Date(item.timestamp).toLocaleDateString()}
+                                        </small>
+                                    </ListGroup.Item>
+                                ))
+                            )}
                         </ListGroup>
                     </Card>
                 </Tab>
 
-                <Tab eventKey="ratings" title="My Ratings">
-                    <Card className="bg-dark text-white border-secondary">
-                        <Card.Header>Rated Titles</Card.Header>
-                        <ListGroup variant="flush">
-                            {mockRatings.map((r, i) => (
-                                <ListGroup.Item key={i} className="bg-transparent text-white border-secondary d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <span className="fw-bold">{r.title}</span>
-                                        <small className="text-muted ms-2">({r.tconst})</small>
-                                    </div>
-                                    <Badge bg="warning" text="dark">★ {r.rating}</Badge>
-                                </ListGroup.Item>
-                            ))}
-                        </ListGroup>
-                    </Card>
-                </Tab>
-
+                {/* TAB: BOOKMARKS */}
                 <Tab eventKey="bookmarks" title="Bookmarks">
-                    {/* Reusing the BookmarksView logic here if we wanted, or just linking to it */}
-                    <div className="p-3 bg-dark border border-secondary rounded">
-                        <p className="text-white mb-0">See "Bookmarks" page for full view.</p>
-                    </div>
+                    <Card className="bg-dark border-secondary text-white">
+                        <Card.Body>
+                            {bookmarksStore.bookmarks.length === 0 ? (
+                                <p className="text-muted">No bookmarks yet.</p>
+                            ) : (
+                                <ListGroup variant="flush">
+                                    {bookmarksStore.bookmarks.map(b => (
+                                        <ListGroup.Item key={b.id + b.type} className="bg-dark text-white">
+                                            {b.type === 'movie' ? '🎬' : '👤'} <strong>{b.title || b.name || b.id}</strong>
+                                            <Badge bg="secondary" className="ms-2">{b.type}</Badge>
+                                        </ListGroup.Item>
+                                    ))}
+                                </ListGroup>
+                            )}
+                        </Card.Body>
+                    </Card>
                 </Tab>
+
+                {/* TAB: RATINGS */}
+                <Tab eventKey="ratings" title="Ratings">
+                    <Card className="bg-dark border-secondary text-white">
+                        <Card.Header>My Ratings</Card.Header>
+                        <ListGroup variant="flush">
+                            {ratingStore.ratings.length === 0 ? (
+                                <ListGroup.Item className="bg-dark text-white-50">No ratings yet.</ListGroup.Item>
+                            ) : (
+                                ratingStore.ratings.map((r, idx) => (
+                                    <ListGroup.Item key={idx} className="bg-dark text-white d-flex justify-content-between">
+                                        <span>Movie ID: {r.tconst}</span>
+                                        <span className="text-warning">{'★'.repeat(r.rating)}</span>
+                                    </ListGroup.Item>
+                                ))
+                            )}
+                        </ListGroup>
+                    </Card>
+                </Tab>
+
             </Tabs>
         </Container>
     );
-};
+});

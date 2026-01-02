@@ -20,9 +20,10 @@ const IMAGE_BASE = 'https://image.tmdb.org/t/p/w500';
  * @returns {Promise<string|null>} Full image URL or null if not found
  */
 export async function fetchTmdbPersonImage(nconst) {
-    if (!API_KEY || API_KEY.includes('your_api_key')) {
-        console.warn('TMDB API Key missing. Images will not load.');
-        return null;
+    // Check for missing or placeholder key
+    if (!API_KEY || API_KEY.includes('your_api_key') || API_KEY === 'placeholder_api_key') {
+        console.warn('TMDB API Key missing or placeholder. Returning placeholder image.');
+        return 'https://placehold.co/400x600?text=No+TMDB+Key';
     }
 
     try {
@@ -30,25 +31,34 @@ export async function fetchTmdbPersonImage(nconst) {
         const findUrl = `${TMDB_BASE}/find/${nconst}?external_source=imdb_id&api_key=${API_KEY}`;
         const findRes = await fetch(findUrl);
 
-        if (!findRes.ok) throw new Error(`TMDB Find Error: ${findRes.status}`);
+        if (!findRes.ok) {
+            console.warn(`TMDB Find Error: ${findRes.status}. Returning placeholder.`);
+            return 'https://placehold.co/400x600?text=TMDB+Error';
+        }
 
         const findData = await findRes.json();
         const tmdbId = findData.person_results?.[0]?.id;
 
-        if (!tmdbId) return null; // Person not in TMDB
+        if (!tmdbId) {
+            console.warn('Person not found in TMDB. Returning placeholder.');
+            return 'https://placehold.co/400x600?text=Not+Found';
+        }
 
         // Step 2: Fetch person images using TMDB ID
         const imgUrl = `${TMDB_BASE}/person/${tmdbId}/images?api_key=${API_KEY}`;
         const imgRes = await fetch(imgUrl);
 
-        if (!imgRes.ok) throw new Error(`TMDB Image Error: ${imgRes.status}`);
+        if (!imgRes.ok) {
+            console.warn(`TMDB Image Error: ${imgRes.status}. Returning placeholder.`);
+            return 'https://placehold.co/400x600?text=Image+Error';
+        }
 
         const imgData = await imgRes.json();
         const filePath = imgData.profiles?.[0]?.file_path;
 
-        return filePath ? `${IMAGE_BASE}${filePath}` : null;
+        return filePath ? `${IMAGE_BASE}${filePath}` : 'https://placehold.co/400x600?text=No+Image';
     } catch (error) {
         console.error('TMDB fetch error:', error);
-        return null;
+        return 'https://placehold.co/400x600?text=Network+Error';
     }
 }

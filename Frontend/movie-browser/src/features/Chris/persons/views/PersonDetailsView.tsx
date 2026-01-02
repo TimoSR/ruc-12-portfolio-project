@@ -2,7 +2,9 @@ import { useEffect } from 'react'
 import { observer, useLocalObservable } from 'mobx-react'
 import styled from 'styled-components'
 import { PersonDetailsStore, type IPersonDetailsStore } from '../store/PersonDetailsStore'
-
+import { PersonImage } from '../components/PersonImage'
+import { BookmarkButton } from '../../bookmarks/components/BookmarkButton'
+import { CoPlayers } from '../components/CoPlayers'
 
 export const PersonDetailsView = observer(PersonDetailsViewBase)
 
@@ -54,8 +56,15 @@ function PersonDetailsViewBase({ actorId, onBack, className = '' }: PersonDetail
 
             <Content>
                 <ImageSection>
-                    <ImagePlaceholder>
-                        <PlaceholderIcon>👤</PlaceholderIcon>
+                    <ImagePlaceholder style={{ position: 'relative' }}>
+                        <PersonImage nconst={actor.nconst} className="w-100 h-100 object-fit-cover rounded" />
+                        <div style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 10 }}>
+                            <BookmarkButton
+                                targetId={actor.nconst}
+                                targetType="person"
+                                displayName={actor.primaryName}
+                            />
+                        </div>
                     </ImagePlaceholder>
                 </ImageSection>
 
@@ -100,6 +109,8 @@ function PersonDetailsViewBase({ actorId, onBack, className = '' }: PersonDetail
                         <SectionTitle>ID</SectionTitle>
                         <IdText>{actor.nconst}</IdText>
                     </Section>
+
+                    <CoPlayers nconst={actor.nconst} />
                 </InfoSection>
             </Content>
         </Container>
@@ -162,10 +173,7 @@ const ImagePlaceholder = styled.div`
     justify-content: center;
 `
 
-const PlaceholderIcon = styled.span`
-    font-size: 6rem;
-    opacity: 0.5;
-`
+
 
 const InfoSection = styled.div`
     display: flex;

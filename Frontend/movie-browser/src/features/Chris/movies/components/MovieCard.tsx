@@ -3,6 +3,8 @@ import { observer } from 'mobx-react'
 import styled from 'styled-components'
 import type { MovieItem } from '../types'
 
+import { BookmarkButton } from '../../bookmarks/components/BookmarkButton'
+
 export const MovieCard = observer(MovieCardBase)
 
 type MovieCardProps = {
@@ -26,6 +28,13 @@ function MovieCardBase({ movie, onClick, className = '' }: MovieCardProps) {
         ) : (
           <PlaceholderIcon>🎬</PlaceholderIcon>
         )}
+        <BookmarkOverlay onClick={(e) => e.stopPropagation()}>
+          <BookmarkButton
+            targetId={movie.id}
+            targetType="movie"
+            displayName={movie.primaryTitle}
+          />
+        </BookmarkOverlay>
       </PosterPlaceholder>
 
       <Info>
@@ -98,3 +107,10 @@ const Meta = styled.div`
 
 const Year = styled.span``
 const Runtime = styled.span``
+
+const BookmarkOverlay = styled.div`
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 10;
+`

@@ -1,6 +1,8 @@
 import { observer } from 'mobx-react'
 import styled from 'styled-components'
 import type { PersonItem } from '../index'
+import { PersonImage } from './PersonImage'
+import { BookmarkButton } from '../../bookmarks/components/BookmarkButton'
 
 export const PersonCard = observer(PersonCardBase)
 
@@ -13,8 +15,15 @@ type PersonCardProps = {
 function PersonCardBase({ actor, onClick, className = '' }: PersonCardProps) {
   return (
     <Card className={className} onClick={onClick}>
-      <ImagePlaceholder>
-        <PlaceholderIcon>👤</PlaceholderIcon>
+      <ImagePlaceholder style={{ position: 'relative' }}>
+        <PersonImage nconst={actor.nconst} className="w-100 h-100 object-fit-cover" />
+        <BookmarkOverlay onClick={(e) => e.stopPropagation()}>
+          <BookmarkButton
+            targetId={actor.nconst}
+            targetType="person"
+            displayName={actor.primaryName}
+          />
+        </BookmarkOverlay>
       </ImagePlaceholder>
       <Content>
         <Name>{actor.primaryName}</Name>
@@ -64,10 +73,7 @@ const ImagePlaceholder = styled.div`
   }
 `
 
-const PlaceholderIcon = styled.span`
-  font-size: 4rem;
-  opacity: 0.5;
-`
+
 
 const Content = styled.div`
   padding: 1rem;
@@ -101,4 +107,11 @@ const Meta = styled.div`
 const Rating = styled.span`
   color: #fbbf24;
   margin-left: auto;
+`
+
+const BookmarkOverlay = styled.div`
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 10;
 `

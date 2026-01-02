@@ -10,6 +10,8 @@ export class SearchStore {
     /** @type {'movie'|'person'|'all'} */
     searchType = 'all'
     results = []
+    /** @type {Array<{id: number, query: string, timestamp: string}>} */
+    history = []
     isSearching = false
     error = null
 
@@ -145,9 +147,41 @@ export class SearchStore {
         // Requirement 1-D.2
         try {
             await new Promise(r => setTimeout(r, 200)); // Mock network
+            runInAction(() => {
+                const newEntry = {
+                    id: Date.now(),
+                    query: query,
+                    timestamp: new Date().toISOString()
+                };
+                this.history.unshift(newEntry);
+            });
             console.log(`Saved "${query}" to search history.`);
         } catch (e) {
             console.error('Failed to save history', e);
+        }
+    }
+
+    /**
+     * Fetches search history for the current user.
+     * @param {string} userId
+     */
+    async fetchSearchHistory(userId) {
+        if (!userId) return;
+
+        try {
+            await new Promise(r => setTimeout(r, 400)); // Mock delay
+
+            // Mock data - normally GET /api/v1/search-history
+            runInAction(() => {
+                this.history = [
+                    { id: 1, query: "Tom Hanks", timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString() },
+                    { id: 2, query: "Inception", timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString() },
+                    { id: 3, query: "Comedy 2023", timestamp: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString() },
+                ];
+            });
+            console.log('[SearchStore] Fetched history for user', userId);
+        } catch (e) {
+            console.error('Failed to fetch history', e);
         }
     }
 }

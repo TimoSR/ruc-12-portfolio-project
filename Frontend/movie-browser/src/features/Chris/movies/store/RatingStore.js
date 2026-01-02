@@ -8,6 +8,8 @@ import { makeAutoObservable } from 'mobx';
 export class RatingStore {
     isLoading = false;
     error = null;
+    /** @type {Array<{tconst: string, rating: number, timestamp: string}>} */
+    ratings = [];
 
     constructor() {
         makeAutoObservable(this);
@@ -39,6 +41,30 @@ export class RatingStore {
         } catch (err) {
             console.error("Rating failed", err);
             this.error = "Failed to submit rating";
+        } finally {
+            this.isLoading = false;
+        }
+    }
+
+    /**
+     * Fetches all ratings made by the user.
+     * @param {string} userId
+     */
+    async fetchUserRatings(userId) {
+        if (!userId) return;
+
+        this.isLoading = true;
+        try {
+            await new Promise(r => setTimeout(r, 500)); // Mock delay
+
+            // Mock data - normally GET /api/v1/ratings
+            this.ratings = [
+                { tconst: 'tt0110912', rating: 9, timestamp: new Date().toISOString() },
+                { tconst: 'tt0068646', rating: 10, timestamp: new Date(Date.now() - 86400000).toISOString() }
+            ];
+
+        } catch (err) {
+            console.error("Failed to fetch user ratings", err);
         } finally {
             this.isLoading = false;
         }

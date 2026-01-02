@@ -1,7 +1,8 @@
 // @ts-nocheck
 import { useState, useEffect } from "react";
 import { Image, Spinner } from "react-bootstrap";
-import { fetchTmdbPersonImage } from "../../../api/tmdbService";
+// Correct import path: go up 4 levels to src/
+import { fetchTmdbPersonImage } from "../../../../api/tmdbService";
 
 /**
  * @fileoverview Displays a person's image from TMDB.
