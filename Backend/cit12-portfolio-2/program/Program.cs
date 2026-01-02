@@ -1,4 +1,5 @@
 using api.controllers;
+using Npgsql;
 using application.accountService;
 using application.titleService;
 using application.ratingService;
@@ -26,6 +27,9 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using application.services;
 
+
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 DotNetEnv.Env.Load(".env.local");
@@ -50,8 +54,12 @@ Console.WriteLine($"Host: {dbSettings?.Host}");*/
 var connectionString = builder.Configuration["DATABASE_CONNECTION_STRING"];
 
 // 2. Register DbContext
+var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
+dataSourceBuilder.MapEnum<BookmarkTarget>("public.bookmark_target");
+var dataSource = dataSourceBuilder.Build();
+
 builder.Services.AddDbContext<MovieDbContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseNpgsql(dataSource));
 
 // 3. Register your repositories and Unit of Work as Scoped
 // This means you get one instance per HTTP request.

@@ -9,10 +9,13 @@ using domain.title;
 using Microsoft.EntityFrameworkCore;
 using service_patterns;
 
+using System.Text.Json;
+
 namespace infrastructure;
 
 public class MovieDbContext(DbContextOptions<MovieDbContext> options) : DbContext(options)
 {
+
     public DbSet<Account> Accounts => Set<Account>();
     public DbSet<Title> Titles => Set<Title>();
     public DbSet<AccountRating> AccountRatings => Set<AccountRating>();
@@ -23,10 +26,16 @@ public class MovieDbContext(DbContextOptions<MovieDbContext> options) : DbContex
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.HasPostgresEnum<BookmarkTarget>("public", "bookmark_target");
         modelBuilder.Ignore<DomainEvent>();
 
         modelBuilder.Entity<Account>(entity =>
         {
+            entity.ToTable("account", "profile");
+// ... check lines, keeping it minimal ...
+// Actually, I can use replace_file_content to target the specific blocks.
+
+
             entity.ToTable("account", "profile");
 
             entity.HasKey(e => e.Id);
@@ -56,9 +65,16 @@ public class MovieDbContext(DbContextOptions<MovieDbContext> options) : DbContex
             entity.Property(x => x.Id).HasColumnName("id");
             entity.Property(x => x.AccountId).HasColumnName("account_id");
             entity.Property(x => x.TargetId).HasColumnName("target_id");
-            entity.Property(x => x.TargetType).HasColumnName("target_type");
-            entity.Property(x => x.CreatedAt).HasColumnName("created_at");
-            entity.Property(x => x.Note).HasColumnName("note");
+            entity.Property(x => x.TargetType)
+                .HasColumnName("target_type")
+                .HasColumnType("public.bookmark_target"); // Explicit type mapping
+            entity.Property(x => x.CreatedAt).HasColumnName("added_at");
+            entity.Property(x => x.Note)
+                .HasColumnName("note")
+                .HasColumnType("jsonb")
+                .HasConversion(
+                    v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
+                    v => JsonSerializer.Deserialize<string>(v, (JsonSerializerOptions?)null));
         });
 
         modelBuilder.Entity<SearchHistory>(entity =>

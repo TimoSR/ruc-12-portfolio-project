@@ -140,7 +140,7 @@ function MovieDetailsViewBase() {
           )}
           <div style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 10 }}>
             <BookmarkButton
-              targetId={movie.id}
+              targetId={movie.legacyId || movie.id}
               targetType="movie"
               displayName={movie.primaryTitle}
             />

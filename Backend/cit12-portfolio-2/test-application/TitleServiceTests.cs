@@ -304,6 +304,11 @@ public class TitleServiceTests
         {
             throw new NotImplementedException();
         }
+
+        public Task<AccountRating?> GetByAccountAndTitleAsync(Guid accountId, Guid titleId, CancellationToken token)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class MockLogger<T> : ILogger<T>

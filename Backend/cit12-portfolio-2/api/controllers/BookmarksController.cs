@@ -29,7 +29,7 @@ public class BookmarksController(IBookmarkService bookmarkService) : ControllerB
         if (result.IsFailure) return BadRequest(result.Error);
 
         var b = result.Value;
-        return CreatedAtAction(nameof(GetBookmarks), new { accountId }, new BookmarkDto(b.Id, dto.TargetId, b.TargetType, b.Note, b.CreatedAt));
+        return CreatedAtAction(nameof(GetBookmarks), new { accountId }, new BookmarkDto(b.Id, dto.TargetId, dto.TargetType, b.Note, b.CreatedAt));
     }
 
     [HttpDelete("{targetId}")] // Deleting by targetId (tconst/nconst) because ID is internal

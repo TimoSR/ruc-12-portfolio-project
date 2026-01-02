@@ -80,7 +80,7 @@ function MovieCardBase({ movie, onClick, className = '' }: MovieCardProps) {
         )}
         <BookmarkOverlay onClick={(e) => e.stopPropagation()}>
           <BookmarkButton
-            targetId={movie.id}
+            targetId={movie.legacyId || movie.id}
             targetType="movie"
             displayName={movie.primaryTitle}
           />

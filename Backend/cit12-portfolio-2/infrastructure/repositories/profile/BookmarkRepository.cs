@@ -29,8 +29,15 @@ public class BookmarkRepository(MovieDbContext context) : IBookmarkRepository
 
     public async Task AddAsync(Bookmark bookmark, CancellationToken cancellationToken)
     {
-        await context.Bookmarks.AddAsync(bookmark, cancellationToken);
-        await context.SaveChangesAsync(cancellationToken);
+        // Using Raw SQL to bypass complex Enum Mapping issues with explicit casting
+        var typeStr = bookmark.TargetType.ToString().ToLower();
+        var noteJson = bookmark.Note == null ? null : System.Text.Json.JsonSerializer.Serialize(bookmark.Note);
+
+        // We use string interpolation but EF Core parameterizes it safely. 
+        // Crucially, we cast the typeStr to the enum type in Postgres.
+        await context.Database.ExecuteSqlInterpolatedAsync($@"
+            INSERT INTO profile.bookmark (id, account_id, target_id, target_type, note, added_at)
+            VALUES ({bookmark.Id}, {bookmark.AccountId}, {bookmark.TargetId}, {typeStr}::public.bookmark_target, {noteJson}::jsonb, {bookmark.CreatedAt})", cancellationToken);
     }
 
     public async Task DeleteAsync(Bookmark bookmark, CancellationToken cancellationToken)

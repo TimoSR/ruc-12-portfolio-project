@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { makeAutoObservable } from 'mobx';
+import { makeAutoObservable, runInAction } from 'mobx';
 
 /**
  * @fileoverview MobX store for managing user bookmarks.
@@ -22,8 +22,10 @@ export class BookmarksStore {
     async fetchUserBookmarks(userId) {
         if (!userId) return;
 
-        this.isLoading = true;
-        this.error = null;
+        runInAction(() => {
+            this.isLoading = true;
+            this.error = null;
+        });
 
         try {
             // EPC: Using Real API v1
@@ -35,22 +37,27 @@ export class BookmarksStore {
 
             const data = await response.json();
 
-            // Map Valid DTOs to store format
-            this.bookmarks = data.map(b => ({
-                id: b.targetId,
-                type: b.targetType,
-                // Title/Name might not be in the lightweight bookmark DTO, 
-                // so we might need to fetch details or just rely on the UI to fetch them.
-                // For the list view, we might need a separate mechanism or store enriched data.
-                // For now, let's just store what we have.
-            }));
-
-            console.log('Fetched bookmarks:', this.bookmarks.length);
+            runInAction(() => {
+                // Map Valid DTOs to store format
+                this.bookmarks = data.map(b => ({
+                    id: b.targetId,
+                    type: b.targetType,
+                    // Title/Name might not be in the lightweight bookmark DTO, 
+                    // so we might need to fetch details or just rely on the UI to fetch them.
+                    // For the list view, we might need a separate mechanism or store enriched data.
+                    // For now, let's just store what we have.
+                }));
+                console.log('Fetched bookmarks:', this.bookmarks.length);
+            });
         } catch (err) {
             console.error('Failed to fetch bookmarks', err);
-            this.error = 'Could not load bookmarks';
+            runInAction(() => {
+                this.error = 'Could not load bookmarks';
+            });
         } finally {
-            this.isLoading = false;
+            runInAction(() => {
+                this.isLoading = false;
+            });
         }
     }
 
@@ -63,16 +70,18 @@ export class BookmarksStore {
         const isAdding = existingIndex === -1;
 
         // 1. Optimistic Update
-        if (isAdding) {
-            this.bookmarks.push({
-                id: targetId,
-                type: targetType,
-                title: targetType === 'movie' ? displayName : undefined,
-                name: targetType === 'person' ? displayName : undefined
-            });
-        } else {
-            this.bookmarks.splice(existingIndex, 1);
-        }
+        runInAction(() => {
+            if (isAdding) {
+                this.bookmarks.push({
+                    id: targetId,
+                    type: targetType,
+                    title: targetType === 'movie' ? displayName : undefined,
+                    name: targetType === 'person' ? displayName : undefined
+                });
+            } else {
+                this.bookmarks.splice(existingIndex, 1);
+            }
+        });
 
         try {
             const baseUrl = `http://localhost:5001/api/v1/accounts/${userId}/bookmarks`;
@@ -99,14 +108,16 @@ export class BookmarksStore {
         } catch (err) {
             console.error('Bookmark toggle failed:', err);
             // Revert on failure
-            if (isAdding) {
-                this.bookmarks = this.bookmarks.filter(b => b.id !== targetId);
-            } else {
-                // Ideally refrain from adding back to avoid complexity or re-fetch
-                // this.fetchUserBookmarks(userId);
-            }
-            this.bookmarks = this.bookmarks.filter(b => b.id !== targetId); // Simple revert validation
-            this.error = 'Failed to update bookmark';
+            runInAction(() => {
+                if (isAdding) {
+                    this.bookmarks = this.bookmarks.filter(b => b.id !== targetId);
+                } else {
+                    // Ideally refrain from adding back to avoid complexity or re-fetch
+                    // this.fetchUserBookmarks(userId);
+                }
+                // Force sync if revert is complex
+                this.error = 'Failed to update bookmark';
+            });
             // Trigger re-fetch to ensure sync
             this.fetchUserBookmarks(userId);
         }
