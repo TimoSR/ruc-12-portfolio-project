@@ -32,9 +32,7 @@ export function MovieListView({ onMovieClick, className = '' }: MovieListViewPro
     staleTime: 1000 * 60 * 5,
   })
 
-  if (data !== undefined) {
-    console.log('movies response:', JSON.stringify(data, null, 2))
-  }
+
 
   const movies = data?.items ?? []
   const totalItems = data?.totalItems ?? 0

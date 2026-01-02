@@ -10,6 +10,7 @@ export type MovieItem = {
     posterUrl: string | null
     plot: string | null
     url: string | null
+    legacyId: string | null
 }
 
 export type PagedResult<T> = {

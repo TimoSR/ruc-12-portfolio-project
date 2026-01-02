@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { observer } from 'mobx-react'
 import styled from 'styled-components'
 import type { MovieItem } from '../types'
+import { fetchTmdbMovieImage } from '../../../../api/tmdbService'
 
 import { BookmarkButton } from '../../bookmarks/components/BookmarkButton'
 
@@ -14,17 +15,65 @@ type MovieCardProps = {
 }
 
 function MovieCardBase({ movie, onClick, className = '' }: MovieCardProps) {
-  const [imageError, setImageError] = useState(false)
+  const [posterSrc, setPosterSrc] = useState<string | null>(null)
+  const [hasError, setHasError] = useState(false)
+  const [isRetrying, setIsRetrying] = useState(false)
+
+  // Initialize/Reset when movie changes
+  useEffect(() => {
+    // Reset state for new movie
+    setHasError(false)
+    setIsRetrying(false)
+
+    if (movie.posterUrl && movie.posterUrl !== 'N/A') {
+      setPosterSrc(movie.posterUrl)
+    } else {
+      // No valid initial URL, try TMDB immediately
+      setPosterSrc(null)
+      tryRecoverImage()
+    }
+  }, [movie.id, movie.posterUrl])
+
+  const tryRecoverImage = async () => {
+    // Prevent infinite loops or retrying without ID
+    if (!movie.legacyId) {
+      setHasError(true)
+      return
+    }
+
+    setIsRetrying(true)
+    try {
+      const newUrl = await fetchTmdbMovieImage(movie.legacyId)
+      // TMDB service returns a placeholder URL if it fails, so we check for that too
+      if (newUrl && !newUrl.includes('placehold.co')) {
+        setPosterSrc(newUrl)
+        setHasError(false)
+      } else {
+        setHasError(true)
+      }
+    } catch {
+      setHasError(true)
+    }
+    // Note: We don't unset isRetrying here to prevent re-triggering loop in some edge cases,
+    // but effectively once we try to recover, we stick with the result.
+  }
 
   return (
     <Card onClick={onClick} className={className}>
       <PosterPlaceholder>
-        {movie.posterUrl && !imageError ? (
+        {posterSrc && !hasError ? (
           <img
-            src={movie.posterUrl}
+            src={posterSrc}
             alt={movie.primaryTitle}
             referrerPolicy="no-referrer"
-            onError={() => setImageError(true)}
+            onError={() => {
+              // If we haven't retried yet, try to recover
+              if (!isRetrying) {
+                tryRecoverImage()
+              } else {
+                setHasError(true)
+              }
+            }}
           />
         ) : (
           <PlaceholderIcon>🎬</PlaceholderIcon>
@@ -65,6 +114,7 @@ const Card = styled.div`
 `
 
 const PosterPlaceholder = styled.div`
+  position: relative;
   aspect-ratio: 2/3;
   background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(236, 72, 153, 0.2));
   display: flex;
