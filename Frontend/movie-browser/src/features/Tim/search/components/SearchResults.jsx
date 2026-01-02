@@ -2,7 +2,6 @@
 import { observer } from "mobx-react";
 import { Card, ListGroup, Badge, Alert, Spinner, Button } from "react-bootstrap";
 import { searchStore } from "../store/SearchStore";
-import { BookmarkButton } from "../../../Chris/bookmarks/components/BookmarkButton";
 
 /**
  * @fileoverview Search Results Display.
@@ -62,14 +61,7 @@ const SearchResultsBase = () => {
                                 {item.type === 'movie' ? 'Movie' : 'Person'}
                             </Badge>
 
-                            {/* Bookmark - stop propagation så klik ikke navigerer */}
-                            <span onClick={(e) => e.stopPropagation()}>
-                                <BookmarkButton
-                                    targetId={item.id}
-                                    targetType={item.type}
-                                    displayName={item.title || item.name}
-                                />
-                            </span>
+
                         </div>
                     </ListGroup.Item>
                 ))}
