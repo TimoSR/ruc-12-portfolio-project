@@ -74,7 +74,7 @@ public sealed class PersonService(IUnitOfWork unitOfWork, ILogger<PersonService>
             var (items, totalCount) = await unitOfWork.PersonQueriesRepository
                 .SearchByNameAsync(query.Query ?? "", query.Page, query.PageSize, cancellationToken);
 
-            var dtos = items.Select(x => new PersonListItemDto(x.Id, x.PrimaryName));
+            var dtos = items.Select(x => new PersonListItemDto(x.Id, x.LegacyId, x.PrimaryName));
             
             return Result<(IEnumerable<PersonListItemDto> items, int totalCount)>.Success((dtos, totalCount));
         }

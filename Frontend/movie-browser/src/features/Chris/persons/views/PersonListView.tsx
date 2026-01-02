@@ -54,14 +54,14 @@ export function PersonListView({ onActorClick, className = '' }: PersonListViewP
   const handleNext = () => {
     if (!isPlaceholderData && page < totalPages) {
       navigate({
-        search: (old) => ({ ...old, page: old.page + 1 }),
+        search: (old) => ({ ...old, page: (old.page ?? 1) + 1 }),
       })
     }
   }
 
   const handlePrevious = () => {
     navigate({
-      search: (old) => ({ ...old, page: Math.max(old.page - 1, 1) }),
+      search: (old) => ({ ...old, page: Math.max((old.page ?? 1) - 1, 1) }),
     })
   }
 

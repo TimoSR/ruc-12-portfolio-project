@@ -54,14 +54,14 @@ export function MovieListView({ onMovieClick, className = '' }: MovieListViewPro
   const handleNext = () => {
     if (!isPlaceholderData && page < totalPages) {
       navigate({
-        search: (old) => ({ ...old, page: old.page + 1 }),
+        search: (old) => ({ ...old, page: (old.page ?? 1) + 1 }),
       })
     }
   }
 
   const handlePrevious = () => {
     navigate({
-      search: (old) => ({ ...old, page: Math.max(old.page - 1, 1) }),
+      search: (old) => ({ ...old, page: Math.max((old.page ?? 1) - 1, 1) }),
     })
   }
 

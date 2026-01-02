@@ -29,7 +29,7 @@ public sealed class PersonQueriesRepository : IPersonQueriesRepository
             .OrderBy(p => p.PrimaryName)
             .Skip(skip)
             .Take(pageSize)
-            .Select(p => new PersonListItem(p.Id, p.PrimaryName))
+            .Select(p => new PersonListItem(p.Id, p.LegacyId, p.PrimaryName))
             .ToListAsync(cancellationToken);
 
         return (items, totalCount);
