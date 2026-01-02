@@ -67,7 +67,8 @@ public class MovieDbContext(DbContextOptions<MovieDbContext> options) : DbContex
             entity.Property(x => x.TargetId).HasColumnName("target_id");
             entity.Property(x => x.TargetType)
                 .HasColumnName("target_type")
-                .HasColumnType("public.bookmark_target"); // Explicit type mapping
+                .HasColumnType("public.bookmark_target")
+                .HasConversion<string>(); // Force Enum <-> String conversion
             entity.Property(x => x.CreatedAt).HasColumnName("added_at");
             entity.Property(x => x.Note)
                 .HasColumnName("note")

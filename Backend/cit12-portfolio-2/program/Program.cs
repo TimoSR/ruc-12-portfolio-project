@@ -55,7 +55,7 @@ var connectionString = builder.Configuration["DATABASE_CONNECTION_STRING"];
 
 // 2. Register DbContext
 var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
-dataSourceBuilder.MapEnum<BookmarkTarget>("public.bookmark_target");
+
 var dataSource = dataSourceBuilder.Build();
 
 builder.Services.AddDbContext<MovieDbContext>(options =>
