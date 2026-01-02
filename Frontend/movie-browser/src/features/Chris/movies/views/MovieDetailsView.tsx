@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { observer, useLocalObservable } from "mobx-react";
 import {
   useQuery,
@@ -12,6 +12,7 @@ import {
   movieDetailsQueryOptions,
   rateMovieMutation,
 } from "../../../../api/queries/movieQueries";
+import { fetchTmdbMovieImage } from "../../../../api/tmdbService";
 import { Rating } from "../components/Rating";
 import { BookmarkButton } from "../../bookmarks/components/BookmarkButton";
 import { SimilarMovies } from "../components/SimilarMovies";
@@ -28,7 +29,9 @@ function MovieDetailsViewBase() {
   const { movieId } = movieDetailsRoute.useParams();
   const { page, pageSize, query } = movieDetailsRoute.useSearch();
 
-  const [imageError, setImageError] = useState(false);
+  const [posterSrc, setPosterSrc] = useState<string | null>(null);
+  const [hasError, setHasError] = useState(false);
+  const [isRetrying, setIsRetrying] = useState(false);
 
   // Local instance (matches your current pattern)
   const authStore = useLocalObservable(() => new AuthStore());
@@ -40,6 +43,41 @@ function MovieDetailsViewBase() {
     placeholderData: keepPreviousData,
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
+
+  // Effect to handle image initialization and fallback
+  useEffect(() => {
+    if (!movie) return;
+
+    setHasError(false);
+    setIsRetrying(false);
+
+    if (movie.posterUrl && movie.posterUrl !== 'N/A') {
+      setPosterSrc(movie.posterUrl);
+    } else {
+      setPosterSrc(null);
+      tryRecoverImage();
+    }
+  }, [movie?.id, movie?.posterUrl]); // Depend on movie.id to reset when movie changes
+
+  const tryRecoverImage = async () => {
+    if (!movie?.legacyId) { // Check runtime availability
+      setHasError(true);
+      return;
+    }
+
+    setIsRetrying(true);
+    try {
+      const newUrl = await fetchTmdbMovieImage(movie.legacyId);
+      if (newUrl && !newUrl.includes("placehold.co")) {
+        setPosterSrc(newUrl);
+        setHasError(false);
+      } else {
+        setHasError(true);
+      }
+    } catch {
+      setHasError(true);
+    }
+  };
 
   const rateMutation = useMutation({
     mutationFn: rateMovieMutation(movieId, authStore.id),
@@ -82,11 +120,18 @@ function MovieDetailsViewBase() {
 
       <Content>
         <PosterSection style={{ position: 'relative' }}>
-          {movie.posterUrl && !imageError ? (
+          {posterSrc && !hasError ? (
             <Poster
-              src={movie.posterUrl}
+              src={posterSrc}
               alt={movie.primaryTitle}
-              onError={() => setImageError(true)}
+              referrerPolicy="no-referrer"
+              onError={() => {
+                if (!isRetrying) {
+                  tryRecoverImage();
+                } else {
+                  setHasError(true);
+                }
+              }}
             />
           ) : (
             <PosterPlaceholder>

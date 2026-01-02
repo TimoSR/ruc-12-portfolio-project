@@ -33,7 +33,7 @@ export const Rating = ({ initialRating = 0, onRate, readonly = false }: RatingPr
             {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((star) => (
                 <Star
                     key={star}
-                    filled={star <= (hoverRating || initialRating)}
+                    $filled={star <= (hoverRating || initialRating)}
                     $readonly={readonly}
                     onMouseEnter={() => handleMouseEnter(star)}
                     onMouseLeave={handleMouseLeave}
@@ -55,10 +55,10 @@ const Container = styled.div`
   gap: 0.25rem;
 `
 
-const Star = styled.span<{ filled: boolean; $readonly: boolean }>`
+const Star = styled.span<{ $filled: boolean; $readonly: boolean }>`
   font-size: 1.5rem;
   cursor: ${(props) => (props.$readonly ? 'default' : 'pointer')};
-  color: ${(props) => (props.filled ? '#fbbf24' : '#4b5563')};
+  color: ${(props) => (props.$filled ? '#fbbf24' : '#4b5563')};
   transition: color 0.1s ease, transform 0.1s ease;
 
   &:hover {
