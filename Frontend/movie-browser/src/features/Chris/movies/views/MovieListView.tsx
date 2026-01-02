@@ -15,7 +15,10 @@ export function MovieListView({ onMovieClick, className = '' }: MovieListViewPro
   const queryClient = useQueryClient()
   const navigate = useNavigate({ from: movieListRoute.fullPath })
 
-  const { page, query, pageSize } = movieListRoute.useSearch()
+  const search = movieListRoute.useSearch()
+  const page = search.page ?? 1
+  const query = search.query ?? ''
+  const pageSize = search.pageSize ?? 24
 
   const {
     data,

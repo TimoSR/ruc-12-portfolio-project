@@ -15,7 +15,10 @@ export function PersonListView({ onActorClick, className = '' }: PersonListViewP
   const queryClient = useQueryClient()
   const navigate = useNavigate({ from: personListRoute.fullPath })
 
-  const { page, query, pageSize } = personListRoute.useSearch()
+  const search = personListRoute.useSearch()
+  const page = search.page ?? 1
+  const query = search.query ?? ''
+  const pageSize = search.pageSize ?? 24
 
   const {
     data,
