@@ -2,7 +2,7 @@
 const baseUrl = import.meta.env.VITE_MOVIE_BROWSER_API_URL;
 
 // 2. Fallback (Good practice)
-const BASE_URL = baseUrl || 'http://localhost:5175/api/v1';
+const BASE_URL = baseUrl || 'http://localhost:5001/api/v1';
 
 export const apiClient = async (endpoint: string, options: RequestInit = {}) => {
   const token = localStorage.getItem('token');

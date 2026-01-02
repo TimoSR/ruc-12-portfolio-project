@@ -1,11 +1,12 @@
 // @ts-nocheck
 import React, { useEffect } from 'react';
 import { Container, Row, Col, Card, ListGroup, Tab, Tabs, Button, Badge } from 'react-bootstrap';
-import { observer } from 'mobx-react';
+import { observer, useLocalObservable } from 'mobx-react';
 import { useNavigate } from '@tanstack/react-router';
 import { searchStore } from '../../../Tim/search/store/SearchStore';
 import { bookmarksStore } from '../../bookmarks/store/BookmarksStore';
 import { ratingStore } from '../../movies/store/RatingStore';
+import { AuthStore } from '../store/AuthStore';
 
 /**
  * @fileoverview User Profile View.
@@ -15,10 +16,13 @@ import { ratingStore } from '../../movies/store/RatingStore';
 export const UserProfileView = observer(() => {
     const navigate = useNavigate();
 
-    // Mock User ID - In real app, get from AuthStore/Context
-    const userId = "mock-user-123";
+    // Use Real AuthStore
+    const authStore = useLocalObservable(() => new AuthStore());
+    const userId = authStore.id;
 
     useEffect(() => {
+        if (!userId) return; // Wait for login/load
+
         // Load data on mount
         searchStore.fetchSearchHistory(userId);
         bookmarksStore.fetchUserBookmarks(userId);

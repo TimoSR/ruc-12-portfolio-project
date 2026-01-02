@@ -4,7 +4,7 @@ namespace domain.movie.titleRatings;
 
 public record RatingCreatedEvent(
     Guid AccountId,
-    string TitleId,
+    Guid TitleId, // EPC: Reverted to Guid
     int Score,
     DateTime RatedAt
 ) : DomainEvent;
@@ -14,7 +14,7 @@ public record RatingCreatedEvent(
 /// </summary>
 public record RatingScoreUpdatedEvent(
     Guid AccountId,
-    string TitleId,
+    Guid TitleId, // EPC: Reverted to Guid
     int NewScore,
     DateTime UpdatedAt
 ) : DomainEvent;

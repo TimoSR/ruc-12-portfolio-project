@@ -56,6 +56,10 @@ const Card = styled.div`
     transform: translateY(-4px);
     border-color: rgba(168, 85, 247, 0.6);
     box-shadow: 0 20px 40px rgba(168, 85, 247, 0.3);
+  }
+
+  &:hover .bookmark-overlay {
+    opacity: 1;
   } 
 `
 
@@ -66,7 +70,6 @@ const ImagePlaceholder = styled.div`
   align-items: center;
   justify-content: center;
 
-  img {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -109,9 +112,11 @@ const Rating = styled.span`
   margin-left: auto;
 `
 
-const BookmarkOverlay = styled.div`
+const BookmarkOverlay = styled.div.attrs({ className: 'bookmark-overlay' })`
   position: absolute;
   top: 8px;
   right: 8px;
   z-index: 10;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
 `

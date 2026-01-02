@@ -26,6 +26,7 @@ export class BookmarksStore {
         this.error = null;
 
         try {
+            // EPC: Using Real API v1
             const response = await fetch(`http://localhost:5001/api/v1/accounts/${userId}/bookmarks`); // TODO: Use config/env for base URL
             // Fallback for CORS or port issues during dev
             // const response = await fetch(`/api/v1/accounts/${userId}/bookmarks`); 

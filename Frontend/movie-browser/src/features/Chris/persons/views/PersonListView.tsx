@@ -86,7 +86,7 @@ export function PersonListView({ onActorClick, className = '' }: PersonListViewP
               <PersonCard
                 key={actor.id}
                 actor={actor}
-                onClick={() => onActorClick?.(actor.id)}
+                onClick={() => onActorClick?.(actor.nconst || actor.id)}
               />
             ))}
           </ActorGrid>

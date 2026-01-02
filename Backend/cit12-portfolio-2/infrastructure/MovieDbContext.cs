@@ -67,8 +67,8 @@ public class MovieDbContext(DbContextOptions<MovieDbContext> options) : DbContex
             entity.HasKey(x => x.Id);
             entity.Property(x => x.Id).HasColumnName("id");
             entity.Property(x => x.AccountId).HasColumnName("account_id");
-            entity.Property(x => x.Query).HasColumnName("query");
-            entity.Property(x => x.Timestamp).HasColumnName("timestamp");
+            entity.Property(x => x.Query).HasColumnName("search_query");
+            entity.Property(x => x.Timestamp).HasColumnName("searched_at");
         });
 
         modelBuilder.Entity<Title>(entity =>

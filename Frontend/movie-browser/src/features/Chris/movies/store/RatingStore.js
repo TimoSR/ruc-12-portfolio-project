@@ -31,6 +31,7 @@ export class RatingStore {
         this.error = null;
 
         try {
+            // EPC: Using Real API v1
             const res = await fetch(`http://localhost:5001/api/v1/accounts/${userId}/ratings`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -66,6 +67,7 @@ export class RatingStore {
 
         this.isLoading = true;
         try {
+            // EPC: Using Real API v1
             const res = await fetch(`http://localhost:5001/api/v1/accounts/${userId}/ratings`);
             if (!res.ok) throw new Error('Failed to fetch ratings');
 

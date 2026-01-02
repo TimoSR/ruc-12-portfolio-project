@@ -4,7 +4,7 @@ namespace application.titleService;
 
 public record TitleDto(
     Guid Id,
-    string? LegacyId,
+    string? LegacyId, // EPC: added LegacyId
     string TitleType,
     string PrimaryTitle, 
     string? OriginalTitle,
@@ -19,7 +19,7 @@ public record TitleDto(
 
 public record TitleLegacyDto(
     Guid Id,
-    string LegacyId,  
+    string LegacyId, // EPC: added LegacyId  
     string TitleType,
     string PrimaryTitle, 
     string? OriginalTitle,

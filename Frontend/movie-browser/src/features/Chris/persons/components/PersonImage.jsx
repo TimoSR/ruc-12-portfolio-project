@@ -58,6 +58,7 @@ export const PersonImage = ({ nconst, alt = "Person", className }) => {
     return (
         <Image
             src={imageUrl}
+            referrerPolicy="no-referrer"
             alt={alt}
             fluid
             className={`rounded shadow-sm ${className}`}

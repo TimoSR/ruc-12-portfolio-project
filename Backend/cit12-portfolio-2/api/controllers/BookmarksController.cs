@@ -18,8 +18,7 @@ public class BookmarksController(IBookmarkService bookmarkService) : ControllerB
         var result = await bookmarkService.GetUserBookmarksAsync(accountId, cancellationToken);
         if (result.IsFailure) return BadRequest(result.Error);
 
-        var dtos = result.Value.Select(b => new BookmarkDto(b.Id, b.TargetId, b.TargetType, b.Note, b.CreatedAt));
-        return Ok(dtos);
+        return Ok(result.Value);
     }
 
     [HttpPost]
@@ -30,7 +29,7 @@ public class BookmarksController(IBookmarkService bookmarkService) : ControllerB
         if (result.IsFailure) return BadRequest(result.Error);
 
         var b = result.Value;
-        return CreatedAtAction(nameof(GetBookmarks), new { accountId }, new BookmarkDto(b.Id, b.TargetId, b.TargetType, b.Note, b.CreatedAt));
+        return CreatedAtAction(nameof(GetBookmarks), new { accountId }, new BookmarkDto(b.Id, dto.TargetId, b.TargetType, b.Note, b.CreatedAt));
     }
 
     [HttpDelete("{targetId}")] // Deleting by targetId (tconst/nconst) because ID is internal

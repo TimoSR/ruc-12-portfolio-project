@@ -23,6 +23,7 @@ function MovieCardBase({ movie, onClick, className = '' }: MovieCardProps) {
           <img
             src={movie.posterUrl}
             alt={movie.primaryTitle}
+            referrerPolicy="no-referrer"
             onError={() => setImageError(true)}
           />
         ) : (

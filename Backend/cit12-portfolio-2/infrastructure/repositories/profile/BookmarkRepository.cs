@@ -20,7 +20,7 @@ public class BookmarkRepository(MovieDbContext context) : IBookmarkRepository
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<Bookmark?> GetByUserAndTargetAsync(Guid accountId, string targetId, CancellationToken cancellationToken)
+    public async Task<Bookmark?> GetByUserAndTargetAsync(Guid accountId, Guid targetId, CancellationToken cancellationToken)
     {
         return await context.Bookmarks
             .AsNoTracking()

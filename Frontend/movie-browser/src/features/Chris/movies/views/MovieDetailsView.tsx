@@ -42,7 +42,7 @@ function MovieDetailsViewBase() {
   });
 
   const rateMutation = useMutation({
-    mutationFn: rateMovieMutation(movieId),
+    mutationFn: rateMovieMutation(movieId, authStore.id),
     onSuccess: async () => {
       // ✅ invalidate the exact details query (keeps things consistent if keys change)
       await queryClient.invalidateQueries({ queryKey: detailsOptions.queryKey });

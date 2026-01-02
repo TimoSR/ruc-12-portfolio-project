@@ -16,8 +16,8 @@ public class RatingService(IUnitOfWork unitOfWork) : IRatingService
     {
         var accountExists = await unitOfWork.AccountRepository
             .ExistsAsync(accountId, cancellationToken);
-            
-        // Validate Title by LegacyId (String)
+
+        // EPC: Validate Title by LegacyId (String) to support IMDB IDs
         var title = await unitOfWork.TitleRepository.GetByLegacyIdAsync(commandDto.TitleId, cancellationToken);
         if (title is null)
             throw new TitleNotFoundException(commandDto.TitleId);
@@ -25,8 +25,11 @@ public class RatingService(IUnitOfWork unitOfWork) : IRatingService
         if (!accountExists)
             throw new AccountNotFoundException(accountId);
         
+        // EPC: Bridge - Use the Internal Guid from the found title
+        Guid internalTitleId = title.Id;
+
         var existingAccountRating = await unitOfWork.AccountRatingRepository
-            .GetByAccountAndTitleAsync(accountId, commandDto.TitleId, cancellationToken);
+            .GetByAccountAndTitleAsync(accountId, internalTitleId, cancellationToken); // EPC: Use internalTitleId
         
         if (existingAccountRating is not null)
             return Result<RatingDto>.Failure(AccountRatingErrors.DuplicateRating);
@@ -37,7 +40,7 @@ public class RatingService(IUnitOfWork unitOfWork) : IRatingService
         {
             var accountRating = AccountRating.Create(
                 accountId: accountId,
-                titleId: commandDto.TitleId,
+                titleId: internalTitleId, // EPC: Use internalTitleId
                 score: commandDto.Score,
                 comment: commandDto.Comment);
 
@@ -55,7 +58,7 @@ public class RatingService(IUnitOfWork unitOfWork) : IRatingService
             var dto = new RatingDto(
                 Id: accountRating.Id,
                 AccountId: accountRating.AccountId,
-                TitleId: accountRating.TitleId,
+                TitleId: title.LegacyId!, // EPC: Bridge back to string (LegacyId)
                 Score: accountRating.Score,
                 Comment: accountRating.Comment);
 
@@ -75,10 +78,14 @@ public class RatingService(IUnitOfWork unitOfWork) : IRatingService
         if (rating is null)
             return Result<RatingDto>.Failure(AccountRatingErrors.NotFound);
 
+        // EPC: Bridge - Lookup Title to get LegacyId
+        var title = await unitOfWork.TitleRepository.GetByIdAsync(rating.TitleId, cancellationToken);
+        var legacyId = title?.LegacyId ?? rating.TitleId.ToString(); // Fallback if missing (shouldn't happen)
+
         var dto = new RatingDto(
             Id: rating.Id, 
             AccountId: rating.AccountId,
-            TitleId: rating.TitleId,
+            TitleId: legacyId, // EPC: Mapped back to string
             Score: rating.Score,
             Comment: rating.Comment);
         
@@ -92,10 +99,14 @@ public class RatingService(IUnitOfWork unitOfWork) : IRatingService
 
         await foreach (var rating in unitOfWork.AccountRatingRepository.GetByAccountIdAsync(accountId).WithCancellation(token))
         {
+            // EPC: Bridge - Lookup Title to get LegacyId (Potential N+1, accept for now)
+            var title = await unitOfWork.TitleRepository.GetByIdAsync(rating.TitleId, token);
+            var legacyId = title?.LegacyId ?? rating.TitleId.ToString();
+
             var dto = new RatingDto(
                 Id: rating.Id,
                 AccountId: rating.AccountId,
-                TitleId: rating.TitleId,
+                TitleId: legacyId, // EPC: Mapped back to string
                 Score: rating.Score,
                 Comment: rating.Comment);
             

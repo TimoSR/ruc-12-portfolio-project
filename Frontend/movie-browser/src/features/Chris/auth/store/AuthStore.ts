@@ -3,6 +3,7 @@ import { makeAutoObservable, runInAction } from 'mobx'
 export interface IAuthStore {
     email: string
     setEmail(email: string): void
+    id: string
     username: string
     setUsername(username: string): void
     password: string
@@ -20,6 +21,7 @@ export interface IAuthStore {
 
 export class AuthStore implements IAuthStore {
     email = ''
+    id = ''
     username = ''
     password = ''
     loading = false
@@ -39,6 +41,7 @@ export class AuthStore implements IAuthStore {
             try {
                 const user = JSON.parse(userStr)
                 this.username = user.username
+                this.id = user.id
             } catch (e) {
                 console.error('Failed to parse user from localStorage', e)
             }
@@ -65,6 +68,7 @@ export class AuthStore implements IAuthStore {
 
     reset() {
         this.email = ''
+        this.id = ''
         this.username = ''
         this.password = ''
         this.loading = false

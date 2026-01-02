@@ -19,7 +19,7 @@ public class TitleService(IUnitOfWork unitOfWork, ILogger<TitleService> logger) 
             
             var dto = new TitleDto(
                 Id: title.Id,
-                LegacyId: title.LegacyId,
+                LegacyId: title.LegacyId, // EPC: Mapped LegacyId
                 TitleType: title.TitleType,
                 PrimaryTitle: title.PrimaryTitle,
                 OriginalTitle: title.OriginalTitle,

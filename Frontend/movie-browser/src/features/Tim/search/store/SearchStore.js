@@ -130,6 +130,7 @@ export class SearchStore {
         const API_BASE = 'http://localhost:5001/api/v1';
 
         const fetchTitles = async () => {
+            // EPC: Using Real API v1
             const res = await fetch(`${API_BASE}/titles?query=${encodeURIComponent(query)}&page=1&pageSize=5`);
             if (!res.ok) return [];
             const data = await res.json();
@@ -143,6 +144,7 @@ export class SearchStore {
         };
 
         const fetchPersons = async () => {
+            // EPC: Using Real API v1
             const res = await fetch(`${API_BASE}/persons?query=${encodeURIComponent(query)}&page=1&pageSize=5`);
             if (!res.ok) return [];
             const data = await res.json();
