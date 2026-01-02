@@ -1,8 +1,8 @@
 // @ts-nocheck
-import React, { useEffect } from 'react';
-import { Container, Row, Col, Card, ListGroup, Tab, Tabs, Button, Badge } from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
+import { Container, Row, Col, Card, ListGroup, Tab, Tabs, Badge, Spinner } from 'react-bootstrap';
 import { observer, useLocalObservable } from 'mobx-react';
-import { useNavigate } from '@tanstack/react-router';
+import { useNavigate, Link } from '@tanstack/react-router';
 import { searchStore } from '../../../Tim/search/store/SearchStore';
 import { bookmarksStore } from '../../bookmarks/store/BookmarksStore';
 import { ratingStore } from '../../movies/store/RatingStore';
@@ -13,6 +13,141 @@ import { AuthStore } from '../store/AuthStore';
  * Displays user's search history, bookmarks, and ratings.
  * Requirement 1-D.2, 1-D.6, 1-D.9 visualization.
  */
+
+// Component to fetch and display a single bookmarked movie
+const EnrichedBookmarkItem = ({ bookmark }) => {
+    const [movie, setMovie] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        if (bookmark.type !== 'movie') {
+            setLoading(false);
+            return;
+        }
+
+        const fetchMovie = async () => {
+            try {
+                const res = await fetch(`http://localhost:5001/api/v1/titles/${bookmark.id}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    setMovie(data);
+                }
+            } catch (err) {
+                console.error('Failed to fetch movie for bookmark', err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchMovie();
+    }, [bookmark.id, bookmark.type]);
+
+    if (loading) {
+        return (
+            <ListGroup.Item className="bg-dark text-white d-flex align-items-center gap-3">
+                <Spinner animation="border" size="sm" />
+                <span>Loading...</span>
+            </ListGroup.Item>
+        );
+    }
+
+    if (bookmark.type === 'person') {
+        return (
+            <ListGroup.Item className="bg-dark text-white d-flex align-items-center gap-3">
+                <span style={{ fontSize: '1.5rem' }}>👤</span>
+                <span><strong>Person ID:</strong> {bookmark.id}</span>
+                <Badge bg="secondary">person</Badge>
+            </ListGroup.Item>
+        );
+    }
+
+    return (
+        <ListGroup.Item
+            as={Link}
+            to={`/movies/${bookmark.id}`}
+            className="bg-dark text-white d-flex align-items-center gap-3 text-decoration-none"
+            style={{ cursor: 'pointer' }}
+        >
+            {movie?.posterUrl ? (
+                <img
+                    src={movie.posterUrl}
+                    alt={movie.primaryTitle}
+                    style={{ width: '50px', height: '75px', objectFit: 'cover', borderRadius: '4px' }}
+                />
+            ) : (
+                <div style={{ width: '50px', height: '75px', background: '#333', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    🎬
+                </div>
+            )}
+            <div style={{ flex: 1 }}>
+                <strong>{movie?.primaryTitle || 'Unknown Movie'}</strong>
+                {movie?.startYear && <span className="text-muted ms-2">({movie.startYear})</span>}
+            </div>
+            <Badge bg="warning" text="dark">movie</Badge>
+        </ListGroup.Item>
+    );
+};
+
+// Component to fetch and display a single rated movie
+const EnrichedRatingItem = ({ rating }) => {
+    const [movie, setMovie] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchMovie = async () => {
+            try {
+                // tconst could be a GUID or legacy ID
+                const res = await fetch(`http://localhost:5001/api/v1/titles/${rating.tconst}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    setMovie(data);
+                }
+            } catch (err) {
+                console.error('Failed to fetch movie for rating', err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchMovie();
+    }, [rating.tconst]);
+
+    if (loading) {
+        return (
+            <ListGroup.Item className="bg-dark text-white d-flex align-items-center gap-3">
+                <Spinner animation="border" size="sm" />
+                <span>Loading...</span>
+            </ListGroup.Item>
+        );
+    }
+
+    return (
+        <ListGroup.Item
+            as={Link}
+            to={`/movies/${rating.tconst}`}
+            className="bg-dark text-white d-flex align-items-center gap-3 text-decoration-none"
+            style={{ cursor: 'pointer' }}
+        >
+            {movie?.posterUrl ? (
+                <img
+                    src={movie.posterUrl}
+                    alt={movie?.primaryTitle}
+                    style={{ width: '50px', height: '75px', objectFit: 'cover', borderRadius: '4px' }}
+                />
+            ) : (
+                <div style={{ width: '50px', height: '75px', background: '#333', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    🎬
+                </div>
+            )}
+            <div style={{ flex: 1 }}>
+                <strong>{movie?.primaryTitle || 'Unknown Movie'}</strong>
+                {movie?.startYear && <span className="text-muted ms-2">({movie.startYear})</span>}
+            </div>
+            <span className="text-warning" style={{ fontSize: '1.2rem' }}>
+                {'★'.repeat(rating.rating)}{'☆'.repeat(10 - rating.rating)}
+            </span>
+        </ListGroup.Item>
+    );
+};
+
 export const UserProfileView = observer(() => {
     const navigate = useNavigate();
 
@@ -97,20 +232,16 @@ export const UserProfileView = observer(() => {
                 {/* TAB: BOOKMARKS */}
                 <Tab eventKey="bookmarks" title="Bookmarks">
                     <Card className="bg-dark border-secondary text-white">
-                        <Card.Body>
+                        <Card.Header>My Bookmarks</Card.Header>
+                        <ListGroup variant="flush">
                             {bookmarksStore.bookmarks.length === 0 ? (
-                                <p className="text-muted">No bookmarks yet.</p>
+                                <ListGroup.Item className="bg-dark text-white-50">No bookmarks yet.</ListGroup.Item>
                             ) : (
-                                <ListGroup variant="flush">
-                                    {bookmarksStore.bookmarks.map(b => (
-                                        <ListGroup.Item key={b.id + b.type} className="bg-dark text-white">
-                                            {b.type === 'movie' ? '🎬' : '👤'} <strong>{b.title || b.name || b.id}</strong>
-                                            <Badge bg="secondary" className="ms-2">{b.type}</Badge>
-                                        </ListGroup.Item>
-                                    ))}
-                                </ListGroup>
+                                bookmarksStore.bookmarks.map(b => (
+                                    <EnrichedBookmarkItem key={b.id + b.type} bookmark={b} />
+                                ))
                             )}
-                        </Card.Body>
+                        </ListGroup>
                     </Card>
                 </Tab>
 
@@ -123,10 +254,7 @@ export const UserProfileView = observer(() => {
                                 <ListGroup.Item className="bg-dark text-white-50">No ratings yet.</ListGroup.Item>
                             ) : (
                                 ratingStore.ratings.map((r, idx) => (
-                                    <ListGroup.Item key={idx} className="bg-dark text-white d-flex justify-content-between">
-                                        <span>Movie ID: {r.tconst}</span>
-                                        <span className="text-warning">{'★'.repeat(r.rating)}</span>
-                                    </ListGroup.Item>
+                                    <EnrichedRatingItem key={idx} rating={r} />
                                 ))
                             )}
                         </ListGroup>

@@ -135,4 +135,42 @@ public class RatingService(IUnitOfWork unitOfWork) : IRatingService
         return Result<List<RatingDto>>.Success(ratings);
     }
 
+    public async Task<Result<RatingDto?>> GetRatingForTitleAsync(Guid accountId, string titleId, CancellationToken token)
+    {
+        // Resolve title ID (could be GUID or Legacy ID)
+        Title? title = null;
+
+        if (Guid.TryParse(titleId, out var parsedGuid))
+        {
+            title = await unitOfWork.TitleRepository.GetByIdAsync(parsedGuid, token);
+        }
+
+        if (title is null)
+        {
+            title = await unitOfWork.TitleRepository.GetByLegacyIdAsync(titleId, token);
+        }
+
+        if (title is null)
+        {
+            return Result<RatingDto?>.Success(null); // Title not found, no rating possible
+        }
+
+        var rating = await unitOfWork.AccountRatingRepository
+            .GetByAccountAndTitleAsync(accountId, title.Id, token);
+
+        if (rating is null)
+        {
+            return Result<RatingDto?>.Success(null); // No rating found
+        }
+
+        var dto = new RatingDto(
+            Id: rating.Id,
+            AccountId: rating.AccountId,
+            TitleId: title.LegacyId ?? title.Id.ToString(),
+            Score: rating.Score,
+            Comment: rating.Comment);
+
+        return Result<RatingDto?>.Success(dto);
+    }
+
 }

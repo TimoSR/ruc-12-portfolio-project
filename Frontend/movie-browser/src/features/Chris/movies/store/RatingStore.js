@@ -47,8 +47,8 @@ export class RatingStore {
                 throw new Error('Rating failed');
             }
 
-            // Optionally refetch ratings or update locally
-            // this.fetchUserRatings(userId); // Or just push to array
+            // Refetch ratings to sync with server
+            this.fetchUserRatings(userId);
 
         } catch (err) {
             console.error("Rating failed", err);

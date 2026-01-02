@@ -46,3 +46,17 @@ export const rateMovieMutation = (movieId: string, userId: string) => {
         body: JSON.stringify({ ...payload, titleId: movieId, score: payload.rating, comment: '' })
     });
 };
+
+export const userRatingQueryOptions = (movieId: string, userId: string | null) => {
+    return queryOptions({
+        queryKey: ['userRating', movieId, userId],
+        queryFn: async () => {
+            if (!userId) return null;
+            const response = await fetch(`http://localhost:5001/api/v1/accounts/${userId}/ratings/title/${movieId}`);
+            if (response.status === 204) return null; // No rating found
+            if (!response.ok) return null;
+            return response.json();
+        },
+        enabled: !!userId, // Only run if user is logged in
+    });
+};

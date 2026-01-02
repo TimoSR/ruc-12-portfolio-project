@@ -28,6 +28,13 @@ const BookmarkButtonBase = ({ targetId, targetType, displayName }) => {
         }
     }, []);
 
+    // Fetch bookmarks when userId is available (ensures isBookmarked works after refresh)
+    useEffect(() => {
+        if (userId && bookmarksStore.bookmarks.length === 0) {
+            bookmarksStore.fetchUserBookmarks(userId);
+        }
+    }, [userId]);
+
     if (!userId) return null; // Don't show if not logged in
 
     const isBookmarked = bookmarksStore.isBookmarked(targetId, targetType);

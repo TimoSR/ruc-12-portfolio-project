@@ -11,6 +11,7 @@ import styled from "styled-components";
 import {
   movieDetailsQueryOptions,
   rateMovieMutation,
+  userRatingQueryOptions,
 } from "../../../../api/queries/movieQueries";
 import { fetchTmdbMovieImage } from "../../../../api/tmdbService";
 import { Rating } from "../components/Rating";
@@ -32,6 +33,7 @@ function MovieDetailsViewBase() {
   const [posterSrc, setPosterSrc] = useState<string | null>(null);
   const [hasError, setHasError] = useState(false);
   const [isRetrying, setIsRetrying] = useState(false);
+  const [userRating, setUserRating] = useState<number | null>(null);
 
   // Local instance (matches your current pattern)
   const authStore = useLocalObservable(() => new AuthStore());
@@ -44,6 +46,11 @@ function MovieDetailsViewBase() {
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
+  // Fetch user's existing rating for this movie
+  const { data: existingRating } = useQuery({
+    ...userRatingQueryOptions(movieId, authStore.id),
+  });
+
   // Effect to handle image initialization and fallback
   useEffect(() => {
     if (!movie) return;
@@ -51,13 +58,18 @@ function MovieDetailsViewBase() {
     setHasError(false);
     setIsRetrying(false);
 
+    // Initialize userRating from fetched existing rating
+    if (existingRating?.score) {
+      setUserRating(existingRating.score);
+    }
+
     if (movie.posterUrl && movie.posterUrl !== 'N/A') {
       setPosterSrc(movie.posterUrl);
     } else {
       setPosterSrc(null);
       tryRecoverImage();
     }
-  }, [movie?.id, movie?.posterUrl]); // Depend on movie.id to reset when movie changes
+  }, [movie?.id, movie?.posterUrl, existingRating]); // Depend on movie.id to reset when movie changes
 
   const tryRecoverImage = async () => {
     if (!movie?.legacyId) { // Check runtime availability
@@ -81,7 +93,9 @@ function MovieDetailsViewBase() {
 
   const rateMutation = useMutation({
     mutationFn: rateMovieMutation(movieId, authStore.id),
-    onSuccess: async () => {
+    onSuccess: async (_, variables) => {
+      // Store the user's rating locally so stars stay filled
+      setUserRating(variables.rating);
       // ✅ invalidate the exact details query (keeps things consistent if keys change)
       await queryClient.invalidateQueries({ queryKey: detailsOptions.queryKey });
     },
@@ -138,13 +152,6 @@ function MovieDetailsViewBase() {
               <PlaceholderIcon>🎬</PlaceholderIcon>
             </PosterPlaceholder>
           )}
-          <div style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 10 }}>
-            <BookmarkButton
-              targetId={movie.legacyId || movie.id}
-              targetType="movie"
-              displayName={movie.primaryTitle}
-            />
-          </div>
         </PosterSection>
 
         <InfoSection>
@@ -177,8 +184,9 @@ function MovieDetailsViewBase() {
             {authStore.isAuthenticated ? (
               <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                 <Rating
-                  initialRating={movie.averageRating || 0}
+                  initialRating={userRating ?? movie.averageRating ?? 0}
                   onRate={(rating) => rateMutation.mutate({ rating })}
+                  readonly={userRating !== null}
                 />
 
                 {rateMutation.isPending && <SmallMeta>Saving rating...</SmallMeta>}

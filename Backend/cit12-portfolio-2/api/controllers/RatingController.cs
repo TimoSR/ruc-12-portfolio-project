@@ -1,5 +1,6 @@
 ﻿using application.ratingService;
 using domain.profile.account;
+using domain.profile.accountRatings;
 using Microsoft.AspNetCore.Http;
 
 namespace api.controllers;
@@ -42,7 +43,9 @@ public class RatingsController : ControllerBase
 
         return result.Error switch
         {
-            var e when e == AccountErrors.DuplicateEmail || e == AccountErrors.DuplicateUsername =>
+            var e when e == AccountErrors.DuplicateEmail 
+                    || e == AccountErrors.DuplicateUsername
+                    || e == AccountRatingErrors.DuplicateRating =>
                 Conflict(new ProblemDetails
                 {
                     Type = "https://httpstatuses.com/409",
@@ -108,5 +111,21 @@ public class RatingsController : ControllerBase
                 Instance = HttpContext.TraceIdentifier
             })
         };
+    }
+
+    [HttpGet("title/{titleId}")]
+    [ProducesResponseType(typeof(RatingDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> GetRatingForTitle(Guid accountId, string titleId, CancellationToken cancellationToken)
+    {
+        var result = await _ratingService.GetRatingForTitleAsync(accountId, titleId, cancellationToken);
+
+        if (result.IsSuccess && result.Value is not null)
+        {
+            return Ok(result.Value);
+        }
+
+        // No rating found for this title
+        return NoContent();
     }
 }
