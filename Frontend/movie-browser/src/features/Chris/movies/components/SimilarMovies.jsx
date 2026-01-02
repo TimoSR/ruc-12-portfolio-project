@@ -1,23 +1,82 @@
 // @ts-nocheck
-import { Card, ListGroup, Badge } from "react-bootstrap";
+import { useState, useEffect } from "react";
+import { Card, ListGroup, Badge, Spinner } from "react-bootstrap";
+import { Link } from "@tanstack/react-router";
 
 /**
  * @fileoverview Displays similar movies for a title.
  * Implements frontend support for requirement 1-D.9.
- * Currently uses MOCKED DATA until backend is ready.
+ * Fetches from /api/v1/titles/{titleId}/similar
  * 
  * @param {object} props
- * @param {string} props.tconst - Movie ID
+ * @param {string} props.tconst - Movie ID (GUID or legacy)
  */
 export const SimilarMovies = ({ tconst }) => {
-    // MOCK DATA - In real app, fetch from /api/v1/titles/{tconst}/similar
-    const mockSimilar = [
-        { tconst: 'tt0110912', primaryTitle: 'Reservoir Dogs', year: 1992 },
-        { tconst: 'tt0107290', primaryTitle: 'Jurassic Park', year: 1993 },
-        { tconst: 'tt0111161', primaryTitle: 'The Shawshank Redemption', year: 1994 },
-    ];
+    const [movies, setMovies] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        if (!tconst) {
+            setLoading(false);
+            return;
+        }
+
+        const fetchSimilarMovies = async () => {
+            setLoading(true);
+            setError(null);
+            try {
+                // tconst could be a GUID or legacyId - try GUID first
+                const res = await fetch(`http://localhost:5001/api/v1/titles/${tconst}/similar?limit=5`);
+
+                if (res.ok) {
+                    const data = await res.json();
+                    setMovies(data);
+                } else {
+                    // Maybe it's a legacy ID, ignore errors gracefully
+                    setMovies([]);
+                }
+            } catch (err) {
+                console.error('Failed to fetch similar movies:', err);
+                setError('Could not load similar movies');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchSimilarMovies();
+    }, [tconst]);
 
     if (!tconst) return null;
+
+    if (loading) {
+        return (
+            <Card className="bg-dark text-white border-secondary mt-4">
+                <Card.Header className="border-secondary text-uppercase small text-muted">
+                    Similar Movies (1-D.9)
+                </Card.Header>
+                <Card.Body className="text-center">
+                    <Spinner animation="border" size="sm" variant="secondary" />
+                    <span className="ms-2 text-muted">Loading...</span>
+                </Card.Body>
+            </Card>
+        );
+    }
+
+    if (error || movies.length === 0) {
+        return (
+            <Card className="bg-dark text-white border-secondary mt-4">
+                <Card.Header className="border-secondary text-uppercase small text-muted">
+                    Similar Movies (1-D.9)
+                </Card.Header>
+                <Card.Body>
+                    <span className="text-muted">
+                        {error || 'No similar movies found'}
+                    </span>
+                </Card.Body>
+            </Card>
+        );
+    }
 
     return (
         <Card className="bg-dark text-white border-secondary mt-4">
@@ -25,16 +84,20 @@ export const SimilarMovies = ({ tconst }) => {
                 Similar Movies (1-D.9)
             </Card.Header>
             <ListGroup variant="flush">
-                {mockSimilar.map(m => (
+                {movies.map(m => (
                     <ListGroup.Item
-                        key={m.tconst}
-                        className="bg-transparent text-white border-secondary d-flex justify-content-between align-items-center"
+                        key={m.titleId}
+                        as={Link}
+                        to={`/movies/${m.titleId}`}
+                        className="bg-transparent text-white border-secondary d-flex justify-content-between align-items-center text-decoration-none"
+                        style={{ cursor: 'pointer' }}
                     >
                         <div>
                             <span>{m.primaryTitle}</span>
-                            <span className="text-muted small ms-2">({m.year})</span>
                         </div>
-                        <Badge bg="dark" className="border border-secondary">Ref</Badge>
+                        <Badge bg="dark" className="border border-secondary">
+                            {Math.round(m.similarity * 100)}%
+                        </Badge>
                     </ListGroup.Item>
                 ))}
             </ListGroup>

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Mime;
 
+
 namespace api.controllers;
 
 [ApiController]
@@ -204,6 +205,31 @@ public class TitlesController(ITitleService titleService) : ControllerBase
         }
 
         return NoContent();
+    }
+
+    /// <summary>
+    /// Gets similar movies based on genre similarity (Jaccard index)
+    /// </summary>
+    [HttpGet("{titleId:guid}/similar")]
+    [ProducesResponseType(typeof(IEnumerable<SimilarMovieDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetSimilarMovies(Guid titleId, [FromQuery] int limit = 10, CancellationToken cancellationToken = default)
+    {
+        var result = await titleService.GetSimilarMoviesAsync(titleId, limit, cancellationToken);
+
+        if (!result.IsSuccess)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, new ProblemDetails
+            {
+                Type = "https://httpstatuses.com/500",
+                Title = "Internal Server Error",
+                Status = StatusCodes.Status500InternalServerError,
+                Detail = result.Error.Description,
+                Instance = HttpContext.TraceIdentifier
+            });
+        }
+
+        return Ok(result.Value);
     }
 
 }

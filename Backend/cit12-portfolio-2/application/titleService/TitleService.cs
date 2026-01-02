@@ -232,4 +232,21 @@ public class TitleService(IUnitOfWork unitOfWork, ILogger<TitleService> logger) 
     }
 
 
+    public async Task<Result<IEnumerable<SimilarMovieDto>>> GetSimilarMoviesAsync(Guid titleId, int limit, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var items = await unitOfWork.TitleRepository.GetSimilarMoviesAsync(titleId, limit, cancellationToken);
+
+            var dtos = items.Select(i => new SimilarMovieDto(i.TitleId, i.PrimaryTitle, i.JaccardScore));
+
+            return Result<IEnumerable<SimilarMovieDto>>.Success(dtos);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Unexpected error while getting similar movies for title {TitleId}", titleId);
+            throw;
+        }
+    }
+
 }

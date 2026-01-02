@@ -3,6 +3,8 @@ using domain.movie.title.interfaces;
 using domain.title;
 using domain.title.interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
+
 
 namespace infrastructure.repositories.movie;
 
@@ -103,4 +105,38 @@ public sealed class TitleRepository(MovieDbContext dbContext) : ITitleRepository
     {
         return await dbContext.Titles.AnyAsync(m => m.Id == id, cancellationToken);
     }
+
+    public async Task<IEnumerable<SimilarMovieItem>> GetSimilarMoviesAsync(Guid titleId, int limit = 10, CancellationToken cancellationToken = default)
+    {
+        // Call api.get_similar_movies(p_title_id, p_limit) DB function
+        var conn = dbContext.Database.GetDbConnection();
+        if (conn.State != System.Data.ConnectionState.Open)
+            await conn.OpenAsync(cancellationToken);
+
+        await using var cmd = conn.CreateCommand();
+        cmd.CommandText = "SELECT sim_title_id, primary_title, jaccard_genre FROM api.get_similar_movies(@ptid, @plimit)";
+        
+        var tidParam = cmd.CreateParameter();
+        tidParam.ParameterName = "@ptid";
+        tidParam.Value = titleId;
+        cmd.Parameters.Add(tidParam);
+
+        var limitParam = cmd.CreateParameter();
+        limitParam.ParameterName = "@plimit";
+        limitParam.Value = limit;
+        cmd.Parameters.Add(limitParam);
+
+        var results = new List<SimilarMovieItem>();
+        await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
+        while (await reader.ReadAsync(cancellationToken))
+        {
+            var simTitleId = reader.GetGuid(0);
+            var primaryTitle = reader.GetString(1);
+            var jaccard = reader.IsDBNull(2) ? 0.0 : reader.GetDouble(2);
+            results.Add(new SimilarMovieItem(simTitleId, primaryTitle, jaccard));
+        }
+
+        return results;
+    }
 }
+

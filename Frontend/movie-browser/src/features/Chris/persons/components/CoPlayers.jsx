@@ -1,23 +1,87 @@
 // @ts-nocheck
-import { Card, ListGroup, Badge } from "react-bootstrap";
+import { useState, useEffect } from "react";
+import { Card, ListGroup, Badge, Spinner } from "react-bootstrap";
+import { Link } from "@tanstack/react-router";
 
 /**
  * @fileoverview Displays frequent co-players for an actor.
  * Implements frontend support for requirement 1-D.6.
- * Currently uses MOCKED DATA until backend is ready.
+ * Fetches from /api/v1/persons/{personName}/co-actors
  * 
  * @param {object} props
- * @param {string} props.nconst - Actor ID
+ * @param {string} props.nconst - Actor ID (nconst or name)
+ * @param {string} [props.personName] - Actor name for API call
  */
-export const CoPlayers = ({ nconst }) => {
-    // MOCK DATA - In real app, fetch from /api/v1/persons/{nconst}/coplayers
-    const mockCoPlayers = [
-        { nconst: 'nm0000158', name: 'Tom Hanks', count: 5 },
-        { nconst: 'nm0000204', name: 'Natalie Portman', count: 3 },
-        { nconst: 'nm0000151', name: 'Morgan Freeman', count: 3 },
-    ];
+export const CoPlayers = ({ nconst, personName }) => {
+    const [coActors, setCoActors] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    if (!nconst) return null;
+    useEffect(() => {
+        if (!personName && !nconst) {
+            setLoading(false);
+            return;
+        }
+
+        const fetchCoActors = async () => {
+            setLoading(true);
+            setError(null);
+            try {
+                // The API uses personName as the path param
+                // Try personName if provided, otherwise fall back to nconst
+                const nameToUse = personName || nconst;
+
+                const res = await fetch(`http://localhost:5001/api/v1/persons/${encodeURIComponent(nameToUse)}/co-actors`);
+
+                if (res.ok) {
+                    const data = await res.json();
+                    // Take top 5 co-actors
+                    setCoActors(data.slice(0, 5));
+                } else {
+                    // API might fail if name format doesn't match - handle gracefully
+                    setCoActors([]);
+                }
+            } catch (err) {
+                console.error('Failed to fetch co-actors:', err);
+                setError('Could not load co-players');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchCoActors();
+    }, [nconst, personName]);
+
+    if (!nconst && !personName) return null;
+
+    if (loading) {
+        return (
+            <Card className="bg-dark text-white border-secondary mt-4">
+                <Card.Header className="border-secondary text-uppercase small text-muted">
+                    Frequent Co-Players (1-D.6)
+                </Card.Header>
+                <Card.Body className="text-center">
+                    <Spinner animation="border" size="sm" variant="secondary" />
+                    <span className="ms-2 text-muted">Loading...</span>
+                </Card.Body>
+            </Card>
+        );
+    }
+
+    if (error || coActors.length === 0) {
+        return (
+            <Card className="bg-dark text-white border-secondary mt-4">
+                <Card.Header className="border-secondary text-uppercase small text-muted">
+                    Frequent Co-Players (1-D.6)
+                </Card.Header>
+                <Card.Body>
+                    <span className="text-muted">
+                        {error || 'No co-players found'}
+                    </span>
+                </Card.Body>
+            </Card>
+        );
+    }
 
     return (
         <Card className="bg-dark text-white border-secondary mt-4">
@@ -25,13 +89,16 @@ export const CoPlayers = ({ nconst }) => {
                 Frequent Co-Players (1-D.6)
             </Card.Header>
             <ListGroup variant="flush">
-                {mockCoPlayers.map(p => (
+                {coActors.map(p => (
                     <ListGroup.Item
-                        key={p.nconst}
-                        className="bg-transparent text-white border-secondary d-flex justify-content-between align-items-center"
+                        key={p.personId}
+                        as={Link}
+                        to={`/persons/${p.personId}`}
+                        className="bg-transparent text-white border-secondary d-flex justify-content-between align-items-center text-decoration-none"
+                        style={{ cursor: 'pointer' }}
                     >
-                        <span>{p.name}</span>
-                        <Badge bg="secondary" pill>{p.count} movies</Badge>
+                        <span>{p.primaryName}</span>
+                        <Badge bg="secondary" pill>{p.frequency} movies</Badge>
                     </ListGroup.Item>
                 ))}
             </ListGroup>

@@ -224,6 +224,9 @@ public class TitleServiceTests
 
         public Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken = default)
             => Task.FromResult(true);
+
+        public Task<IEnumerable<SimilarMovieItem>> GetSimilarMoviesAsync(Guid titleId, int limit = 10, CancellationToken cancellationToken = default)
+            => Task.FromResult(Enumerable.Empty<SimilarMovieItem>());
     }
 
     public class MockTitleRatingRepository : ITitleRatingRepository

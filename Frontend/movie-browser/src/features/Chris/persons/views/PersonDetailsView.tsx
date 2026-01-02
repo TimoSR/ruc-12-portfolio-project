@@ -110,7 +110,7 @@ function PersonDetailsViewBase({ actorId, onBack, className = '' }: PersonDetail
                         <IdText>{actor.nconst}</IdText>
                     </Section>
 
-                    <CoPlayers nconst={actor.nconst} />
+                    <CoPlayers nconst={actor.nconst} personName={actor.primaryName} />
                 </InfoSection>
             </Content>
         </Container>

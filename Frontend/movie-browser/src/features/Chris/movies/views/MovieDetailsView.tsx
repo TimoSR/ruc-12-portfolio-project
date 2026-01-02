@@ -176,7 +176,7 @@ function MovieDetailsViewBase() {
             </PlotSection>
           )}
 
-          <SimilarMovies tconst={movie.tconst} />
+          <SimilarMovies tconst={movie.id} />
 
           <RatingSection>
             <SectionTitle>Rating</SectionTitle>

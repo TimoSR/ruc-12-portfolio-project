@@ -3,6 +3,11 @@ using service_patterns;
 
 namespace domain.movie.title.interfaces;
 
+/// <summary>
+/// DTO for similar movie results from the database
+/// </summary>
+public record SimilarMovieItem(Guid TitleId, string PrimaryTitle, double JaccardScore);
+
 public interface ITitleRepository : IRepository<Title>
 {
     Task<Title?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
@@ -12,4 +17,5 @@ public interface ITitleRepository : IRepository<Title>
     Task UpdateAsync(Title title, CancellationToken cancellationToken = default);
     Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
     Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<IEnumerable<SimilarMovieItem>> GetSimilarMoviesAsync(Guid titleId, int limit = 10, CancellationToken cancellationToken = default);
 }
