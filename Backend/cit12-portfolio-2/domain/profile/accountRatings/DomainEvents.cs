@@ -5,7 +5,7 @@ namespace domain.profile.accountRatings;
 public record RatingCreatedEvent(
     Guid RatingId,
     Guid AccountId,
-    Guid TitleId,
+    string TitleId,
     int Score,
     DateTime RatedAt
 ) : DomainEvent;

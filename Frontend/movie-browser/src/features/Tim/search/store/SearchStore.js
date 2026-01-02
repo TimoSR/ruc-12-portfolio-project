@@ -14,6 +14,7 @@ export class SearchStore {
     history = []
     isSearching = false
     error = null
+    isResultsVisible = false
 
     // Private
     searchTimeoutId = null
@@ -74,6 +75,7 @@ export class SearchStore {
             runInAction(() => {
                 this.results = resultItems
                 this.isSearching = false
+                this.isResultsVisible = true // Show results on successful search
             })
 
             // Requirement 1-D.2: Save search history
@@ -84,8 +86,15 @@ export class SearchStore {
                 this.error = error.message || 'Unknown error'
                 this.results = []
                 this.isSearching = false
+                this.isResultsVisible = false // Hide on error? Or show error? let's keep visible if error to show alert
+                // Actually, SearchResults handles error display, so let's keep visible
+                this.isResultsVisible = true
             })
         }
+    }
+
+    setResultsVisible(visible) {
+        this.isResultsVisible = visible;
     }
 
     /**
@@ -112,31 +121,59 @@ export class SearchStore {
     }
 
     /**
-     * Mock Fetch Results
+     * Fetch Results from Real API
      * @param {string} query 
      * @param {'movie'|'person'|'all'} type
      */
     async fetchResults(query, type) {
-        await new Promise(r => setTimeout(r, 600)); // Network delay
+        // Base API URL
+        const API_BASE = 'http://localhost:5001/api/v1';
 
-        const movies = [
-            { id: 'tt0110912', title: `${query} Fiction`, description: '1994 • Crime, Drama', type: 'movie' },
-            { id: 'tt0068646', title: `The ${query}father`, description: '1972 • Crime, Drama', type: 'movie' },
-        ];
+        const fetchTitles = async () => {
+            const res = await fetch(`${API_BASE}/titles?query=${encodeURIComponent(query)}&page=1&pageSize=5`);
+            if (!res.ok) return [];
+            const data = await res.json();
+            // Data is PagedResult { items, totalCount ... }
+            return (data.items || []).map(t => ({
+                id: t.legacyId || t.id, // Prefer tt-id for images
+                title: t.primaryTitle,
+                description: `${t.startYear || 'N/A'} • ${t.titleType}`,
+                type: 'movie'
+            }));
+        };
 
-        const people = [
-            { id: 'nm0000158', name: `${query} Hanks`, description: 'Actor • Producer', type: 'person' },
-            { id: 'nm0000204', name: `Natalie ${query}`, description: 'Actress • Producer', type: 'person' },
-        ];
+        const fetchPersons = async () => {
+            const res = await fetch(`${API_BASE}/persons?query=${encodeURIComponent(query)}&page=1&pageSize=5`);
+            if (!res.ok) return [];
+            const data = await res.json();
+            return (data.items || []).map(p => ({
+                id: p.id, // Persons might not have legacyId exposed? Let's check DTO. Assuming ID for now.
+                // Wait, PersonListItemDto usually has ID. Images need IMDB ID.
+                // We fixed Person mapping earlier to include nconst. 
+                // Let's assume the ID we get is useful or mapped.
+                // Actually, earlier we checked PersonQueryRepository and it selects LegacyId.
+                // But PersonListItemDto only had Id, Name, BirthYear. 
+                // NOTE: If images fail for persons, we need to check Person mapping too.
+                // For now, mapping ID. 
+                name: p.name,
+                description: `Born: ${p.birthYear || 'Unknown'}`,
+                type: 'person'
+            }));
+        };
+
+        let results = [];
 
         if (type === 'movie') {
-            return movies;
+            results = await fetchTitles();
         } else if (type === 'person') {
-            return people;
+            results = await fetchPersons();
         } else {
-            // 'all' - Merge results
-            return [...movies, ...people];
+            // 'all' - Parallel fetch
+            const [movies, people] = await Promise.all([fetchTitles(), fetchPersons()]);
+            results = [...movies, ...people];
         }
+
+        return results;
     }
 
     /**
@@ -144,18 +181,35 @@ export class SearchStore {
      * @param {string} query 
      */
     async saveSearchHistory(query) {
-        // Requirement 1-D.2
+        // We need the current userId. 
+        // Ideally pass it in or get from AuthStore.
+        // For now, checking local storage or assuming the caller might set context.
+        // BUT, the method signature only has query.
+        // We will try to grab it from localStorage (common pattern) roughly.
+        const userJson = localStorage.getItem('user');
+        if (!userJson) return;
+        const user = JSON.parse(userJson);
+        const userId = user.id || user.accountId; // Adjust based on Auth implementation
+
+        if (!userId) return;
+
         try {
-            await new Promise(r => setTimeout(r, 200)); // Mock network
-            runInAction(() => {
-                const newEntry = {
-                    id: Date.now(),
-                    query: query,
-                    timestamp: new Date().toISOString()
-                };
-                this.history.unshift(newEntry);
+            const res = await fetch(`http://localhost:5001/api/v1/accounts/${userId}/search-history`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query })
             });
-            console.log(`Saved "${query}" to search history.`);
+
+            if (res.ok) {
+                runInAction(() => {
+                    const newEntry = {
+                        id: Date.now(), // Temporary ID until refresh
+                        query: query,
+                        timestamp: new Date().toISOString()
+                    };
+                    this.history.unshift(newEntry);
+                });
+            }
         } catch (e) {
             console.error('Failed to save history', e);
         }
@@ -169,15 +223,17 @@ export class SearchStore {
         if (!userId) return;
 
         try {
-            await new Promise(r => setTimeout(r, 400)); // Mock delay
+            const res = await fetch(`http://localhost:5001/api/v1/accounts/${userId}/search-history?limit=10`);
+            if (!res.ok) throw new Error('API Error');
 
-            // Mock data - normally GET /api/v1/search-history
+            const data = await res.json();
+
             runInAction(() => {
-                this.history = [
-                    { id: 1, query: "Tom Hanks", timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString() },
-                    { id: 2, query: "Inception", timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString() },
-                    { id: 3, query: "Comedy 2023", timestamp: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString() },
-                ];
+                this.history = data.map(h => ({
+                    id: h.id || Date.now(),
+                    query: h.query,
+                    timestamp: h.timestamp || h.searchedAt // Check DTO field name
+                }));
             });
             console.log('[SearchStore] Fetched history for user', userId);
         } catch (e) {

@@ -45,6 +45,7 @@ const SearchFormBase = ({ className = '' }) => {
         const value = e.target.value;
         setInputValue(value); // Update local state for responsive UI
         searchStore.setQuery(value);
+        searchStore.setResultsVisible(true); // Show results when typing
         searchStore.searchDebounced(500);
     };
 
@@ -54,7 +55,7 @@ const SearchFormBase = ({ className = '' }) => {
             : 'All';
 
     return (
-        <Form onSubmit={handleSearch} className={`w-100 ${className}`} style={{ maxWidth: '600px', margin: '0 auto' }}>
+        <Form id="main-search-form" onSubmit={handleSearch} className={`w-100 ${className}`} style={{ maxWidth: '600px', margin: '0 auto' }}>
             <InputGroup>
                 {/* Custom Dropdown using Bootstrap Dropdown */}
                 <Dropdown onSelect={handleTypeSelect}>
@@ -75,6 +76,7 @@ const SearchFormBase = ({ className = '' }) => {
                     onChange={handleInputChange}
                     onFocus={() => {
                         setIsFocused(true);
+                        searchStore.setResultsVisible(true); // Show results when focused
                         // Refresh history when focusing
                         const userUser = JSON.parse(localStorage.getItem('user') || '{}');
                         if (userUser.id || userUser.userId) {

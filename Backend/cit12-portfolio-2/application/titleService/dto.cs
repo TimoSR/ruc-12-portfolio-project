@@ -4,6 +4,7 @@ namespace application.titleService;
 
 public record TitleDto(
     Guid Id,
+    string? LegacyId,
     string TitleType,
     string PrimaryTitle, 
     string? OriginalTitle,

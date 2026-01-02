@@ -16,15 +16,14 @@ public class RatingService(IUnitOfWork unitOfWork) : IRatingService
     {
         var accountExists = await unitOfWork.AccountRepository
             .ExistsAsync(accountId, cancellationToken);
-
-        var titleExists = await unitOfWork.TitleRepository
-            .ExistsAsync(commandDto.TitleId, cancellationToken);
+            
+        // Validate Title by LegacyId (String)
+        var title = await unitOfWork.TitleRepository.GetByLegacyIdAsync(commandDto.TitleId, cancellationToken);
+        if (title is null)
+            throw new TitleNotFoundException(commandDto.TitleId);
 
         if (!accountExists)
             throw new AccountNotFoundException(accountId);
-
-        if (!titleExists)
-            throw new TitleNotFoundException(commandDto.TitleId);
         
         var existingAccountRating = await unitOfWork.AccountRatingRepository
             .GetByAccountAndTitleAsync(accountId, commandDto.TitleId, cancellationToken);

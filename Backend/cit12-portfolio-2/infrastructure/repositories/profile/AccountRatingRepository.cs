@@ -5,7 +5,7 @@ namespace infrastructure.repositories.profile;
 
 public class AccountRatingRepository(MovieDbContext context) : IAccountRatingRepository
 {
-    public IAsyncEnumerable<AccountRating> Ratings(Guid titleId) => context.AccountRatings.Where(r => r.TitleId == titleId).AsAsyncEnumerable();
+    public IAsyncEnumerable<AccountRating> Ratings(string titleId) => context.AccountRatings.Where(r => r.TitleId == titleId).AsAsyncEnumerable();
     
     public IAsyncEnumerable<AccountRating> GetByAccountIdAsync(Guid accountId)
     {
@@ -36,7 +36,7 @@ public class AccountRatingRepository(MovieDbContext context) : IAccountRatingRep
         throw new NotImplementedException();
     }
 
-    public async Task<AccountRating?> GetByAccountAndTitleAsync(Guid accountId, Guid titleId, CancellationToken token)
+    public async Task<AccountRating?> GetByAccountAndTitleAsync(Guid accountId, string titleId, CancellationToken token)
     {
         return await context.AccountRatings
             .AsNoTracking()

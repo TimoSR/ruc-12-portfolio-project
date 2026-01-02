@@ -9,5 +9,5 @@ public interface IAccountRatingRepository : IRepository<AccountRating>
     Task AddAsync(AccountRating accountRating, CancellationToken token);
     Task UpdateAsync(AccountRating accountRating, CancellationToken token);
     Task DeleteAsync(Guid accountId, Guid ratingId, CancellationToken token);
-    Task<AccountRating?> GetByAccountAndTitleAsync(Guid accountId, Guid titleId, CancellationToken token);
+    Task<AccountRating?> GetByAccountAndTitleAsync(Guid accountId, string titleId, CancellationToken token);
 }

@@ -7,12 +7,12 @@ public class AccountRating : AggregateRoot
 {
     public Guid Id { get; private set; }
     public Guid AccountId { get; private set; } // The "foreign key"
-    public Guid TitleId { get; private set; } // e.g., "tt0111161"
+    public string TitleId { get; private set; } // e.g., "tt0111161"
     public int Score { get; private set; } // e.g., 1-10
     public string? Comment { get; private set; }
     public DateTime CreatedAt { get; private set; }
 
-    internal AccountRating(Guid id, Guid accountId, Guid titleId, int score, string? comment, DateTime createdAt)
+    internal AccountRating(Guid id, Guid accountId, string titleId, int score, string? comment, DateTime createdAt)
     {
         Id = id;
         AccountId = accountId;
@@ -22,7 +22,7 @@ public class AccountRating : AggregateRoot
         Comment = comment;
     }
     
-    private AccountRating(Guid accountId, Guid titleId, int score, string? comment = null)
+    private AccountRating(Guid accountId, string titleId, int score, string? comment = null)
     {
         AccountId = accountId;
         TitleId = titleId;
@@ -41,12 +41,12 @@ public class AccountRating : AggregateRoot
     }
 
     // Factory method for validation and controlled instantiation
-    public static AccountRating Create(Guid accountId, Guid titleId, int score, string? comment = null)
+    public static AccountRating Create(Guid accountId, string titleId, int score, string? comment = null)
     {
         if (accountId == Guid.Empty)
             throw new ArgumentException("Account ID cannot be empty.", nameof(accountId));
 
-        if (titleId == Guid.Empty)
+        if (string.IsNullOrWhiteSpace(titleId))
             throw new ArgumentException("Title ID cannot be empty.", nameof(titleId));
 
         if (score is < 1 or > 10)

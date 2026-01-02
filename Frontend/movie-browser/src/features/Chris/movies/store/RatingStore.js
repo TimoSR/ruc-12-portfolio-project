@@ -31,13 +31,24 @@ export class RatingStore {
         this.error = null;
 
         try {
-            // MOCK DELAY
-            await new Promise(resolve => setTimeout(resolve, 600));
+            const res = await fetch(`http://localhost:5001/api/v1/accounts/${userId}/ratings`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    titleId: tconst,
+                    score: rating,
+                    comment: ''
+                })
+            });
 
-            // Mock API: POST /api/v1/titles/rate
-            console.log(`User ${userId} rated ${tconst} with ${rating} stars`);
+            if (!res.ok) {
+                // If 409 Conflict, maybe we want to alert?
+                throw new Error('Rating failed');
+            }
 
-            // In a real app, we might update a local cache of ratings here
+            // Optionally refetch ratings or update locally
+            // this.fetchUserRatings(userId); // Or just push to array
+
         } catch (err) {
             console.error("Rating failed", err);
             this.error = "Failed to submit rating";
@@ -55,16 +66,21 @@ export class RatingStore {
 
         this.isLoading = true;
         try {
-            await new Promise(r => setTimeout(r, 500)); // Mock delay
+            const res = await fetch(`http://localhost:5001/api/v1/accounts/${userId}/ratings`);
+            if (!res.ok) throw new Error('Failed to fetch ratings');
 
-            // Mock data - normally GET /api/v1/ratings
-            this.ratings = [
-                { tconst: 'tt0110912', rating: 9, timestamp: new Date().toISOString() },
-                { tconst: 'tt0068646', rating: 10, timestamp: new Date(Date.now() - 86400000).toISOString() }
-            ];
+            const data = await res.json();
+
+            // Map DTO { titleId, score, ... } to { tconst, rating, timestamp }
+            this.ratings = data.map(r => ({
+                tconst: r.titleId,
+                rating: r.score,
+                timestamp: new Date().toISOString() // DTO might not have timestamp? AccountRating has CreatedAt but RatingDto didn't have it?
+            }));
 
         } catch (err) {
             console.error("Failed to fetch user ratings", err);
+            this.error = "Could not load ratings";
         } finally {
             this.isLoading = false;
         }

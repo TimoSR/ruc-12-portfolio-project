@@ -38,7 +38,9 @@ const ResultImage = ({ id, type, alt }) => {
 };
 
 const SearchResultsBase = () => {
-    const { results, isSearching, error, query } = searchStore;
+    const { results, isSearching, error, query, isResultsVisible } = searchStore;
+
+    if (!isResultsVisible) return null;
 
     if (error) {
         return (

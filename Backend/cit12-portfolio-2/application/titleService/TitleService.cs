@@ -19,6 +19,7 @@ public class TitleService(IUnitOfWork unitOfWork, ILogger<TitleService> logger) 
             
             var dto = new TitleDto(
                 Id: title.Id,
+                LegacyId: title.LegacyId,
                 TitleType: title.TitleType,
                 PrimaryTitle: title.PrimaryTitle,
                 OriginalTitle: title.OriginalTitle,
@@ -80,6 +81,7 @@ public class TitleService(IUnitOfWork unitOfWork, ILogger<TitleService> logger) 
 
             var dtos = titles.Select(title => new TitleDto(
                 Id: title.Id,
+                LegacyId: title.LegacyId,
                 TitleType: title.TitleType,
                 PrimaryTitle: title.PrimaryTitle,
                 OriginalTitle: title.OriginalTitle,
@@ -123,6 +125,7 @@ public class TitleService(IUnitOfWork unitOfWork, ILogger<TitleService> logger) 
 
             var dto = new TitleDto(
                 Id: title.Id,
+                LegacyId: title.LegacyId,
                 TitleType: title.TitleType,
                 PrimaryTitle: title.PrimaryTitle,
                 OriginalTitle: title.OriginalTitle,
@@ -181,6 +184,7 @@ public class TitleService(IUnitOfWork unitOfWork, ILogger<TitleService> logger) 
 
             var dto = new TitleDto(
                 Id: title.Id,
+                LegacyId: title.LegacyId,
                 TitleType: title.TitleType,
                 PrimaryTitle: title.PrimaryTitle,
                 OriginalTitle: title.OriginalTitle,

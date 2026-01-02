@@ -3,13 +3,36 @@ import { SearchResults } from "../../search/components/SearchResults"
 import { Navigation } from "./Navigation"
 import styled from "styled-components"
 
+import { useRef, useEffect } from "react"
+import { searchStore } from "../../search/store/SearchStore"
+
 export const NavigationWithSearch = observer(() => {
+  const resultsRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      const target = event.target as Node
+      const form = document.getElementById('main-search-form')
+
+      const clickedInsideResults = resultsRef.current?.contains(target)
+      const clickedInsideForm = form?.contains(target)
+
+      if (!clickedInsideResults && !clickedInsideForm) {
+        searchStore.setResultsVisible(false)
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [])
 
   return (
     <>
       <Navigation />
       <SearchResultsOverlay>
-        <SearchResultsContainer>
+        <SearchResultsContainer ref={resultsRef}>
           <SearchResults />
         </SearchResultsContainer>
       </SearchResultsOverlay>

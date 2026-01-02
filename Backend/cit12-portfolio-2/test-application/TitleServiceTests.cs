@@ -258,7 +258,7 @@ public class TitleServiceTests
             throw new NotImplementedException();
         }
 
-        public Task<TitleRating?> GetByAccountAndTitleAsync(Guid accountId, Guid titleId, CancellationToken token)
+        public Task<TitleRating?> GetByAccountAndTitleAsync(Guid accountId, string titleId, CancellationToken token)
         {
             throw new NotImplementedException();
         }
@@ -300,7 +300,7 @@ public class TitleServiceTests
             throw new NotImplementedException();
         }
 
-        public Task<AccountRating?> GetByAccountAndTitleAsync(Guid accountId, Guid titleId, CancellationToken token)
+        public Task<AccountRating?> GetByAccountAndTitleAsync(Guid accountId, string titleId, CancellationToken token)
         {
             throw new NotImplementedException();
         }
