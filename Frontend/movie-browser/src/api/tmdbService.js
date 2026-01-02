@@ -62,3 +62,30 @@ export async function fetchTmdbPersonImage(nconst) {
         return 'https://placehold.co/400x600?text=Network+Error';
     }
 }
+
+/**
+ * Fetches a movie's poster image from TMDB using its IMDB const (tt...).
+ * @param {string} imdbId - IMDB movie ID (e.g., "tt0110912")
+ * @returns {Promise<string|null>} Full image URL or placeholder
+ */
+export async function fetchTmdbMovieImage(imdbId) {
+    if (!API_KEY || API_KEY.includes('your_api_key')) {
+        return 'https://placehold.co/400x600?text=No+TMDB+Key';
+    }
+
+    try {
+        // Step 1: Find movie by IMDB ID
+        const findUrl = `${TMDB_BASE}/find/${imdbId}?external_source=imdb_id&api_key=${API_KEY}`;
+        const findRes = await fetch(findUrl);
+
+        if (!findRes.ok) return 'https://placehold.co/400x600?text=Error';
+
+        const findData = await findRes.json();
+        const posterPath = findData.movie_results?.[0]?.poster_path;
+
+        return posterPath ? `${IMAGE_BASE}${posterPath}` : 'https://placehold.co/400x600?text=No+Image';
+    } catch (error) {
+        console.error('TMDB fetch error:', error);
+        return 'https://placehold.co/400x600?text=Network+Error';
+    }
+}

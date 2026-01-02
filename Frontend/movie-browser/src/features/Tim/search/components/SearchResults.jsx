@@ -8,6 +8,35 @@ import { searchStore } from "../store/SearchStore";
  * Replaces old SearchResults.tsx to use React Bootstrap + New Store.
  * Implements requirement 3-E.5 (Displaying results).
  */
+import { fetchTmdbPersonImage, fetchTmdbMovieImage } from "../../../../api/tmdbService";
+import { useState, useEffect } from "react";
+
+const ResultImage = ({ id, type, alt }) => {
+    const [src, setSrc] = useState(null);
+
+    useEffect(() => {
+        let mounted = true;
+        const load = async () => {
+            const fetcher = type === 'movie' ? fetchTmdbMovieImage : fetchTmdbPersonImage;
+            const url = await fetcher(id);
+            if (mounted) setSrc(url);
+        };
+        load();
+        return () => { mounted = false; };
+    }, [id, type]);
+
+    if (!src) return <div style={{ width: 50, height: 75, background: '#333' }} className="rounded me-3" />;
+
+    return (
+        <img
+            src={src}
+            alt={alt}
+            className="rounded me-3 object-fit-cover"
+            style={{ width: 50, height: 75 }}
+        />
+    );
+};
+
 const SearchResultsBase = () => {
     const { results, isSearching, error, query } = searchStore;
 
@@ -51,17 +80,18 @@ const SearchResultsBase = () => {
                         className="bg-dark text-white border-secondary mb-2 rounded d-flex justify-content-between align-items-center"
                         style={{ cursor: 'pointer' }}
                     >
-                        <div>
-                            <div className="fw-bold">{item.title || item.name}</div>
-                            <small className="text-muted">{item.description}</small>
+                        <div className="d-flex align-items-center">
+                            <ResultImage id={item.id} type={item.type} alt={item.title || item.name} />
+                            <div>
+                                <div className="fw-bold">{item.title || item.name}</div>
+                                <small className="text-muted">{item.description}</small>
+                            </div>
                         </div>
 
                         <div className="d-flex align-items-center gap-2">
                             <Badge bg={item.type === 'movie' ? 'primary' : 'success'}>
                                 {item.type === 'movie' ? 'Movie' : 'Person'}
                             </Badge>
-
-
                         </div>
                     </ListGroup.Item>
                 ))}

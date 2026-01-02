@@ -120,13 +120,13 @@ export class SearchStore {
         await new Promise(r => setTimeout(r, 600)); // Network delay
 
         const movies = [
-            { id: 'tt0110912', title: `Movie: ${query} Fiction`, description: '1994 • Crime, Drama', type: 'movie' },
-            { id: 'tt0068646', title: `Movie: The ${query}father`, description: '1972 • Crime, Drama', type: 'movie' },
+            { id: 'tt0110912', title: `${query} Fiction`, description: '1994 • Crime, Drama', type: 'movie' },
+            { id: 'tt0068646', title: `The ${query}father`, description: '1972 • Crime, Drama', type: 'movie' },
         ];
 
         const people = [
-            { id: 'nm0000158', name: `Actor: ${query} Hanks`, description: 'Actor • Producer', type: 'person' },
-            { id: 'nm0000204', name: `Actor: Natalie ${query}`, description: 'Actress • Producer', type: 'person' },
+            { id: 'nm0000158', name: `${query} Hanks`, description: 'Actor • Producer', type: 'person' },
+            { id: 'nm0000204', name: `Natalie ${query}`, description: 'Actress • Producer', type: 'person' },
         ];
 
         if (type === 'movie') {
