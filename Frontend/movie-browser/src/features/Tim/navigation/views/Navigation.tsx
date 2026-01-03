@@ -109,7 +109,7 @@ const SearchContainer = styled.div`
     top: 50%;
     transform: translate(-50%, -50%);
 
-    width: min(600px, 100% - 4rem);  /* bigger input + some side padding */
+    width: min(500px, 100% - 4rem);  /* reduced to prevent overlap */
     z-index: 100; /* Ensure search is clickable and above other elements */
     pointer-events: none; /* Allow clicks to pass through empty space... */
 
@@ -126,15 +126,14 @@ const SearchContainer = styled.div`
 const DesktopLinks = styled.div`
     flex-shrink: 0;
     display: flex;
-    gap: 2rem;
+    gap: 1.5rem;
     align-items: center;
 `
 
 const StyledLink = styled(Link)`
     color: #9ca3af;
     text-decoration: none;
-    font-size: 0.95rem;
-    font-weight: 500;
+    font-size: 0.85rem;
     transition: all 0.2s ease;
     position: relative;
 
@@ -166,8 +165,7 @@ const NavButton = styled.button`
     font: inherit;
     cursor: pointer;
     color: #9ca3af;
-    font-size: 0.95rem;
-    font-weight: 500;
+    font-size: 0.9rem;
     transition: all 0.2s ease;
     position: relative;
 
