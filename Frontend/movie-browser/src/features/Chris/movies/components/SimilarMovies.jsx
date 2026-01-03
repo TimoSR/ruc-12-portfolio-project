@@ -93,8 +93,8 @@ export const SimilarMovies = ({ tconst }) => {
                         as={Link}
                         to={`/movies/${m.titleId}`}
                         className="bg-transparent text-white border-secondary d-flex justify-content-between align-items-center text-decoration-none"
-                        style={{ cursor: 'default' }}
-                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                        style={{ cursor: 'pointer', transition: 'background-color 0.2s ease' }}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'}
                         onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                     >
                         <div>

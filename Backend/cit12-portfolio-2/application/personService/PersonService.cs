@@ -135,7 +135,7 @@ public sealed class PersonService(IUnitOfWork unitOfWork, ILogger<PersonService>
         try
         {
             var items = await unitOfWork.PersonQueriesRepository.GetKnownForTitlesAsync(personId, cancellationToken);
-            var dtos = items.Select(x => new KnownForTitleDto(x.TitleId));
+            var dtos = items.Select(x => new KnownForTitleDto(x.TitleId, x.PrimaryTitle));
             return Result<IEnumerable<KnownForTitleDto>>.Success(dtos);
         }
         catch (Exception ex)

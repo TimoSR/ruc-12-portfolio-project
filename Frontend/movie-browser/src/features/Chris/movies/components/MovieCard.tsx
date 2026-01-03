@@ -107,7 +107,6 @@ const Card = styled.div`
   transition: all 0.2s ease;
 
   &:hover {
-    transform: translateY(-4px);
     border-color: rgba(168, 85, 247, 0.6);
     box-shadow: 0 20px 40px rgba(168, 85, 247, 0.3);
   }

@@ -22,31 +22,32 @@ public sealed class PersonsController(IPersonService service) : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = dto.Id, version = "1.0" }, dto);
     }
 
-    [HttpGet("{personId:guid}")]
-    public async Task<IActionResult> GetById(Guid personId, CancellationToken cancellationToken)
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(string id, CancellationToken cancellationToken)
     {
-        var result = await service.GetPersonByIdAsync(personId, cancellationToken);
-        if (!result.IsSuccess) return NotFound(result.Error);
-        
-        var dto = result.Value with 
-        { 
-            Url = Url.ActionLink(nameof(GetById), values: new { id = personId, version = "1.0" })
-        };
-        return Ok(dto);
+        if (Guid.TryParse(id, out var guid))
+        {
+            var result = await service.GetPersonByIdAsync(guid, cancellationToken);
+            if (!result.IsSuccess) return NotFound(result.Error);
+            
+            var dto = result.Value with 
+            { 
+                Url = Url.ActionLink(nameof(GetById), values: new { id = guid, version = "1.0" })
+            };
+            return Ok(dto);
+        }
+        else
+        {
+            var result = await service.GetPersonByLegacyIdAsync(id, cancellationToken);
+            if (!result.IsSuccess) return NotFound(result.Error);
+            
+            var dto = result.Value with 
+            { 
+                Url = Url.ActionLink(nameof(GetById), values: new { id = result.Value.Id, version = "1.0" })
+            };
+            return Ok(dto);
+        }
     }
-
-    /*[HttpGet("by-legacy/{legacyId}", Name = "GetPersonByLegacyId")]
-    public async Task<IActionResult> GetByLegacyId(string legacyId, CancellationToken cancellationToken)
-    {
-        var result = await service.GetPersonByLegacyIdAsync(legacyId, cancellationToken);
-        if (!result.IsSuccess) return NotFound(result.Error);
-        
-        var dto = result.Value with 
-        { 
-            Url = Url.ActionLink("GetPersonByLegacyId", values: new { legacyId, version = "1.0" })
-        };
-        return Ok(dto);
-    }*/
 
     [HttpGet]
     public async Task<IActionResult> Search([FromQuery] string? query = null, [FromQuery] int page = 1, [FromQuery] int pageSize = 20, CancellationToken cancellationToken = default)
@@ -91,17 +92,41 @@ public sealed class PersonsController(IPersonService service) : ControllerBase
         return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
     }
 
-    [HttpGet("{id:guid}/known-for")]
-    public async Task<IActionResult> KnownFor(Guid id, CancellationToken cancellationToken = default)
+    [HttpGet("{id}/known-for")]
+    public async Task<IActionResult> KnownFor(string id, CancellationToken cancellationToken = default)
     {
-        var result = await service.GetKnownForTitlesAsync(id, cancellationToken);
+        Guid personId;
+        if (Guid.TryParse(id, out var g))
+        {
+            personId = g;
+        }
+        else
+        {
+            var pResult = await service.GetPersonByLegacyIdAsync(id, cancellationToken);
+            if (!pResult.IsSuccess) return NotFound(pResult.Error);
+            personId = pResult.Value.Id;
+        }
+
+        var result = await service.GetKnownForTitlesAsync(personId, cancellationToken);
         return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
     }
 
-    [HttpGet("{id:guid}/professions")]
-    public async Task<IActionResult> Professions(Guid id, CancellationToken cancellationToken = default)
+    [HttpGet("{id}/professions")]
+    public async Task<IActionResult> Professions(string id, CancellationToken cancellationToken = default)
     {
-        var result = await service.GetProfessionsAsync(id, cancellationToken);
+        Guid personId;
+        if (Guid.TryParse(id, out var g))
+        {
+            personId = g;
+        }
+        else
+        {
+            var pResult = await service.GetPersonByLegacyIdAsync(id, cancellationToken);
+            if (!pResult.IsSuccess) return NotFound(pResult.Error);
+            personId = pResult.Value.Id;
+        }
+
+        var result = await service.GetProfessionsAsync(personId, cancellationToken);
         return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
     }
 }
