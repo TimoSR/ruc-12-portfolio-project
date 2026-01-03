@@ -92,13 +92,13 @@ public sealed class TitleRepository(MovieDbContext dbContext) : ITitleRepository
         countCmd.CommandText = @"
             SELECT COUNT(DISTINCT t.id)
             FROM movie_db.title t
-            LEFT JOIN movie_db.title_principals tp ON t.id = tp.title_id
-            LEFT JOIN movie_db.person p ON tp.person_id = p.id
+            LEFT JOIN movie_db.actor a ON t.id = a.title_id
+            LEFT JOIN movie_db.person p ON a.person_id = p.id
             WHERE
-              (@title IS NULL OR t.primary_title ILIKE '%' || @title || '%') AND
-              (@plot IS NULL OR t.plot ILIKE '%' || @plot || '%') AND
-              (@character IS NULL OR tp.characters ILIKE '%' || @character || '%') AND
-              (@name IS NULL OR p.primary_name ILIKE '%' || @name || '%')";
+              (@title::text IS NULL OR t.primary_title ILIKE '%' || @title || '%') AND
+              (@plot::text IS NULL OR t.plot ILIKE '%' || @plot || '%') AND
+              (@character::text IS NULL OR a.character_name ILIKE '%' || @character || '%') AND
+              (@name::text IS NULL OR p.primary_name ILIKE '%' || @name || '%')";
 
         AddParam(countCmd, "@title", title);
         AddParam(countCmd, "@plot", plot);
@@ -116,13 +116,13 @@ public sealed class TitleRepository(MovieDbContext dbContext) : ITitleRepository
         cmd.CommandText = @"
             SELECT DISTINCT t.id, t.legacy_id, t.title_type, t.primary_title, t.original_title, t.is_adult, t.start_year, t.end_year, t.runtime_minutes, t.poster_url, t.plot
             FROM movie_db.title t
-            LEFT JOIN movie_db.title_principals tp ON t.id = tp.title_id
-            LEFT JOIN movie_db.person p ON tp.person_id = p.id
+            LEFT JOIN movie_db.actor a ON t.id = a.title_id
+            LEFT JOIN movie_db.person p ON a.person_id = p.id
             WHERE
-              (@title IS NULL OR t.primary_title ILIKE '%' || @title || '%') AND
-              (@plot IS NULL OR t.plot ILIKE '%' || @plot || '%') AND
-              (@character IS NULL OR tp.characters ILIKE '%' || @character || '%') AND
-              (@name IS NULL OR p.primary_name ILIKE '%' || @name || '%')
+              (@title::text IS NULL OR t.primary_title ILIKE '%' || @title || '%') AND
+              (@plot::text IS NULL OR t.plot ILIKE '%' || @plot || '%') AND
+              (@character::text IS NULL OR a.character_name ILIKE '%' || @character || '%') AND
+              (@name::text IS NULL OR p.primary_name ILIKE '%' || @name || '%')
             ORDER BY t.primary_title
             LIMIT @limit OFFSET @offset";
 
@@ -159,8 +159,12 @@ public sealed class TitleRepository(MovieDbContext dbContext) : ITitleRepository
             
             // Use reflection to instantiate Title since constructor is internal
             // Note: This relies on the internal constructor matching this signature
-            var titleObj = (Title)Activator.CreateInstance(typeof(Title), true,
-                id, legacyId, titleType, primaryTitle, originalTitle, isAdult, startYear, endYear, runtime, poster, plotRes)!;
+            var titleObj = (Title)Activator.CreateInstance(
+                typeof(Title),
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic,
+                null,
+                new object?[] { id, legacyId, titleType, primaryTitle, originalTitle, isAdult, startYear, endYear, runtime, poster, plotRes },
+                null)!;
                 
             items.Add(titleObj);
         }

@@ -176,8 +176,23 @@ const SearchFormBase = ({ className = '' }) => {
 
             {/* Advanced Search Fields */}
             {searchStore.isAdvancedSearch && (
-                <div className="mt-2 p-3 bg-dark border border-secondary rounded shadow-sm" style={{ display: 'block' }}>
-                    <h6 className="text-white-50 mb-3 small text-uppercase fw-bold">Structured Search (1-D.4)</h6>
+                <div
+                    className="position-absolute w-100 mt-2 p-3 bg-dark border border-secondary rounded shadow-lg"
+                    style={{ top: '100%', left: 0, zIndex: 2000 }}
+                >
+                    <div className="d-flex justify-content-between align-items-center mb-3">
+                        <h6 className="text-white-50 small text-uppercase fw-bold mb-0">Structured Search (1-D.4)</h6>
+                        <Button
+                            variant="link"
+                            size="sm"
+                            className="text-white-50 p-0 text-decoration-none"
+                            style={{ fontSize: '1.2rem', lineHeight: '1' }}
+                            onClick={() => searchStore.setAdvancedSearch(false)}
+                            title="Close"
+                        >
+                            &times;
+                        </Button>
+                    </div>
                     <div className="row g-2">
                         <div className="col-md-6">
                             <Form.Control
@@ -215,9 +230,7 @@ const SearchFormBase = ({ className = '' }) => {
                 </div>
             )}
 
-            <div className="text-white bg-danger p-1 mt-1">
-                DEBUG: [{instanceId.current}] isAdvancedSearch = {searchStore.isAdvancedSearch ? 'TRUE' : 'FALSE'}
-            </div>
+
         </Form>
     );
 };
