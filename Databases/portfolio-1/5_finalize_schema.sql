@@ -1,5 +1,5 @@
 -- ============================================
--- 5_finalize_schema.sql
+-- DETTE HAR VI IKKE BRUGT IGNORE DET VAR HVAD VI KSULLE HVIS VI KUNNE LAVE ÆNDRINGER PÅ DB
 -- ============================================
 -- Description:
 -- Finalizes the database schema for the portfolio project.
