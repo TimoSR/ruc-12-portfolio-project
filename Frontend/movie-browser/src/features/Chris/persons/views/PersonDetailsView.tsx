@@ -105,10 +105,7 @@ function PersonDetailsViewBase({ actorId, onBack, className = '' }: PersonDetail
                         </Section>
                     )}
 
-                    <Section>
-                        <SectionTitle>ID</SectionTitle>
-                        <IdText>{actor.nconst}</IdText>
-                    </Section>
+
 
                     <CoPlayers nconst={actor.nconst} personName={actor.primaryName} />
                 </InfoSection>
@@ -248,12 +245,7 @@ const TitleItem = styled.div`
     font-family: monospace;
 `
 
-const IdText = styled.p`
-    color: #6b7280;
-    font-family: monospace;
-    font-size: 0.875rem;
-    margin: 0;
-`
+
 
 const LoadingMessage = styled.div`
     text-align: center;

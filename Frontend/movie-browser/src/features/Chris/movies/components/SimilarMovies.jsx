@@ -52,8 +52,8 @@ export const SimilarMovies = ({ tconst }) => {
     if (loading) {
         return (
             <Card className="bg-dark text-white border-secondary mt-4">
-                <Card.Header className="border-secondary text-uppercase small text-muted">
-                    Similar Movies (1-D.9)
+                <Card.Header className="border-secondary">
+                    <div className="fw-bold">You Might Also Like</div>
                 </Card.Header>
                 <Card.Body className="text-center">
                     <Spinner animation="border" size="sm" variant="secondary" />
@@ -66,8 +66,8 @@ export const SimilarMovies = ({ tconst }) => {
     if (error || movies.length === 0) {
         return (
             <Card className="bg-dark text-white border-secondary mt-4">
-                <Card.Header className="border-secondary text-uppercase small text-muted">
-                    Similar Movies (1-D.9)
+                <Card.Header className="border-secondary">
+                    <div className="fw-bold">You Might Also Like</div>
                 </Card.Header>
                 <Card.Body>
                     <span className="text-muted">
@@ -80,8 +80,11 @@ export const SimilarMovies = ({ tconst }) => {
 
     return (
         <Card className="bg-dark text-white border-secondary mt-4">
-            <Card.Header className="border-secondary text-uppercase small text-muted">
-                Similar Movies (1-D.9)
+            <Card.Header className="border-secondary">
+                <div className="fw-bold">You Might Also Like</div>
+                <div className="small text-muted" style={{ fontSize: '0.75rem' }}>
+                    Based on shared genres
+                </div>
             </Card.Header>
             <ListGroup variant="flush">
                 {movies.map(m => (
@@ -90,7 +93,9 @@ export const SimilarMovies = ({ tconst }) => {
                         as={Link}
                         to={`/movies/${m.titleId}`}
                         className="bg-transparent text-white border-secondary d-flex justify-content-between align-items-center text-decoration-none"
-                        style={{ cursor: 'pointer' }}
+                        style={{ cursor: 'default' }}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                     >
                         <div>
                             <span>{m.primaryTitle}</span>

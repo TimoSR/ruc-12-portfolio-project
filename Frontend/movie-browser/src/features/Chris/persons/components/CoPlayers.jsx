@@ -57,8 +57,8 @@ export const CoPlayers = ({ nconst, personName }) => {
     if (loading) {
         return (
             <Card className="bg-dark text-white border-secondary mt-4">
-                <Card.Header className="border-secondary text-uppercase small text-muted">
-                    Frequent Co-Players (1-D.6)
+                <Card.Header className="border-secondary">
+                    <div className="fw-bold">Often Acts With</div>
                 </Card.Header>
                 <Card.Body className="text-center">
                     <Spinner animation="border" size="sm" variant="secondary" />
@@ -71,8 +71,8 @@ export const CoPlayers = ({ nconst, personName }) => {
     if (error || coActors.length === 0) {
         return (
             <Card className="bg-dark text-white border-secondary mt-4">
-                <Card.Header className="border-secondary text-uppercase small text-muted">
-                    Frequent Co-Players (1-D.6)
+                <Card.Header className="border-secondary">
+                    <div className="fw-bold">Often Acts With</div>
                 </Card.Header>
                 <Card.Body>
                     <span className="text-muted">
@@ -85,8 +85,11 @@ export const CoPlayers = ({ nconst, personName }) => {
 
     return (
         <Card className="bg-dark text-white border-secondary mt-4">
-            <Card.Header className="border-secondary text-uppercase small text-muted">
-                Frequent Co-Players (1-D.6)
+            <Card.Header className="border-secondary">
+                <div className="fw-bold">Often Acts With</div>
+                <div className="small text-muted" style={{ fontSize: '0.75rem' }}>
+                    Based on shared movie appearances
+                </div>
             </Card.Header>
             <ListGroup variant="flush">
                 {coActors.map(p => (
@@ -95,9 +98,11 @@ export const CoPlayers = ({ nconst, personName }) => {
                         as={Link}
                         to={`/persons/${p.personId}`}
                         className="bg-transparent text-white border-secondary d-flex justify-content-between align-items-center text-decoration-none"
-                        style={{ cursor: 'pointer' }}
+                        style={{ cursor: 'default' }}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                     >
-                        <span>{p.primaryName}</span>
+                        <span>{p.primaryName || p.name || 'Unknown Actor'}</span>
                         <Badge bg="secondary" pill>{p.frequency} movies</Badge>
                     </ListGroup.Item>
                 ))}

@@ -38,24 +38,45 @@ export class PersonDetailsStore implements IPersonDetailsStore {
         }
     }
 
-    private async fetchActor(nconst: string): Promise<PersonItem> {
-        // Mock data - replace with API call later
-        await new Promise(resolve => setTimeout(resolve, 300))
+    private async fetchActor(id: string): Promise<PersonItem> {
+        const API_BASE = 'http://localhost:5001/api/v1';
 
-        const index = parseInt(nconst.replace('nm', '')) || 1
+        // Parallel fetch for details and professions and known-for
+        const [personRes, profRes, knownForRes] = await Promise.all([
+            fetch(`${API_BASE}/persons/${id}`),
+            fetch(`${API_BASE}/persons/${id}/professions`),
+            fetch(`${API_BASE}/persons/${id}/known-for`)
+        ]);
+
+        if (!personRes.ok) throw new Error('Person not found');
+
+        const person = await personRes.json();
+
+        let professions: string[] = [];
+        if (profRes.ok) {
+            const profData = await profRes.json();
+            professions = profData.map((p: { profession: string }) => p.profession);
+        }
+
+        let knownFor: string[] = [];
+        if (knownForRes.ok) {
+            const knownData = await knownForRes.json();
+            // Currently returns IDs only. Ideally we'd map these to titles but the endpoint only gives IDs.
+            // We'll show IDs for now to verify data flow, or empty if it users prefer. 
+            // Given the user wants NAMES, showing IDs might be confusing. 
+            // Let's filter out knownFor for now or map to ID strings.
+            // knownData is { titleId: string, primaryTitle: string }[]
+            knownFor = knownData.map((k: { primaryTitle: string }) => k.primaryTitle);
+        }
 
         return {
-            nconst,
-            primaryName: `Actor ${index}`,
-            birthYear: 1950 + (index % 50),
-            deathYear: index % 10 === 0 ? 2020 : undefined,
-            primaryProfession: ['actor', 'director', 'producer'].slice(0, (index % 3) + 1),
-            knownForTitles: [
-                `tt${String(index * 100 + 1).padStart(7, '0')}`,
-                `tt${String(index * 100 + 2).padStart(7, '0')}`,
-                `tt${String(index * 100 + 3).padStart(7, '0')}`
-            ],
-            averageRating: 5 + (index % 5)
-        }
+            nconst: person.legacyId || person.id,
+            primaryName: person.primaryName,
+            birthYear: person.birthYear,
+            deathYear: person.deathYear,
+            primaryProfession: professions,
+            knownForTitles: knownFor,
+            averageRating: 0 // Not provided by main endpoint
+        };
     }
 }

@@ -126,6 +126,7 @@ export class SearchStore {
      * @param {'movie'|'person'|'all'} type
      */
     async fetchResults(query, type) {
+        console.warn('[SearchStore] fetchResults called with query:', query, 'and type:', type);
         // Base API URL
         const API_BASE = 'http://localhost:5001/api/v1';
 
@@ -149,15 +150,8 @@ export class SearchStore {
             if (!res.ok) return [];
             const data = await res.json();
             return (data.items || []).map(p => ({
-                id: p.id, // Persons might not have legacyId exposed? Let's check DTO. Assuming ID for now.
-                // Wait, PersonListItemDto usually has ID. Images need IMDB ID.
-                // We fixed Person mapping earlier to include nconst. 
-                // Let's assume the ID we get is useful or mapped.
-                // Actually, earlier we checked PersonQueryRepository and it selects LegacyId.
-                // But PersonListItemDto only had Id, Name, BirthYear. 
-                // NOTE: If images fail for persons, we need to check Person mapping too.
-                // For now, mapping ID. 
-                name: p.name,
+                id: p.id,
+                name: p.primaryName || p.name, // Fix: API returns primaryName
                 description: `Born: ${p.birthYear || 'Unknown'}`,
                 type: 'person'
             }));

@@ -103,7 +103,11 @@ public sealed class PersonQueriesRepository : IPersonQueriesRepository
         var conn = _db.Database.GetDbConnection();
         using var _ = await EnsureOpenAsync(conn, cancellationToken);
         await using var cmd = conn.CreateCommand();
-        cmd.CommandText = "select title_id from movie_db.person_known_for where person_id = @pid";
+        cmd.CommandText = @"
+            select kf.title_id, t.primary_title 
+            from movie_db.person_known_for kf
+            join movie_db.title t on kf.title_id = t.id
+            where kf.person_id = @pid";
         AddParam(cmd, "@pid", personId);
 
         var list = new List<KnownForTitleItem>();
@@ -111,7 +115,8 @@ public sealed class PersonQueriesRepository : IPersonQueriesRepository
         while (await reader.ReadAsync(cancellationToken))
         {
             var tid = reader.GetGuid(0);
-            list.Add(new KnownForTitleItem(tid));
+            var title = reader.GetString(1);
+            list.Add(new KnownForTitleItem(tid, title));
         }
         return list;
     }
