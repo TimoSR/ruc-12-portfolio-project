@@ -1,21 +1,95 @@
-// src/pages/HomePage.tsx
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { LargeImage } from "../features/Tim/Images/LargeImageModules";
 import { UpNextModule, type UpNextItem } from "../features/Tim/Movies/UpNextModule";
 import LegacyWidget from "../features/Tim/js-in-ts/LegacyWidget";
+import { fetchTmdbMovieImage } from "../api/tmdbService";
+
+// Hardcoded list of popular movies to feature on Home
+// In a real app, this could come from a "Trending" endpoint
+const FEATURED_MOVIES = [
+  {
+    id: "tt0816692", // Interstellar
+    title: "Interstellar",
+    description: "A team of explorers travel through a wormhole in space in an attempt to ensure humanity's survival.",
+    href: "/movies/tt0816692"
+  },
+  {
+    id: "tt0468569", // The Dark Knight
+    title: "The Dark Knight",
+    description: "When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests of his ability to fight injustice.",
+    href: "/movies/tt0468569"
+  },
+  {
+    id: "tt1375666", // Inception
+    title: "Inception",
+    description: "A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O.",
+    href: "/movies/tt1375666"
+  },
+  {
+    id: "tt1160419", // Dune (2021)
+    title: "Dune",
+    description: "A noble family becomes embroiled in a war for control over the galaxy's most valuable asset while its heir becomes troubled by visions of a dark future.",
+    href: "/movies/tt1160419"
+  }
+];
 
 export const HomePage = () => {
+  const [mainMovie, setMainMovie] = useState<any>(null);
+  const [upNextItems, setUpNextItems] = useState<UpNextItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadImages = async () => {
+      setIsLoading(true);
+      try {
+        // Fetch images for all featured movies
+        const moviesWithImages = await Promise.all(
+          FEATURED_MOVIES.map(async (movie) => {
+            const imageSrc = await fetchTmdbMovieImage(movie.id);
+            return {
+              ...movie,
+              imageSrc: imageSrc || "/images/demo-light.png", // Fallback
+              imageAlt: `Poster for ${movie.title}`
+            };
+          })
+        );
+
+        if (moviesWithImages.length > 0) {
+          setMainMovie(moviesWithImages[0]);
+          setUpNextItems(moviesWithImages.slice(1));
+        }
+      } catch (error) {
+        console.error("Failed to load home page images", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadImages();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <Page>
+        <div style={{ color: 'white', textAlign: 'center', marginTop: '4rem' }}>Loading...</div>
+      </Page>
+    )
+  }
+
   return (
     <Page>
       <MainModule>
         <MainImageWrapper>
-          <LargeImage
-            src="/images/demo-light.png"
-            alt="Space mining ship"
-            rounded
-            cover
-            maxWidth="100%"
-          />
+          {mainMovie && (
+            <LargeImage
+              src={mainMovie.imageSrc}
+              alt={mainMovie.imageAlt}
+              rounded
+              cover
+              maxWidth="100%"
+            />
+          )}
         </MainImageWrapper>
 
         <UpNextWrapper>
@@ -26,36 +100,6 @@ export const HomePage = () => {
     </Page>
   );
 };
-
-const upNextItems: UpNextItem[] = [
-  {
-    id: "1",
-    title: "The Expanse: New Horizons",
-    description:
-      "A rogue mining crew uncovers an ancient signal that threatens to destabilize the entire solar system.",
-    imageSrc: "/images/demo-light.png",
-    imageAlt: "Spaceship flying near a blue nebula",
-    href: "/movies/the-expanse-new-horizons",
-  },
-  {
-    id: "2",
-    title: "Signal in the Void",
-    description:
-      "A lone operator on a deep space relay station starts receiving messages from a future that shouldn't exist.",
-    imageSrc: "/images/demo-light.png",
-    imageAlt: "A relay station above a planet with a glowing signal",
-    href: "/movies/signal-in-the-void",
-  },
-  {
-    id: "3",
-    title: "Orbital Factor",
-    description:
-      "Engineers on a failing ringworld race to patch its crumbling infrastructure before gravity fails.",
-    imageSrc: "/images/demo-light.png",
-    imageAlt: "A massive ringworld structure lit by a distant star",
-    href: "/movies/orbital-factor",
-  },
-];
 
 const Page = styled.main`
   max-width: 1300px;
