@@ -227,6 +227,9 @@ public class TitleServiceTests
 
         public Task<IEnumerable<SimilarMovieItem>> GetSimilarMoviesAsync(Guid titleId, int limit = 10, CancellationToken cancellationToken = default)
             => Task.FromResult(Enumerable.Empty<SimilarMovieItem>());
+
+        public Task<(IEnumerable<Title> items, int totalCount)> StructuredSearchAsync(string? title, string? plot, string? character, string? name, int page, int pageSize, CancellationToken cancellationToken = default)
+            => Task.FromResult((_titlesToReturn, _titlesToReturn.Count()));
     }
 
     public class MockTitleRatingRepository : ITitleRatingRepository

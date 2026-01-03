@@ -19,8 +19,25 @@ export class SearchStore {
     // Private
     searchTimeoutId = null
 
+    // structured query state
+    structuredQuery = { title: '', plot: '', character: '', name: '' }
+    isAdvancedSearch = false
+
     constructor() {
         makeAutoObservable(this)
+    }
+
+    setAdvancedSearch(visible) {
+        console.log('[SearchStore] setAdvancedSearch called with:', visible);
+        this.isAdvancedSearch = visible;
+    }
+
+    setStructuredQueryField(field, value) {
+        this.structuredQuery[field] = value;
+    }
+
+    resetStructuredQuery() {
+        this.structuredQuery = { title: '', plot: '', character: '', name: '' };
     }
 
     /**
@@ -30,6 +47,10 @@ export class SearchStore {
     setQuery(value) {
         console.log('[SearchStore] setQuery called with:', value);
         this.query = value;
+        if (!this.isAdvancedSearch) {
+            // Sync basic query to structured title if needed, or keep separate. 
+            // Keeping separate is safer.
+        }
         console.log('[SearchStore] query is now:', this.query);
     }
 
@@ -48,6 +69,7 @@ export class SearchStore {
     clear() {
         console.log('[SearchStore] clear called');
         this.query = ''
+        this.structuredQuery = { title: '', plot: '', character: '', name: '' }
         this.results = []
         this.error = null
         this.cancelPendingSearch()
@@ -58,6 +80,11 @@ export class SearchStore {
      * Automagically saves to history if found.
      */
     async searchNow() {
+        if (this.isAdvancedSearch) {
+            await this.searchStructuredNow();
+            return;
+        }
+
         const trimmed = this.query.trim()
         if (trimmed.length === 0) {
             this.clear()
@@ -86,10 +113,52 @@ export class SearchStore {
                 this.error = error.message || 'Unknown error'
                 this.results = []
                 this.isSearching = false
-                this.isResultsVisible = false // Hide on error? Or show error? let's keep visible if error to show alert
-                // Actually, SearchResults handles error display, so let's keep visible
                 this.isResultsVisible = true
             })
+        }
+    }
+
+    async searchStructuredNow() {
+        const { title, plot, character, name } = this.structuredQuery;
+        // Check if at least one field is filled
+        if (!title && !plot && !character && !name) return;
+
+        this.isSearching = true;
+        this.error = null;
+
+        try {
+            const params = new URLSearchParams();
+            if (title) params.append('title', title);
+            if (plot) params.append('plot', plot);
+            if (character) params.append('character', character);
+            if (name) params.append('name', name);
+            params.append('page', '1');
+            params.append('pageSize', '20'); // Limit for now
+
+            const res = await fetch(`http://localhost:5001/api/v1/titles/structured-search?${params.toString()}`);
+            if (!res.ok) throw new Error('Structured search failed');
+
+            const data = await res.json();
+            const items = (data.items || []).map(t => ({
+                id: t.legacyId || t.id,
+                title: t.primaryTitle,
+                description: `${t.startYear || 'N/A'} • ${t.titleType}`,
+                type: 'movie'
+            }));
+
+            runInAction(() => {
+                this.results = items;
+                this.isSearching = false;
+                this.isResultsVisible = true;
+            });
+
+        } catch (error) {
+            runInAction(() => {
+                this.error = error.message;
+                this.results = [];
+                this.isSearching = false;
+                this.isResultsVisible = true;
+            });
         }
     }
 
@@ -103,9 +172,19 @@ export class SearchStore {
      */
     searchDebounced(delayMs = 500) {
         this.cancelPendingSearch()
-        if (this.query.trim().length === 0) {
-            this.clear();
-            return;
+
+        if (this.isAdvancedSearch) {
+            // For advanced, maybe don't debounce, wait for explicit enter/click? 
+            // Or debounce. Let's do debounce for now but checking fields.
+            const { title, plot, character, name } = this.structuredQuery;
+            if (!title && !plot && !character && !name) {
+                return;
+            }
+        } else {
+            if (this.query.trim().length === 0) {
+                this.clear();
+                return;
+            }
         }
 
         this.searchTimeoutId = setTimeout(() => {

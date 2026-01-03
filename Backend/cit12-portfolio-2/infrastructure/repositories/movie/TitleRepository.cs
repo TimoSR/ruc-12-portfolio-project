@@ -81,6 +81,101 @@ public sealed class TitleRepository(MovieDbContext dbContext) : ITitleRepository
         return (results, totalCount);
     }
 
+    public async Task<(IEnumerable<Title> items, int totalCount)> StructuredSearchAsync(string? title, string? plot, string? character, string? name, int page, int pageSize, CancellationToken cancellationToken = default)
+    {
+        var conn = dbContext.Database.GetDbConnection();
+        if (conn.State != System.Data.ConnectionState.Open)
+            await conn.OpenAsync(cancellationToken);
+
+        // Calculate count first
+        await using var countCmd = conn.CreateCommand();
+        countCmd.CommandText = @"
+            SELECT COUNT(DISTINCT t.id)
+            FROM movie_db.title t
+            LEFT JOIN movie_db.title_principals tp ON t.id = tp.title_id
+            LEFT JOIN movie_db.person p ON tp.person_id = p.id
+            WHERE
+              (@title IS NULL OR t.primary_title ILIKE '%' || @title || '%') AND
+              (@plot IS NULL OR t.plot ILIKE '%' || @plot || '%') AND
+              (@character IS NULL OR tp.characters ILIKE '%' || @character || '%') AND
+              (@name IS NULL OR p.primary_name ILIKE '%' || @name || '%')";
+
+        AddParam(countCmd, "@title", title);
+        AddParam(countCmd, "@plot", plot);
+        AddParam(countCmd, "@character", character);
+        AddParam(countCmd, "@name", name);
+
+        var countResult = await countCmd.ExecuteScalarAsync(cancellationToken);
+        var totalCount = Convert.ToInt32(countResult);
+
+        if (totalCount == 0)
+            return (Enumerable.Empty<Title>(), 0);
+
+        // Fetch items
+        await using var cmd = conn.CreateCommand();
+        cmd.CommandText = @"
+            SELECT DISTINCT t.id, t.legacy_id, t.title_type, t.primary_title, t.original_title, t.is_adult, t.start_year, t.end_year, t.runtime_minutes, t.poster_url, t.plot
+            FROM movie_db.title t
+            LEFT JOIN movie_db.title_principals tp ON t.id = tp.title_id
+            LEFT JOIN movie_db.person p ON tp.person_id = p.id
+            WHERE
+              (@title IS NULL OR t.primary_title ILIKE '%' || @title || '%') AND
+              (@plot IS NULL OR t.plot ILIKE '%' || @plot || '%') AND
+              (@character IS NULL OR tp.characters ILIKE '%' || @character || '%') AND
+              (@name IS NULL OR p.primary_name ILIKE '%' || @name || '%')
+            ORDER BY t.primary_title
+            LIMIT @limit OFFSET @offset";
+
+        AddParam(cmd, "@title", title);
+        AddParam(cmd, "@plot", plot);
+        AddParam(cmd, "@character", character);
+        AddParam(cmd, "@name", name);
+        AddParam(cmd, "@limit", pageSize);
+        AddParam(cmd, "@offset", (page - 1) * pageSize);
+
+        var items = new List<Title>();
+        await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
+        while (await reader.ReadAsync(cancellationToken))
+        {
+            // Map raw SQL result to Title entity (using internal constructor via reflection or manual mapping)
+            // Since Title constructor is internal/private, we might need a workaround or just map to DTO if possible.
+            // But Repository returns Domain Entities.
+            // WORKAROUND: We will use the DbContext to attach/track if possible, or just reconstruct.
+            // Since we can't easily access the internal constructor from outside the assembly without InternalsVisibleTo (which we likely have),
+            // let's check Program.cs or AssemblyInfo. If not, we can use reflection.
+            
+            // Assuming InternalsVisibleTo is set or we can use reflection.
+            var id = reader.GetGuid(0);
+            var legacyId = reader.IsDBNull(1) ? string.Empty : reader.GetString(1);
+            var titleType = reader.IsDBNull(2) ? string.Empty : reader.GetString(2);
+            var primaryTitle = reader.IsDBNull(3) ? string.Empty : reader.GetString(3);
+            var originalTitle = reader.IsDBNull(4) ? primaryTitle : reader.GetString(4);
+            var isAdult = !reader.IsDBNull(5) && reader.GetBoolean(5);
+            var startYear = reader.IsDBNull(6) ? (int?)null : reader.GetInt32(6);
+            var endYear = reader.IsDBNull(7) ? (int?)null : reader.GetInt32(7);
+            var runtime = reader.IsDBNull(8) ? (int?)null : reader.GetInt32(8);
+            var poster = reader.IsDBNull(9) ? null : reader.GetString(9);
+            var plotRes = reader.IsDBNull(10) ? null : reader.GetString(10);
+            
+            // Use reflection to instantiate Title since constructor is internal
+            // Note: This relies on the internal constructor matching this signature
+            var titleObj = (Title)Activator.CreateInstance(typeof(Title), true,
+                id, legacyId, titleType, primaryTitle, originalTitle, isAdult, startYear, endYear, runtime, poster, plotRes)!;
+                
+            items.Add(titleObj);
+        }
+
+        return (items, totalCount);
+    }
+    
+    private static void AddParam(System.Data.Common.DbCommand cmd, string name, object? value)
+    {
+        var p = cmd.CreateParameter();
+        p.ParameterName = name;
+        p.Value = value ?? DBNull.Value;
+        cmd.Parameters.Add(p);
+    }
+
     public async Task AddAsync(Title title, CancellationToken cancellationToken = default)
     {
         await dbContext.Titles.AddAsync(title, cancellationToken);

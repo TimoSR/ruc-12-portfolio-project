@@ -13,6 +13,7 @@ public interface ITitleRepository : IRepository<Title>
     Task<Title?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
     Task<Title?> GetByLegacyIdAsync(string legacyId, CancellationToken cancellationToken = default);
     Task<(IEnumerable<Title> items, int totalCount)> SearchAsync(string query, int page, int pageSize, CancellationToken cancellationToken = default);
+    Task<(IEnumerable<Title> items, int totalCount)> StructuredSearchAsync(string? title, string? plot, string? character, string? name, int page, int pageSize, CancellationToken cancellationToken = default);
     Task AddAsync(Title title, CancellationToken cancellationToken = default);
     Task UpdateAsync(Title title, CancellationToken cancellationToken = default);
     Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);

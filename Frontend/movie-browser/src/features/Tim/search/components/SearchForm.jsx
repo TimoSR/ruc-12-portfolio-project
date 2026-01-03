@@ -1,14 +1,17 @@
 // @ts-nocheck
-import { observer } from "mobx-react";
-import { useState, useEffect } from "react";
-import { Form, InputGroup, Button, Dropdown, ListGroup } from "react-bootstrap";
-import { searchStore } from "../store/SearchStore";
+import { observer } from 'mobx-react';
+import { useState, useRef, useEffect } from 'react';
+import { Form, InputGroup, Button, Dropdown, ButtonGroup, ListGroup } from 'react-bootstrap';
+import { searchStore } from '../store/SearchStore';
 
 /**
  * @fileoverview Search Input Form with Bootstrap Dropdown.
  * Fixed version using local state for input to prevent focus loss.
  */
 const SearchFormBase = ({ className = '' }) => {
+    const instanceId = useRef(Math.random().toString(36).substr(2, 5));
+    console.log('[SearchForm ' + instanceId.current + '] RENDER. isAdvancedSearch: ', searchStore.isAdvancedSearch);
+
     // Local state for input to prevent focus loss during MobX updates
     const [inputValue, setInputValue] = useState(searchStore.query);
     const [searchType, setSearchType] = useState(searchStore.searchType);
@@ -19,9 +22,16 @@ const SearchFormBase = ({ className = '' }) => {
         setSearchType(searchStore.searchType);
 
         // Initial history fetch
-        const userUser = JSON.parse(localStorage.getItem('user') || '{}');
-        if (userUser.id || userUser.userId) {
-            searchStore.fetchSearchHistory(userUser.id || userUser.userId);
+        try {
+            const userJson = localStorage.getItem('user');
+            if (userJson) {
+                const userUser = JSON.parse(userJson);
+                if (userUser.id || userUser.userId) {
+                    searchStore.fetchSearchHistory(userUser.id || userUser.userId);
+                }
+            }
+        } catch (e) {
+            console.error('Error parsing user from local storage', e);
         }
     }, [searchStore.searchType]);
 
@@ -55,7 +65,12 @@ const SearchFormBase = ({ className = '' }) => {
             : 'All';
 
     return (
-        <Form id="main-search-form" onSubmit={handleSearch} className={`w-100 ${className}`} style={{ maxWidth: '600px', margin: '0 auto' }}>
+        <Form
+            id="main-search-form"
+            onSubmit={handleSearch}
+            className={`w-100 ${className}`}
+            style={{ maxWidth: '600px', margin: '0 auto' }}
+        >
             <InputGroup>
                 {/* Custom Dropdown using Bootstrap Dropdown */}
                 <Dropdown onSelect={handleTypeSelect}>
@@ -78,10 +93,15 @@ const SearchFormBase = ({ className = '' }) => {
                         setIsFocused(true);
                         searchStore.setResultsVisible(true); // Show results when focused
                         // Refresh history when focusing
-                        const userUser = JSON.parse(localStorage.getItem('user') || '{}');
-                        if (userUser.id || userUser.userId) {
-                            searchStore.fetchSearchHistory(userUser.id || userUser.userId);
-                        }
+                        try {
+                            const userJson = localStorage.getItem('user');
+                            if (userJson) {
+                                const userUser = JSON.parse(userJson);
+                                if (userUser.id || userUser.userId) {
+                                    searchStore.fetchSearchHistory(userUser.id || userUser.userId);
+                                }
+                            }
+                        } catch (e) { }
                     }}
                     onBlur={() => {
                         // Delay hiding so clicks on items register
@@ -95,13 +115,36 @@ const SearchFormBase = ({ className = '' }) => {
                     }}
                 />
 
-                <Button
-                    variant="primary"
-                    type="submit"
-                    disabled={searchStore.isSearching}
-                >
-                    {searchStore.isSearching ? '...' : 'Search'}
-                </Button>
+                <Dropdown as={ButtonGroup}>
+                    <Button
+                        variant="primary"
+                        type="submit"
+                        disabled={searchStore.isSearching}
+                    >
+                        {searchStore.isSearching ? '...' : 'Search'}
+                    </Button>
+                    <Dropdown.Toggle split variant="primary" id="dropdown-split-basic" />
+                    <Dropdown.Menu align="end">
+                        <Dropdown.Item
+                            active={!searchStore.isAdvancedSearch}
+                            onClick={() => {
+                                console.log('[SearchForm] Simple Search clicked');
+                                searchStore.setAdvancedSearch(false);
+                            }}
+                        >
+                            Simple Search
+                        </Dropdown.Item>
+                        <Dropdown.Item
+                            active={searchStore.isAdvancedSearch}
+                            onClick={() => {
+                                console.log('[SearchForm] Advanced Search clicked');
+                                searchStore.setAdvancedSearch(true);
+                            }}
+                        >
+                            Advanced Search (Structured)
+                        </Dropdown.Item>
+                    </Dropdown.Menu>
+                </Dropdown>
 
                 {/* History Dropdown */}
                 {isFocused && inputValue.trim() === '' && searchStore.history.length > 0 && (
@@ -130,6 +173,51 @@ const SearchFormBase = ({ className = '' }) => {
                     </div>
                 )}
             </InputGroup>
+
+            {/* Advanced Search Fields */}
+            {searchStore.isAdvancedSearch && (
+                <div className="mt-2 p-3 bg-dark border border-secondary rounded shadow-sm" style={{ display: 'block' }}>
+                    <h6 className="text-white-50 mb-3 small text-uppercase fw-bold">Structured Search (1-D.4)</h6>
+                    <div className="row g-2">
+                        <div className="col-md-6">
+                            <Form.Control
+                                size="sm"
+                                placeholder="Title contains..."
+                                className="bg-secondary text-white border-0"
+                                onChange={(e) => searchStore.setStructuredQueryField('title', e.target.value)}
+                            />
+                        </div>
+                        <div className="col-md-6">
+                            <Form.Control
+                                size="sm"
+                                placeholder="Plot contains..."
+                                className="bg-secondary text-white border-0"
+                                onChange={(e) => searchStore.setStructuredQueryField('plot', e.target.value)}
+                            />
+                        </div>
+                        <div className="col-md-6">
+                            <Form.Control
+                                size="sm"
+                                placeholder="Character name..."
+                                className="bg-secondary text-white border-0"
+                                onChange={(e) => searchStore.setStructuredQueryField('character', e.target.value)}
+                            />
+                        </div>
+                        <div className="col-md-6">
+                            <Form.Control
+                                size="sm"
+                                placeholder="Actor/Person name..."
+                                className="bg-secondary text-white border-0"
+                                onChange={(e) => searchStore.setStructuredQueryField('name', e.target.value)}
+                            />
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            <div className="text-white bg-danger p-1 mt-1">
+                DEBUG: [{instanceId.current}] isAdvancedSearch = {searchStore.isAdvancedSearch ? 'TRUE' : 'FALSE'}
+            </div>
         </Form>
     );
 };
@@ -137,4 +225,3 @@ const SearchFormBase = ({ className = '' }) => {
 // Export both the base component and the observer-wrapped version
 export { SearchFormBase };
 export const SearchForm = observer(SearchFormBase);
-

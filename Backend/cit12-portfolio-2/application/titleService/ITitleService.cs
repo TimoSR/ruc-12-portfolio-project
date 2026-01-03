@@ -9,6 +9,7 @@ public interface ITitleService
     Task<Result<TitleDto>> GetTitleByIdAsync(Guid id, CancellationToken cancellationToken);
     Task<Result<TitleLegacyDto>> GetTitleByLegacyIdAsync(string legacyId, CancellationToken cancellationToken);
     Task<Result<(IEnumerable<TitleDto> items, int totalCount)>> SearchTitlesAsync(SearchTitlesQuery query, CancellationToken cancellationToken);
+    Task<Result<(IEnumerable<TitleDto> items, int totalCount)>> StructuredSearchAsync(string? title, string? plot, string? character, string? name, int page, int pageSize, CancellationToken cancellationToken);
     Task<Result<TitleDto>> CreateTitleAsync(CreateTitleCommand command, CancellationToken cancellationToken);
     Task<Result<TitleDto>> UpdateTitleAsync(Guid id, UpdateTitleCommand command, CancellationToken cancellationToken);
     Task<Result> DeleteTitleAsync(Guid id, CancellationToken cancellationToken);

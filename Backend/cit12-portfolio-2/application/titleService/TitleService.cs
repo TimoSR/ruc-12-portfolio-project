@@ -102,6 +102,35 @@ public class TitleService(IUnitOfWork unitOfWork, ILogger<TitleService> logger) 
         }
     }
 
+    public async Task<Result<(IEnumerable<TitleDto> items, int totalCount)>> StructuredSearchAsync(string? title, string? plot, string? character, string? name, int page, int pageSize, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var (titles, totalCount) = await unitOfWork.TitleRepository.StructuredSearchAsync(title, plot, character, name, page, pageSize, cancellationToken);
+
+            var dtos = titles.Select(title => new TitleDto(
+                Id: title.Id,
+                LegacyId: title.LegacyId,
+                TitleType: title.TitleType,
+                PrimaryTitle: title.PrimaryTitle,
+                OriginalTitle: title.OriginalTitle,
+                IsAdult: title.IsAdult,
+                StartYear: title.StartYear,
+                EndYear: title.EndYear,
+                RuntimeMinutes: title.RuntimeMinutes,
+                PosterUrl: title.PosterUrl,
+                Plot: title.Plot
+            ));
+
+            return Result<(IEnumerable<TitleDto> items, int totalCount)>.Success((dtos, totalCount));
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Unexpected error while structured searching titles");
+            throw;
+        }
+    }
+
     public async Task<Result<TitleDto>> CreateTitleAsync(CreateTitleCommand command, CancellationToken cancellationToken)
     {
         try

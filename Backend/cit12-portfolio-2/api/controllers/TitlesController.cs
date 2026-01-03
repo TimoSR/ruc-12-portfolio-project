@@ -103,6 +103,44 @@ public class TitlesController(ITitleService titleService) : ControllerBase
         return Ok(pagedResult);
     }
 
+    [HttpGet("structured-search", Name = "StructuredSearchTitles")]
+    [ProducesResponseType(typeof(PagedResult<TitleDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> StructuredSearch(
+        [FromQuery] string? title = null,
+        [FromQuery] string? plot = null,
+        [FromQuery] string? character = null,
+        [FromQuery] string? name = null,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await titleService.StructuredSearchAsync(title, plot, character, name, page, pageSize, cancellationToken);
+
+        if (!result.IsSuccess)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, new ProblemDetails
+            {
+                Type = "https://httpstatuses.com/500",
+                Title = "Internal Server Error",
+                Status = StatusCodes.Status500InternalServerError,
+                Detail = result.Error.Description,
+                Instance = HttpContext.TraceIdentifier
+            });
+        }
+
+        var pagedResult = result.Value.items.ToPagedResult(
+            result.Value.totalCount,
+            page,
+            pageSize,
+            HttpContext,
+            "StructuredSearchTitles",
+            new { title, plot, character, name }
+        );
+
+        return Ok(pagedResult);
+    }
+
     [HttpPost]
     [ProducesResponseType(typeof(TitleDto), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
