@@ -11,6 +11,7 @@ export type MovieItem = {
     plot: string | null
     url: string | null
     legacyId: string | null
+    averageRating: number | null
 }
 
 export type PagedResult<T> = {
