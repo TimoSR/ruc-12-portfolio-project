@@ -59,6 +59,7 @@ public sealed class TitleRepository(MovieDbContext dbContext) : ITitleRepository
             {
                 Title = t,
                 Rank =
+                    // Ranking system based on weight - we use exact (a double of) numbers to create a strict hieracy.
                     (t.PrimaryTitle.ToLower() == lowerQuery ? 4.0 : 0.0) +                   // exact title match
                     (t.PrimaryTitle.ToLower().StartsWith(lowerQuery) ? 2.0 : 0.0) +          // prefix match
                     (t.PrimaryTitle.ToLower().Contains(lowerQuery) ? 1.0 : 0.0) +            // substring match
@@ -137,12 +138,6 @@ public sealed class TitleRepository(MovieDbContext dbContext) : ITitleRepository
         await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
         while (await reader.ReadAsync(cancellationToken))
         {
-            // Map raw SQL result to Title entity (using internal constructor via reflection or manual mapping)
-            // Since Title constructor is internal/private, we might need a workaround or just map to DTO if possible.
-            // But Repository returns Domain Entities.
-            // WORKAROUND: We will use the DbContext to attach/track if possible, or just reconstruct.
-            // Since we can't easily access the internal constructor from outside the assembly without InternalsVisibleTo (which we likely have),
-            // let's check Program.cs or AssemblyInfo. If not, we can use reflection.
             
             // Assuming InternalsVisibleTo is set or we can use reflection.
             var id = reader.GetGuid(0);
