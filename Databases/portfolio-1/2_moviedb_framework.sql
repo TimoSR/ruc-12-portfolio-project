@@ -128,6 +128,11 @@ CREATE TABLE movie_db.word_index (
 -- ============================================
 
 -- Title: search by primary_title, plot (ILIKE / substring search)
+-- 1. TRIGRAM INDEX (Fuzzy Search / "Did you mean?")
+--    Uses: GIN index with `gin_trgm_ops`.
+--    Function: Breaks text into 3-letter chunks (e.g. "Space" -> "Spa", "pac", "ace").
+--    Why: Allows us to find matches even with misspellings (e.g. "Spacce" matches "Space").
+--    Used by: ILIKE queries in `api.structured_string_search`.
 CREATE INDEX idx_title_primary_title_trgm
   ON movie_db.title USING gin (primary_title gin_trgm_ops);
 
@@ -135,6 +140,11 @@ CREATE INDEX idx_title_plot_trgm
   ON movie_db.title USING gin (plot gin_trgm_ops);
 
 -- Title: full-text index alternative (if you use full-text search instead of trigram)
+-- 2. FULL-TEXT SEARCH INDEX (Semantic Search)
+--    Uses: GIN index with `to_tsvector`.
+--    Function: Converts text to "lexemes" (root words) and removes stop words (the, a, is).
+--    Why: Understands language rules. "Running" matches "Run". Fast for long texts like plots.
+--    Used by: `@@` operator in `api.string_search_title`.
 CREATE INDEX idx_title_fulltext
   ON movie_db.title USING gin (to_tsvector('english', primary_title || ' ' || coalesce(plot,'')));
 
@@ -143,6 +153,11 @@ CREATE INDEX idx_user_rating_account
   ON movie_db.user_rating (account_id);
 
 -- Genre: join by title, filter by genre
+-- 3. B-TREE INDEX (Standard / "Lookups")
+--    Uses: Default B-Tree (no extra keywords needed).
+--    Function: Standard sorting (like a phone book).
+--    Why: Essential for Foreign Keys and JOIN performance. Without this, finding a movie's genre scans the whole table.
+--    Used by: JOIN clauses (e.g. JOIN movie_db.genre g ON g.title_id = t.id).
 CREATE INDEX idx_genre_title
   ON movie_db.genre (title_id);
 
@@ -390,6 +405,10 @@ LANGUAGE sql
 AS $$
     SELECT t.id, t.primary_title
     FROM movie_db.title t
+    -- EXPLANATION:
+    -- to_tsvector(...) -> Prepares the movie document (title + plot) for semantic search.
+    -- plainto_tsquery(...) -> Turns user input "Fast cars" into query "fast & car".
+    -- @@ -> The match operator that utilizes the idx_title_fulltext index.
     WHERE to_tsvector('english', t.primary_title || ' ' || coalesce(t.plot, ''))
           @@ plainto_tsquery('english', p_query)
     ORDER BY ts_rank(
@@ -415,6 +434,10 @@ AS $$
   LEFT JOIN movie_db.actor a   ON a.title_id = t.id
   LEFT JOIN movie_db.person p  ON p.id = a.person_id
   WHERE (p_title_q  IS NULL OR t.primary_title ILIKE '%' || p_title_q  || '%')
+    -- EXPLANATION:
+    -- ILIKE with wildcards (%) usually requires scanning every row.
+    -- HOWEVER, because we created the GIN Trigram Index (idx_title_primary_title_trgm),
+    -- Postgres can swiftly find matching patterns without a slow table scan.
     AND (p_plot_q   IS NULL OR t.plot          ILIKE '%' || p_plot_q   || '%')
     AND (p_char_q   IS NULL OR a.character_name ILIKE '%' || p_char_q  || '%')
     AND (p_person_q IS NULL OR p.primary_name  ILIKE '%' || p_person_q || '%')

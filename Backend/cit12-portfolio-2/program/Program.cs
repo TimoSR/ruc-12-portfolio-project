@@ -6,7 +6,7 @@ using application.ratingService;
 using application.personService;
 using Microsoft.EntityFrameworkCore;
 using domain.title.interfaces;
-using application.ratingService;
+
 using domain.movie.person.interfaces;
 using domain.movie.title.interfaces;
 using domain.movie.titleRatings;
@@ -32,7 +32,24 @@ using application.services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-DotNetEnv.Env.Load(".env.local");
+// Load .env.local from current or parent - it was an old fallback before
+var root = Directory.GetCurrentDirectory();
+var dotenvPath = Path.Combine(root, ".env.local");
+if (!File.Exists(dotenvPath))
+{
+    // Try one level up (solution root)
+    var parent = Directory.GetParent(root)?.FullName;
+    if (parent != null) 
+    {
+        var parentPath = Path.Combine(parent, ".env.local");
+        if (File.Exists(parentPath))
+        {
+            dotenvPath = parentPath;
+        }
+    }
+}
+DotNetEnv.Env.Load(dotenvPath);
+
 
 builder.Configuration.AddEnvironmentVariables();
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("APP"));
@@ -88,7 +105,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["TokenKey"] ?? "super_secret_key_12345_must_be_long_enough_for_hmac_sha512_this_is_definitely_long_enough_now")),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["TokenKey"] ?? throw new InvalidOperationException("TokenKey is missing from configuration"))),
             ValidateIssuer = false,
             ValidateAudience = false
         };

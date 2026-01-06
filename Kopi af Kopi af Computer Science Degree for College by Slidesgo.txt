@@ -1,0 +1,129 @@
+ Movie BrowserComplex IT Systems
+Timothy Stoltzner & Christopher Bouet
+
+Introduction
+
+Database
+Backend
+Frontend
+
+
+
+
+Database
+
+Database (Tim)
+Schema driven
+Schemas
+movie_db
+api
+profile
+Vi bygger et moderne system ovenpå et eksisterende fundament
+Fokus: kontrollerede ændringer, bevarelse af legacy data, og konvertere til skalerbar arkitektur
+Ændringer fra originalt design
+Behold legacy id til evt. senere brug (TMDB)
+Konverter til GUID-baseret main id
+Migrations til normaliserede tabeller
+Implementations-tilgang: schema-baseret opdeling
+API Inspired endpoints (we did not use these)
+
+Database (Chris)
+
+Topic: Normalized Integration & Privacy (Baseret på Portfolio 1)
+The "Difficult" Challenge:
+Converting raw IMDB data (Strings) into a strict 3NF Relational Schema.
+Solution: Replacing comma-separated lists with Join Tables (title_genre, person_known_for).
+The Privacy Model:
+Designed a strict separation: Movie Data (Public/Read-only) vs. User Data (Private).
+UUID Strategy: All Primary Keys are UUIDs, ensuring we can merge datasets without ID collision.
+Result: A scalable foundation that handles complex relations efficiently.
+
+
+
+Konverter til GUID-baseret main id
+Migrations til normaliserede tabeller
+Implementations-tilgang: schema-baseret opdeling
+
+
+
+Backend
+
+Backend (Tim)
+
+Architecture: tydelige boundaries og ansvar
+Principper
+DDD
+Clean Architecture
+Entity Framework (men uden migrations)
+Gøre koden nem at teste mod abstraction
+
+
+Backend (Chris)
+
+Vi opic: Security & API Composition (Baseret på Portfolio 2 + Final Polish)
+The "Interesting" Feature: Stateless Auth:
+Implemented JWT (JSON Web Tokens) to secure the API.
+Allows a Stateless architecture where every request carries its own identity.
+API Orchestration:
+The API forces a Clean Architecture.
+It aggregates data from multiple repositories into DTOs (Data Transfer Objects).
+Example: PersonDetails combines local SQL data + calculated Co-Player stats before sending to Frontend.
+
+
+
+
+Frontend
+
+Frontend (Tim)
+Frontend
+Routing struktur
+Login-flow
+JWT token til authentication/authorization
+Resultat: en sammenhængende kæde fra data → domæne → API → UI med sikkerhed og vedligeholdelse i centrum
+
+
+Frontend (Chris)
+
+VTopic: Seamless Integration (Baseret på Subproject 3)
+The "Clever" Feature: Unified Bookmarks:
+Problem: Avoiding duplicate code for Movies vs. Actors.
+Solution: A Polymorphic BookmarkButton component handling generic TargetTypes.
+External Integration (TMDB):
+We use the IMDB nconst (from our DB) to query the TMDB API live.
+Why? Provenance + Aesthetics. We keep the reliable data locally, but fetch the beautiful assets remotely.
+
+
+
+
+Demo
+
+Demo
+
+V1. The User Journey
+Search (Live): Typing "Inception" -> Showing Debounce & Loading State.
+Deep Dive: Selecting a Movie -> Viewing combined Metadata + Cast.
+2. Personalization (Auth)
+Login Flow: Secure token exchange.
+Bookmarking:
+Adding a Movie to favorites.
+Adding an Actor to favorites (Uniform Logic).
+3. The Profile
+Verification: Showing the saved data in "My Profile".
+
+
+
+
+Conclusion
+Here’s what you’ll find in this Slidesgo template:
+A slide structure based on an Education template for University, which you can easily adapt to your needs. For more info on how to edit the template, please visit Slidesgo School or read our FAQs.
+An assortment of graphic illustrations that are suitable for use in the presentation can be found in the alternative resources slide.
+A thanks slide, which you must keep so that proper credits for our design are given.
+A resources slide, where you’ll find links to all the elements used in the template.
+Instructions for use 
+Final slides with: 
+The fonts and colors used in the template.
+A selection of illustrations. You can also customize and animate them as you wish with the online editor. Visit Storyset to find more.
+More infographic resources, whose size and color can be edited. 
+Sets of customizable icons of the following themes: general, business, avatar, creative process, education, help & support, medical, nature, performing arts, SEO & marketing, and teamwork.
+
+You can delete this slide when you’re done editing the presentation.

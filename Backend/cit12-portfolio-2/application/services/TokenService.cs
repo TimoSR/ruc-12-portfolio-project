@@ -16,7 +16,7 @@ public class TokenService : ITokenService
     {
         _config = config;
         // Hardcoded key for "last fix" scenario if config is missing, but ideally from config
-        var tokenKey = _config["TokenKey"] ?? "super_secret_key_12345_must_be_long_enough_for_hmac_sha512_this_is_definitely_long_enough_now";
+        var tokenKey = _config["TokenKey"] ?? throw new InvalidOperationException("TokenKey is missing from configuration");
         _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenKey));
     }
 
