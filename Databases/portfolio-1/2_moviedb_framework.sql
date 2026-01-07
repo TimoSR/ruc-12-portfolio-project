@@ -351,7 +351,7 @@ RETURNS TABLE (sim_title_id UUID, primary_title VARCHAR(500), jaccard_genre FLOA
 LANGUAGE sql
 AS $$
 WITH base AS (
-  -- 1. Find the "recipe" (set of genres) for the target movie (e.g., Star Wars)
+  -- 1. Find the "recipe" (set of genres) for the target movie (eg Star Wars)
   SELECT ARRAY_AGG(g.genre ORDER BY g.genre) AS gset
   FROM movie_db.genre g
   WHERE g.title_id = p_title_id
@@ -378,7 +378,7 @@ SELECT
       cardinality( (SELECT ARRAY(SELECT DISTINCT x FROM unnest(b.gset) x
                                  INTERSECT SELECT DISTINCT y FROM unnest(c.gset) y)) )::float
       /
-      -- Bottom part (Union): Count of TOTAL unique genres involved (e.g. Action, Sci-Fi, Drama)
+      -- Bottom part (Union): Count of TOTAL unique genres involved (eg Action, Sci-Fi, Drama)
       cardinality( (SELECT ARRAY(SELECT DISTINCT x FROM unnest(b.gset) x
                                  UNION    SELECT DISTINCT y FROM unnest(c.gset) y)) )::float
   END AS jaccard_genre
