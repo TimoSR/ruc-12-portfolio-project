@@ -351,11 +351,13 @@ RETURNS TABLE (sim_title_id UUID, primary_title VARCHAR(500), jaccard_genre FLOA
 LANGUAGE sql
 AS $$
 WITH base AS (
+  -- 1. Find the "recipe" (set of genres) for the target movie (e.g., Star Wars)
   SELECT ARRAY_AGG(g.genre ORDER BY g.genre) AS gset
   FROM movie_db.genre g
   WHERE g.title_id = p_title_id
 ),
 cand AS (
+  -- 2. Find the "recipe" for all other candidate movies to compare against
   SELECT t.id, t.primary_title, ARRAY_AGG(g.genre ORDER BY g.genre) AS gset
   FROM movie_db.title t
   JOIN movie_db.genre g ON g.title_id = t.id
@@ -365,17 +367,22 @@ cand AS (
 SELECT
   c.id, c.primary_title,
   CASE
+    -- Avoid division by zero if NO genres exist in total
     WHEN cardinality( (SELECT ARRAY(SELECT DISTINCT x FROM unnest(b.gset) x
                                     UNION SELECT DISTINCT y FROM unnest(c.gset) y)) ) = 0
     THEN 0
     ELSE
+      -- JACCARD FORMULA: Intersection / Union
+      
+      -- Top part (Intersection): Count of genres they SHARE (e.g. Action, Sci-Fi)
       cardinality( (SELECT ARRAY(SELECT DISTINCT x FROM unnest(b.gset) x
                                  INTERSECT SELECT DISTINCT y FROM unnest(c.gset) y)) )::float
       /
+      -- Bottom part (Union): Count of TOTAL unique genres involved (e.g. Action, Sci-Fi, Drama)
       cardinality( (SELECT ARRAY(SELECT DISTINCT x FROM unnest(b.gset) x
                                  UNION    SELECT DISTINCT y FROM unnest(c.gset) y)) )::float
   END AS jaccard_genre
-FROM base b CROSS JOIN cand c
+FROM base b CROSS JOIN cand c -- Compare Base movie with EVERY Candidate movie
 ORDER BY jaccard_genre DESC, c.primary_title
 LIMIT p_limit;
 $$;
